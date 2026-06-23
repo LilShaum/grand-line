@@ -537,6 +537,54 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--bounty-gold
 .crew-progress { height: 5px; background: rgba(43,32,23,.14); border-radius: 4px; overflow: hidden; margin-top: 5px; }
 .crew-progress-fill { height: 100%; background: var(--bounty-gold2); border-radius: 4px; }
 
+/* ===================== DUTIES REDESIGN: POSTER CARDS ===================== */
+.bounty.poster, .duty.poster {
+  position: relative; overflow: hidden;
+  background:
+    repeating-linear-gradient(0deg, transparent, transparent 20px, rgba(120,90,40,.035) 21px),
+    var(--parchment);
+}
+.stat-sigil { color: var(--stat, var(--ocean-navy)); margin-right: 6px; font-size: .95rem; vertical-align: -1px; }
+.bounty.rarity-rookie, .duty.rarity-rookie { border-color: rgba(46,110,106,.45); }
+.bounty.rarity-notorious, .duty.rarity-notorious { border-color: var(--bounty-gold2); box-shadow: var(--shadow), inset 0 0 0 1px rgba(200,162,74,.30); }
+.bounty.rarity-warlord, .duty.rarity-warlord { border-color: var(--wanted-red); box-shadow: 0 0 0 1px rgba(138,59,46,.22), 0 7px 20px rgba(138,59,46,.22); }
+.bounty-reward { display: flex; flex-direction: column; align-items: flex-end; min-width: 54px; text-align: right; line-height: 1; }
+.br-amount { font-family: "Pirata One", serif; font-size: 1.35rem; color: var(--bounty-gold2); }
+.br-sign { margin-right: 1px; }
+.br-xp { font-size: .56rem; font-weight: 700; letter-spacing: .5px; color: var(--ink-soft); text-transform: uppercase; margin-top: 3px; }
+.rarity-warlord .br-amount { color: var(--wanted-red); }
+.bounty.done .bounty-reward, .duty.done .bounty-reward { opacity: .5; }
+.bounty-acts { display: flex; flex-direction: column; gap: 1px; }
+.clear-stamp {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%,-50%) rotate(-16deg) scale(2);
+  font-family: "Pirata One", "Special Elite", serif;
+  font-size: 1.5rem; letter-spacing: 3px; font-weight: 700;
+  color: var(--stat, var(--wanted-red));
+  border: 3px solid var(--stat, var(--wanted-red));
+  border-radius: 8px; padding: 1px 12px;
+  background: rgba(244,236,216,.5);
+  opacity: 0; pointer-events: none; z-index: 5;
+  animation: stampSlam .6s ease forwards;
+}
+@keyframes stampSlam {
+  0%   { opacity: 0; transform: translate(-50%,-50%) rotate(-16deg) scale(2.4); }
+  35%  { opacity: 1; transform: translate(-50%,-50%) rotate(-16deg) scale(.9); }
+  55%  { transform: translate(-50%,-50%) rotate(-16deg) scale(1.05); }
+  72%  { opacity: 1; transform: translate(-50%,-50%) rotate(-16deg) scale(1); }
+  100% { opacity: 0; transform: translate(-50%,-50%) rotate(-16deg) scale(1); }
+}
+.bounty-streak-banner { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 14px; padding: 11px 14px; border-left: 5px solid var(--bounty-gold); }
+.bounty-streak-banner.hot { border-left-color: var(--wanted-red); background: linear-gradient(0deg, rgba(138,59,46,.05), var(--parchment)); }
+.bsb-streak { font-weight: 700; color: var(--ink); font-size: .9rem; display: inline-flex; align-items: center; gap: 6px; }
+.bsb-streak .ti { color: var(--bounty-gold2); }
+.bounty-streak-banner.hot .bsb-streak .ti { color: var(--wanted-red); }
+.bsb-streak.cold { color: var(--ink-soft); font-weight: 600; }
+.bsb-next { font-size: .72rem; color: var(--ink-soft); }
+.bsb-next strong { color: var(--ocean-navy); }
+.bsb-bar { flex-basis: 100%; height: 5px; background: rgba(43,32,23,.14); border-radius: 4px; overflow: hidden; margin-top: 2px; }
+.bsb-fill { height: 100%; background: linear-gradient(90deg, var(--bounty-gold), var(--wanted-red)); border-radius: 4px; transition: width .4s ease; }
+
 /* ===================== ACTION TOAST ===================== */
 .toast.action { display: flex; align-items: center; gap: 12px; justify-content: space-between; }
 .toast-btn {
@@ -637,6 +685,8 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--bounty-gold
     <!-- BOUNTIES (tasks) -->
     <section class="screen" data-screen="bounties" hidden>
       <h2 class="screen-title"><i class="ti ti-flag"></i> Bounty Board</h2>
+
+      <div class="card bounty-streak-banner" id="bountyStreakBanner"></div>
 
       <form class="add-bounty card" id="addBountyForm" autocomplete="off">
         <input type="text" id="bountyTitle" placeholder="Name the bounty… (e.g. 30-min workout)" maxlength="120" required />
@@ -980,6 +1030,21 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--bounty-gold
     { id: "yami", name: "Yami Yami no Mi", desc: "The void — true dark mode.", cost: 8000, vars: { "--parchment": "#1d2131", "--parchment2": "#262b3e", "--parchment3": "#2f3551", "--ocean-navy": "#0c0e16", "--ocean-navy2": "#070810", "--bounty-gold": "#c8a24a", "--bounty-gold2": "#a9852f", "--wanted-red": "#c2533f", "--ink": "#e7e3d4", "--ink-soft": "#9aa0b5", "--paper-line": "#3a4060", "--sea-teal": "#4fb6a8", "--den-pink": "#d98aa6", "--good": "#5cae6e" } }
   ];
 
+  var BOUNTY_MILESTONES = [
+    { count: 10,  bonus: 100,  title: "Rookie Bounty Hunter" },
+    { count: 25,  bonus: 250,  title: "Seasoned Hunter" },
+    { count: 50,  bonus: 500,  title: "Notorious Hunter" },
+    { count: 100, bonus: 1000, title: "Veteran of a Hundred Bounties" },
+    { count: 250, bonus: 2500, title: "Legendary Bounty Hunter" },
+    { count: 500, bonus: 5000, title: "The Hunter Kings Fear" }
+  ];
+  function nextBountyMilestone(cleared) {
+    for (var i = 0; i < BOUNTY_MILESTONES.length; i++) {
+      if (cleared < BOUNTY_MILESTONES[i].count) return BOUNTY_MILESTONES[i];
+    }
+    return null;
+  }
+
   var HAKI_NODES = [];
   STAT_KEYS.forEach(function (k) { HAKI_TREE[k].forEach(function (n) { HAKI_NODES.push(n); }); });
 
@@ -988,6 +1053,7 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--bounty-gold
     HAKI_TREE: HAKI_TREE, HAKI_NODES: HAKI_NODES,
     PROMPTS: PROMPTS, promptForDay: promptForDay,
     THEMES: THEMES,
+    BOUNTY_MILESTONES: BOUNTY_MILESTONES, nextBountyMilestone: nextBountyMilestone,
     TIERS: TIERS, TIER_KEYS: TIER_KEYS,
     XP_BASE: XP_BASE,
     xpToNext: xpToNext,
@@ -1049,6 +1115,7 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--bounty-gold
         activeTheme: "grandline",
         ownedThemes: ["grandline"],
         remindersOn: false,
+        bountiesCleared: 0,
         firstRun: true
       },
       stats: stats,
@@ -1143,6 +1210,13 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--bounty-gold
   function voyageStreak(save, today) {
     var streak = 0, cursor = today;
     while (save.logPose[cursor]) { streak++; cursor = addDays(cursor, -1); }
+    return streak;
+  }
+  function taskStreak(save, today) {
+    var streak = 0, cursor = today;
+    while (save.logPose[cursor] && (save.logPose[cursor].tasksDone || 0) > 0) {
+      streak++; cursor = addDays(cursor, -1);
+    }
     return streak;
   }
   function activeBuffs(save, today) {
@@ -1256,6 +1330,7 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--bounty-gold
     grantBuff: grantBuff,
     pruneBuffs: pruneBuffs,
     voyageStreak: voyageStreak,
+    taskStreak: taskStreak,
     xpMultiplier: xpMultiplier,
     berryMultiplier: berryMultiplier,
     activeBuffs: activeBuffs,
@@ -1305,6 +1380,9 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--bounty-gold
     }
     var t = economy.TIERS[b.tier];
     var ev = rewards.applyReward(save, { xp: t.xp, stat: b.stat, berries: t.berries, isTask: true, tier: b.tier });
+    save.player.bountiesCleared = (save.player.bountiesCleared || 0) + 1;
+    var ms = economy.BOUNTY_MILESTONES.find(function (m) { return m.count === save.player.bountiesCleared; });
+    if (ms) { save.player.berries += ms.bonus; ev.bountyMilestone = ms; }
     if (b.recurring) {
       b.lastCompleted = today;
       b.status = "open";
@@ -1473,6 +1551,7 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--bounty-gold
     if (!save.haki) save.haki = {};
     if (!save.player.ownedThemes) save.player.ownedThemes = ["grandline"];
     if (!save.player.activeTheme) save.player.activeTheme = "grandline";
+    if (save.player.bountiesCleared == null) save.player.bountiesCleared = 0;
     save.player.firstRun = false;
     state.save(save);
     return save;
@@ -1516,6 +1595,8 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--bounty-gold
   var deferredPrompt = null;
   var RANK_FACE = { "Stowaway": "🧭", "East Blue Rookie": "⚓", "Paradise Pirate": "🗺️", "Rising Supernova": "⭐", "Notorious Captain": "🏴‍☠️", "Warlord-Tier": "⚔️", "Emperor's Vanguard": "🔱", "Yonko": "👑", "Pirate King": "👑" };
   var TIER_ORDER = { petty: 0, rookie: 1, notorious: 2, warlord: 3 };
+  var STAT_FLAVOR = { strength: "Crushed it.", wisdom: "Outwitted them.", ambition: "Conquered.", resolve: "Endured." };
+  var STAT_SIGIL = { strength: "ti-sword", wisdom: "ti-eye", ambition: "ti-crown", resolve: "ti-anchor" };
 
   var $ = function (sel, root) { return (root || document).querySelector(sel); };
   var $$ = function (sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); };
@@ -1700,9 +1781,31 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--bounty-gold
     return a;
   }
 
+  function renderBountyStreakBanner() {
+    var banner = $("#bountyStreakBanner"); if (!banner) return;
+    var streak = rewards.taskStreak(save, state.todayStr());
+    var cleared = save.player.bountiesCleared || 0;
+    var next = economy.nextBountyMilestone(cleared);
+    banner.classList.toggle("hot", streak > 0);
+    var left = streak > 0
+      ? '<span class="bsb-streak"><i class="ti ti-flame"></i> ' + streak + '-day bounty streak</span>'
+      : '<span class="bsb-streak cold"><i class="ti ti-target"></i> Clear a bounty today to start a streak</span>';
+    var right = next
+      ? '<span class="bsb-next">' + cleared + ' / ' + next.count + ' cleared → <strong>' + next.title + '</strong></span>'
+      : '<span class="bsb-next">' + cleared + ' cleared · top of the wanted list ☠</span>';
+    banner.innerHTML = left + right;
+    if (next) {
+      var prev = 0;
+      for (var i = 0; i < economy.BOUNTY_MILESTONES.length; i++) { if (economy.BOUNTY_MILESTONES[i].count === next.count) break; prev = economy.BOUNTY_MILESTONES[i].count; }
+      var pct = Math.min(100, Math.round(((cleared - prev) / (next.count - prev)) * 100));
+      banner.innerHTML += '<div class="bsb-bar"><div class="bsb-fill" style="width:' + pct + '%"></div></div>';
+    }
+  }
+
   function renderBounties() {
     populateSelects();
     renderBountyStatusFilters();
+    renderBountyStreakBanner();
     $$("#bountyFilters .chip").forEach(function (c) {
       c.classList.toggle("active", c.textContent === (bountyFilter === "all" ? "All" : economy.STATS[bountyFilter].name));
     });
@@ -1722,7 +1825,8 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--bounty-gold
     }
     items.forEach(function (b) {
       if (editingBounty === b.id) { list.appendChild(bountyEditRow(b)); return; }
-      var li = el("li", "bounty" + (b.status === "done" ? " done" : ""));
+      var li = el("li", "bounty poster rarity-" + b.tier + (b.status === "done" ? " done" : ""));
+      li.dataset.id = b.id;
       li.style.setProperty("--stat", accent(b.stat));
       var chk = el("button", "bounty-check", b.status === "done" ? '<i class="ti ti-check"></i>' : "");
       chk.onclick = function () { b.status === "done" ? doUncomplete(b.id) : doComplete(b.id); };
@@ -1733,14 +1837,18 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--bounty-gold
         dueHtml = '<span class="' + (overdue ? "due-over" : "due") + '"><i class="ti ti-calendar"></i> ' + (overdue ? "Overdue " : "Due ") + b.dueDate + '</span>';
       }
       var recurHtml = b.recurring ? '<span class="recur-badge"><i class="ti ti-repeat"></i> ' + b.recurring + '</span>' : "";
-      body.innerHTML = '<div class="bounty-title">' + escapeHtml(b.title) + '</div>' +
-        '<div class="bounty-meta"><span class="tier-badge tier-' + b.tier + '">' + b.tier + '</span>' +
-        '<span>' + economy.STATS[b.stat].name + '</span><span>' + economy.TIERS[b.tier].xp + ' XP · ' + economy.TIERS[b.tier].berries + ' ฿</span>' + recurHtml + dueHtml + '</div>';
+      body.innerHTML = '<div class="bounty-title"><i class="ti ' + (STAT_SIGIL[b.stat] || "ti-circle") + ' stat-sigil"></i>' + escapeHtml(b.title) + '</div>' +
+        '<div class="bounty-meta"><span class="tier-badge tier-' + b.tier + '">' + economy.TIERS[b.tier].label + '</span>' +
+        '<span>' + economy.STATS[b.stat].name + '</span>' + recurHtml + dueHtml + '</div>';
+      var reward = el("div", "bounty-reward",
+        '<span class="br-amount"><span class="br-sign">฿</span>' + fmt(economy.TIERS[b.tier].berries) + '</span>' +
+        '<span class="br-xp">+' + economy.TIERS[b.tier].xp + ' XP</span>');
       var editBtn = el("button", "edit-btn", '<i class="ti ti-pencil"></i>'); editBtn.title = "Edit";
       editBtn.onclick = function () { editingBounty = b.id; renderBounties(); };
       var del = el("button", "del-btn", '<i class="ti ti-x"></i>'); del.title = "Delete";
       del.onclick = function () { game.deleteBounty(save, b.id); renderBounties(); renderQuarters(); };
-      li.appendChild(chk); li.appendChild(body); li.appendChild(editBtn); li.appendChild(del);
+      var acts = el("div", "bounty-acts"); acts.appendChild(editBtn); acts.appendChild(del);
+      li.appendChild(chk); li.appendChild(body); li.appendChild(reward); li.appendChild(acts);
       list.appendChild(li);
     });
   }
@@ -1784,19 +1892,22 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--bounty-gold
     if (!save.habits.length) { list.appendChild(el("li", "empty", "No ship duties yet. Add a daily routine below.")); }
     save.habits.forEach(function (h) {
       var doneToday = h.lastCheckDate === today;
-      var li = el("li", "duty" + (doneToday ? " done" : ""));
+      var li = el("li", "duty poster rarity-" + h.tier + (doneToday ? " done" : ""));
+      li.dataset.id = h.id;
       li.style.setProperty("--stat", accent(h.stat));
       var chk = el("button", "duty-check", doneToday ? '<i class="ti ti-check"></i>' : "");
       chk.title = doneToday ? "Done today" : "Check in";
       chk.onclick = function () { doCheckHabit(h.id); };
       var body = el("div", "duty-body");
-      body.innerHTML = '<div class="duty-title">' + escapeHtml(h.title) + '</div>' +
+      body.innerHTML = '<div class="duty-title"><i class="ti ' + (STAT_SIGIL[h.stat] || "ti-circle") + ' stat-sigil"></i>' + escapeHtml(h.title) + '</div>' +
         '<div class="duty-meta"><span>' + economy.STATS[h.stat].name + '</span>' +
-        '<span>' + economy.TIERS[h.tier].xp + ' XP · ' + economy.TIERS[h.tier].berries + ' ฿</span>' +
         (h.streak > 0 ? '<span class="duty-streak"><i class="ti ti-flame"></i> ' + h.streak + 'd</span>' : '') + '</div>';
+      var reward = el("div", "bounty-reward",
+        '<span class="br-amount"><span class="br-sign">฿</span>' + fmt(economy.TIERS[h.tier].berries) + '</span>' +
+        '<span class="br-xp">+' + economy.TIERS[h.tier].xp + ' XP</span>');
       var del = el("button", "del-btn", '<i class="ti ti-x"></i>');
       del.onclick = function () { game.deleteHabit(save, h.id); renderDuties(); };
-      li.appendChild(chk); li.appendChild(body); li.appendChild(del);
+      li.appendChild(chk); li.appendChild(body); li.appendChild(reward); li.appendChild(del);
       list.appendChild(li);
     });
   }
@@ -2000,15 +2111,24 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--bounty-gold
   function doComplete(id) {
     var b = save.bounties.find(function (x) { return x.id === id; });
     var ev = game.completeBounty(save, id);
-    if (ev) { celebrate(ev); if (b) offerVictory(b.title); }
-    refreshAll();
+    if (!ev) { refreshAll(); return; }
+    if (ev.already) { toast('<i class="ti ti-clock"></i> Already cleared today.'); refreshAll(); return; }
+    stampCard(id, b ? b.stat : "resolve");
+    if (b) clearedFlavor(b.stat, "bounty cleared");
+    celebrate(ev);
+    if (b) offerVictory(b.title);
+    setTimeout(refreshAll, 620);
   }
   function doUncomplete(id) { game.uncompleteBounty(save, id); refreshAll(); }
   function doCheckHabit(id) {
+    var h = save.habits.find(function (x) { return x.id === id; });
     var ev = game.checkHabit(save, id);
-    if (ev && ev.already) toast('<i class="ti ti-clock"></i> Already done today.');
-    else if (ev) celebrate(ev);
-    refreshAll();
+    if (!ev) { refreshAll(); return; }
+    if (ev.already) { toast('<i class="ti ti-clock"></i> Already done today.'); refreshAll(); return; }
+    stampCard(id, h ? h.stat : "resolve");
+    if (h) clearedFlavor(h.stat, "duty logged");
+    celebrate(ev);
+    setTimeout(refreshAll, 620);
   }
   function offerVictory(title) {
     toastAction('<i class="ti ti-confetti"></i> Bounty cleared! Log this win?', "Log it (+5 ฿)", function () {
@@ -2044,6 +2164,10 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--bounty-gold
       toast('<i class="ti ti-users"></i> Unlocked: ' + c.name + ' — ' + c.bonus, true);
       confetti();
     });
+    if (ev.bountyMilestone) {
+      toast('<i class="ti ti-trophy"></i> Most Wanted: ' + ev.bountyMilestone.title + '!  +' + fmt(ev.bountyMilestone.bonus) + ' ฿', true);
+      confetti("#8a3b2e");
+    }
   }
 
   function toast(html, big) {
@@ -2063,8 +2187,10 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--bounty-gold
     setTimeout(function () { t.remove(); }, 6000);
   }
 
-  function confetti() {
-    var colors = ["#c8a24a", "#8a3b2e", "#2e6e6a", "#1b2a4a", "#e8a0a8"];
+  function confetti(accentHex) {
+    var colors = accentHex
+      ? [accentHex, "#c8a24a", "#fffdf6", accentHex, "#fff"]
+      : ["#c8a24a", "#8a3b2e", "#2e6e6a", "#1b2a4a", "#e8a0a8"];
     var layer = $("#confettiLayer");
     for (var i = 0; i < 60; i++) {
       var c = el("div", "confetti");
@@ -2076,6 +2202,20 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--bounty-gold
       layer.appendChild(c);
       (function (node) { setTimeout(function () { node.remove(); }, 3200); })(c);
     }
+  }
+
+  function stampCard(id, stat) {
+    var li = $('#bountyList li[data-id="' + id + '"]') || $('#dutyList li[data-id="' + id + '"]');
+    if (!li) return;
+    li.classList.add("just-cleared");
+    var st = el("div", "clear-stamp", "CLEARED");
+    st.style.setProperty("--stat", accent(stat));
+    li.appendChild(st);
+  }
+  function clearedFlavor(stat, suffix) {
+    var flavor = STAT_FLAVOR[stat] || "Cleared.";
+    toast('<i class="ti ti-confetti"></i> ' + flavor + ' — ' + economy.STATS[stat].name + ' ' + suffix, true);
+    confetti(accent(stat));
   }
 
   function showConfirm(title, msg, yesLabel, onYes) {
