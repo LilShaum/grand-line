@@ -30,12 +30,12 @@
   --ocean-navy: #1b2a4a;
   --ocean-navy2:#12203c;
   --sea-teal:   #2e6e6a;
-  --bounty-gold:#c8a24a;
-  --bounty-gold2:#a9852f;
+  --bounty-gold:#b89038;
+  --bounty-gold2:#9a7a2a;
   --wanted-red: #8a3b2e;
   --den-pink:   #e8a0a8;
   --ink:        #2b2017;
-  --ink-soft:   #5e5142;
+  --ink-soft:   #524430;
   --paper-line: #d8c69a;
   --good:       #3f7d4e;
   --shadow:     0 6px 18px rgba(27,42,74,.18);
@@ -89,14 +89,14 @@ body {
   font-size: .62rem; letter-spacing: 3px; color: var(--ink-soft);
   text-transform: uppercase;
 }
-.helm-btn { position: absolute; right: -6px; top: -2px; }
+.helm-btn { position: absolute; right: -6px; top: -2px; padding: 8px; touch-action: manipulation; }
 
 .poster-face {
   font-size: 2.7rem; margin: 10px auto 4px;
   width: 96px; height: 84px; line-height: 84px;
   background: radial-gradient(circle at 50% 38%, var(--parchment3), var(--parchment2));
   border: 2px solid var(--bounty-gold2);
-  border-radius: 8px;
+border-radius: var(--radius);
   box-shadow: inset 0 2px 8px rgba(120,90,40,.18);
 }
 .poster-name {
@@ -187,17 +187,19 @@ main { padding: 16px; }
 /* ===================== WEATHER ===================== */
 .weather-row { display: flex; gap: 8px; }
 .weather-btn {
-  flex: 1; padding: 10px; border-radius: 10px; cursor: pointer;
+  flex: 1; padding: 14px; border-radius: var(--radius); cursor: pointer;
   border: 1px solid var(--paper-line); background: var(--parchment2);
   font-weight: 600; color: var(--ink); display: flex; align-items: center; justify-content: center; gap: 6px;
   font-family: inherit; transition: transform .08s ease, background .2s;
+  min-height: 44px; touch-action: manipulation;
 }
 .weather-btn:hover { transform: translateY(-2px); }
 .weather-btn.sel { background: var(--ocean-navy); color: var(--parchment); }
 
 /* ===================== BUTTONS / FORMS ===================== */
 .primary-btn, .ghost-btn, .icon-btn {
-  font-family: inherit; cursor: pointer; border: none; border-radius: 10px;
+  font-family: inherit; cursor: pointer; border: none; border-radius: var(--radius);
+  touch-action: manipulation;
 }
 .primary-btn {
   background: var(--wanted-red); color: #fff; font-weight: 600;
@@ -213,14 +215,22 @@ main { padding: 16px; }
 }
 .ghost-btn:hover { background: var(--parchment2); }
 .ghost-btn.danger { color: var(--wanted-red); border-color: var(--wanted-red); }
-.icon-btn { background: transparent; color: var(--ink); font-size: 1.2rem; padding: 6px; }
+.icon-btn { background: transparent; color: var(--ink); font-size: 1.2rem; padding: 10px; min-height: 44px; min-width: 44px; touch-action: manipulation; }
 
 input, select, textarea {
   font-family: inherit; font-size: .92rem; color: var(--ink);
-  background: #fff; border: 1px solid var(--paper-line); border-radius: 10px;
-  padding: 10px 12px; width: 100%;
+  background: #fff; border: 1px solid var(--paper-line); border-radius: var(--radius);
+  padding: 12px; width: 100%; min-height: 44px;
 }
 input:focus, select:focus, textarea:focus { outline: 2px solid var(--bounty-gold); border-color: var(--bounty-gold); }
+:focus-visible {
+  outline: 3px solid var(--bounty-gold);
+  outline-offset: 2px;
+}
+button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focus-visible, .mood-cell:focus-visible, .icon-btn:focus-visible, .buy-btn:focus-visible, .edit-btn:focus-visible, .del-btn:focus-visible, .theme-btn:focus-visible, .haki-buy:focus-visible, .mini-save:focus-visible, .mini-cancel:focus-visible, .toast-btn:focus-visible {
+  outline: 3px solid var(--bounty-gold);
+  outline-offset: 2px;
+}
 .add-row { display: flex; gap: 8px; margin-top: 8px; }
 .add-row select { flex: 1; }
 .add-row .primary-btn { white-space: nowrap; }
@@ -231,7 +241,8 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--bounty-gold
 .chip {
   background: var(--parchment); border: 1px solid var(--paper-line);
   color: var(--ink); font-size: .74rem; font-weight: 600;
-  padding: 5px 11px; border-radius: 999px; cursor: pointer;
+  padding: 8px 12px; border-radius: 999px; cursor: pointer;
+  touch-action: manipulation; min-height: 44px;
 }
 .chip.active { background: var(--ocean-navy); color: var(--parchment); border-color: var(--ocean-navy); }
 
@@ -240,14 +251,15 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--bounty-gold
   display: flex; align-items: center; gap: 10px;
   background: var(--parchment); border: 1px solid var(--paper-line);
   border-left: 5px solid var(--stat, var(--ocean-navy));
-  border-radius: 10px; padding: 11px 12px; margin-bottom: 9px; box-shadow: var(--shadow);
+  border-radius: var(--radius); padding: 11px 12px; margin-bottom: 9px; box-shadow: var(--shadow);
 }
 .bounty.done { opacity: .55; }
 .bounty.done .bounty-title { text-decoration: line-through; }
 .bounty-check {
-  width: 26px; height: 26px; min-width: 26px; border-radius: 50%;
+  width: 44px; height: 44px; min-width: 44px; border-radius: 50%;
   border: 2px solid var(--stat, var(--ocean-navy)); background: transparent;
   cursor: pointer; display: flex; align-items: center; justify-content: center; color: #fff;
+  touch-action: manipulation;
 }
 .bounty.done .bounty-check { background: var(--good); border-color: var(--good); }
 .bounty-body { flex: 1; min-width: 0; }
@@ -257,20 +269,46 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--bounty-gold
   font-size: .6rem; font-weight: 700; letter-spacing: .5px; text-transform: uppercase;
   padding: 2px 7px; border-radius: 4px; color: #fff; background: var(--ink-soft);
 }
-.tier-petty     { background: #8a8170; }
+.tier-petty     { background: #6a6150; }
 .tier-rookie    { background: var(--sea-teal); }
-.tier-notorious { background: var(--bounty-gold2); }
+.tier-notorious { background: #7a5a1a; }
 .tier-warlord   { background: var(--wanted-red); }
-.del-btn { background: transparent; border: none; color: var(--ink-soft); cursor: pointer; font-size: 1.05rem; padding: 4px; }
+.del-btn { background: transparent; border: none; color: var(--ink-soft); cursor: pointer; font-size: 1.05rem; padding: 4px; touch-action: manipulation; }
 .del-btn:hover { color: var(--wanted-red); }
 
 .mini-list li { display: flex; align-items: center; gap: 8px; padding: 7px 0; border-bottom: 1px dashed var(--paper-line); font-size: .9rem; }
 .mini-list li:last-child { border-bottom: none; }
 .mini-list .mini-check {
-  width: 20px; height: 20px; min-width: 20px; border-radius: 50%;
+  width: 44px; height: 44px; min-width: 44px; border-radius: 50%;
   border: 2px solid var(--stat, var(--ocean-navy)); cursor: pointer; background: transparent;
+  touch-action: manipulation;
 }
 .empty { color: var(--ink-soft); font-size: .85rem; padding: 8px 0; font-style: italic; }
+
+.empty-state {
+  text-align: center; padding: 24px 16px; color: var(--ink-soft);
+}
+.empty-state .ti { font-size: 3rem; color: var(--paper-line); margin-bottom: 12px; display: block; }
+.empty-state-title { font-family: "Instrument Serif", serif; font-size: 1.1rem; color: var(--ink); margin-bottom: 6px; }
+.empty-state-desc { font-size: .85rem; margin-bottom: 16px; }
+.empty-state-action { display: inline-flex; align-items: center; gap: 6px; }
+
+.skeleton {
+  background: linear-gradient(90deg, var(--parchment2) 25%, var(--parchment3) 50%, var(--parchment2) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s infinite;
+  border-radius: calc(var(--radius) / 2);
+}
+@keyframes skeleton-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+.skeleton-text { height: 1rem; margin-bottom: 8px; }
+.skeleton-text:last-child { width: 60%; }
+.skeleton-card { height: 80px; margin-bottom: 14px; }
+.skeleton-round { border-radius: 50%; }
+
+.skeleton-screen { padding: 16px; }
 
 /* ===================== JOURNAL ===================== */
 .log-textarea {
@@ -302,9 +340,10 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--bounty-gold
 .pose-legend { text-align: center; font-size: .72rem; color: var(--ink-soft); margin: 6px 0 12px; }
 .pose-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
 .pose-cell {
-  aspect-ratio: 1; border-radius: 8px; display: flex; align-items: center; justify-content: center;
+  aspect-ratio: 1; border-radius: calc(var(--radius) / 2); display: flex; align-items: center; justify-content: center;
   font-size: .72rem; color: var(--ink-soft); background: var(--parchment2);
   border: 1px solid var(--paper-line); position: relative;
+  min-height: 44px; touch-action: manipulation;
 }
 .pose-cell.dow { background: transparent; border: none; font-weight: 700; color: var(--wanted-red); font-size: .64rem; aspect-ratio: auto; }
 .pose-cell.empty { background: transparent; border: none; }
@@ -319,14 +358,14 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--bounty-gold
 .hold-balance strong { color: var(--bounty-gold2); font-family: "Pirata One", serif; font-size: 1.3rem; }
 .shop-item {
   display: flex; align-items: center; gap: 10px;
-  background: var(--parchment); border: 1px solid var(--paper-line); border-radius: 10px;
+  background: var(--parchment); border: 1px solid var(--paper-line); border-radius: var(--radius);
   padding: 11px 12px; margin-bottom: 9px; box-shadow: var(--shadow);
 }
 .shop-item .si-body { flex: 1; }
 .shop-item .si-name { font-weight: 600; color: var(--ink); }
 .shop-item .si-cost { font-size: .72rem; color: var(--ink-soft); }
 .shop-item .si-days { font-size: .66rem; color: var(--sea-teal); }
-.buy-btn { background: var(--bounty-gold2); color: #fff; border: none; border-radius: 8px; padding: 8px 12px; font-weight: 700; cursor: pointer; font-family: inherit; }
+.buy-btn { background: var(--bounty-gold2); color: #fff; border: none; border-radius: 8px; padding: 8px 12px; font-weight: 700; cursor: pointer; font-family: inherit; touch-action: manipulation; }
 .buy-btn:disabled { background: #b9ad92; cursor: not-allowed; }
 
 .crew-list li { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px dashed var(--paper-line); }
@@ -347,25 +386,31 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--bounty-gold
   display: flex; background: var(--ocean-navy2);
   border-top: 2px solid var(--bounty-gold2);
   box-shadow: 0 -4px 18px rgba(0,0,0,.25); z-index: 30;
+  padding-bottom: env(safe-area-inset-bottom);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
 }
+.tabbar::-webkit-scrollbar { display: none; }
 .tab {
   flex: 1; background: transparent; border: none; cursor: pointer;
-  color: #9fb0cc; padding: 9px 4px 8px; font-family: inherit;
-  display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: .64rem; font-weight: 600;
+  color: #9fb0cc; padding: 12px 8px; font-family: inherit;
+  display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: .64rem; font-weight: 600;
   transition: color .15s;
+  min-height: 44px; min-width: 44px; touch-action: manipulation;
 }
-.tab .ti { font-size: 1.3rem; }
+.tab .ti { font-size: 1.5rem; }
 .tab.active { color: var(--bounty-gold); }
 
 /* ===================== TOAST + CONFETTI ===================== */
 .toast-wrap {
-  position: fixed; bottom: 96px; left: 50%; transform: translateX(-50%);
+  position: fixed; bottom: calc(96px + env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%);
   z-index: 60; display: flex; flex-direction: column; gap: 8px; align-items: center; width: 100%; max-width: 420px; padding: 0 12px;
 }
 .toast {
   background: var(--ocean-navy); color: var(--parchment);
   border-left: 4px solid var(--bounty-gold);
-  padding: 11px 16px; border-radius: 10px; box-shadow: var(--shadow);
+  padding: 11px 16px; border-radius: var(--radius); box-shadow: var(--shadow);
   font-size: .88rem; font-weight: 600; width: 100%;
   animation: toastIn .25s ease, toastOut .3s ease 2.4s forwards;
 }
@@ -401,13 +446,14 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--bounty-gold
   display: flex; align-items: center; gap: 10px;
   background: var(--parchment); border: 1px solid var(--paper-line);
   border-left: 5px solid var(--stat, var(--ocean-navy));
-  border-radius: 10px; padding: 11px 12px; margin-bottom: 9px; box-shadow: var(--shadow);
+  border-radius: var(--radius); padding: 11px 12px; margin-bottom: 9px; box-shadow: var(--shadow);
 }
 .duty.done { opacity: .65; }
 .duty-check {
-  width: 30px; height: 30px; min-width: 30px; border-radius: 9px;
+  width: 44px; height: 44px; min-width: 44px; border-radius: 9px;
   border: 2px solid var(--stat, var(--ocean-navy)); background: transparent;
   cursor: pointer; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 1rem;
+  touch-action: manipulation;
 }
 .duty.done .duty-check { background: var(--good); border-color: var(--good); }
 .duty-body { flex: 1; min-width: 0; }
@@ -431,7 +477,7 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--bounty-gold
 .haki-trees { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
 .haki-tree {
   background: var(--parchment); border: 1px solid var(--paper-line);
-  border-top: 4px solid var(--stat, var(--ocean-navy));
+  border-left: 4px solid var(--stat, var(--ocean-navy));
   border-radius: var(--radius); padding: 12px; box-shadow: var(--shadow);
 }
 .haki-tree-head { display: flex; justify-content: space-between; align-items: baseline; }
@@ -448,6 +494,7 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--bounty-gold
 .haki-buy {
   font-family: inherit; cursor: pointer; border: none; border-radius: 7px;
   background: var(--stat, var(--ocean-navy)); color: #fff; font-weight: 700; font-size: .72rem; padding: 6px 10px;
+  touch-action: manipulation;
 }
 .haki-buy:disabled { background: #b9ad92; cursor: not-allowed; }
 .haki-node-badge { font-size: .7rem; font-weight: 700; color: var(--good); display: inline-flex; align-items: center; gap: 3px; }
@@ -462,7 +509,7 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--bounty-gold
 .today-band.at-risk .today-streak .ti { color: var(--wanted-red); }
 .today-status { font-size: .72rem; color: var(--ink-soft); margin-top: 6px; }
 .quick-stat-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
-.quick-stat-dot { font-family: inherit; cursor: pointer; border: 1px solid var(--paper-line); background: var(--parchment2); color: var(--ink-soft); font-size: .72rem; font-weight: 600; padding: 4px 10px; border-radius: 999px; display: inline-flex; align-items: center; gap: 5px; }
+.quick-stat-dot { font-family: inherit; cursor: pointer; border: 1px solid var(--paper-line); background: var(--parchment2); color: var(--ink-soft); font-size: .72rem; font-weight: 600; padding: 8px 12px; border-radius: 999px; display: inline-flex; align-items: center; gap: 5px; touch-action: manipulation; min-height: 44px; }
 .quick-stat-dot .qs-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--stat, var(--ocean-navy)); display: inline-block; }
 .quick-stat-dot.sel { border-color: var(--stat, var(--ocean-navy)); color: var(--ink); background: #fff; }
 #quickBountyTitle { margin-bottom: 0; }
@@ -477,7 +524,7 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--bounty-gold
 
 /* mood / weather strip */
 .mood-strip { display: flex; gap: 4px; flex-wrap: wrap; }
-.mood-cell { flex: 1; min-width: 18px; aspect-ratio: 1; border-radius: 6px; border: 1px solid var(--paper-line); display: flex; align-items: center; justify-content: center; font-size: .8rem; background: var(--parchment2); color: var(--ink-soft); }
+.mood-cell { flex: 1; min-width: 44px; aspect-ratio: 1; border-radius: 6px; border: 1px solid var(--paper-line); display: flex; align-items: center; justify-content: center; font-size: .8rem; background: var(--parchment2); color: var(--ink-soft); touch-action: manipulation; }
 .mood-cell.Sunny { background: var(--bounty-gold); color: #fff; border-color: var(--bounty-gold); }
 .mood-cell.Cloudy { background: #b9b09a; color: #fff; border-color: #b9b09a; }
 .mood-cell.Storm { background: var(--ocean-navy); color: var(--bounty-gold); border-color: var(--ocean-navy); }
@@ -511,10 +558,10 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--bounty-gold
 .bounty-edit-row { display: flex; gap: 6px; }
 .bounty-edit-row select { flex: 1; }
 .bounty-edit-actions { display: flex; gap: 6px; }
-.edit-btn { background: transparent; border: none; color: var(--ink-soft); cursor: pointer; font-size: 1rem; padding: 4px; }
+.edit-btn { background: transparent; border: none; color: var(--ink-soft); cursor: pointer; font-size: 1rem; padding: 4px; touch-action: manipulation; }
 .edit-btn:hover { color: var(--ocean-navy); }
-.mini-save { background: var(--good); color: #fff; border: none; border-radius: 8px; padding: 6px 12px; font-weight: 700; cursor: pointer; font-family: inherit; font-size: .75rem; }
-.mini-cancel { background: transparent; border: 1px solid var(--paper-line); border-radius: 8px; padding: 6px 12px; cursor: pointer; font-family: inherit; font-size: .75rem; color: var(--ink-soft); }
+.mini-save { background: var(--good); color: #fff; border: none; border-radius: 8px; padding: 6px 12px; font-weight: 700; cursor: pointer; font-family: inherit; font-size: .75rem; touch-action: manipulation; }
+.mini-cancel { background: transparent; border: 1px solid var(--paper-line); border-radius: 8px; padding: 6px 12px; cursor: pointer; font-family: inherit; font-size: .75rem; color: var(--ink-soft); touch-action: manipulation; }
 
 /* Log Pose legend + summary */
 .pose-key { display: inline-flex; align-items: center; gap: 4px; margin-left: 10px; }
@@ -531,7 +578,7 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--bounty-gold
 .theme-info { flex: 1; min-width: 0; }
 .theme-name { font-weight: 600; color: var(--ink); font-size: .9rem; }
 .theme-desc { font-size: .68rem; color: var(--ink-soft); }
-.theme-btn { background: var(--ocean-navy); color: #fff; border: none; border-radius: 8px; padding: 6px 12px; font-weight: 700; cursor: pointer; font-family: inherit; font-size: .72rem; white-space: nowrap; }
+.theme-btn { background: var(--ocean-navy); color: #fff; border: none; border-radius: 8px; padding: 6px 12px; font-weight: 700; cursor: pointer; font-family: inherit; font-size: .72rem; white-space: nowrap; touch-action: manipulation; }
 .theme-btn.active { background: var(--good); }
 .theme-btn:disabled { background: #b9ad92; cursor: not-allowed; }
 .crew-progress { height: 5px; background: rgba(43,32,23,.14); border-radius: 4px; overflow: hidden; margin-top: 5px; }
@@ -590,15 +637,31 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--bounty-gold
 .toast-btn {
   background: var(--bounty-gold); color: var(--ink); border: none; border-radius: 8px;
   padding: 7px 12px; font-weight: 700; cursor: pointer; font-family: inherit; white-space: nowrap;
+  touch-action: manipulation;
 }
 .toast-btn:hover { filter: brightness(1.05); }
 
 [hidden] { display: none !important; }
 
+.visually-hidden {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+}
+
 /* small screens */
 @media (max-width: 420px) {
   .haki-grid { grid-template-columns: 1fr; }
   .poster-wanted { font-size: 2rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .confetti { display: none !important; }
 }
   </style>
 </head>
@@ -628,11 +691,13 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--bounty-gold
     </div>
   </header>
 
+  <h1 class="visually-hidden">Grand Line — Pirate Productivity</h1>
+
   <!-- ===================== SCREENS ===================== -->
   <main id="screens">
 
     <!-- QUARTERS (home) -->
-    <section class="screen" data-screen="quarters">
+    <section class="screen" data-screen="quarters" role="tabpanel" id="panel-quarters" aria-labelledby="tab-quarters">
       <h2 class="screen-title"><i class="ti ti-anchor"></i> Captain's Quarters</h2>
 
       <div class="card today-band" id="todayBand">
@@ -642,7 +707,7 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--bounty-gold
 
       <div class="card">
         <div class="card-head"><i class="ti ti-plus"></i> Quick Bounty</div>
-        <form id="quickBountyForm" autocomplete="off"><input type="text" id="quickBountyTitle" placeholder="New bounty… press Enter" maxlength="120" /></form>
+        <form id="quickBountyForm" autocomplete="off"><input type="text" id="quickBountyTitle" placeholder="New bounty… press Enter" maxlength="120" aria-label="New bounty title" /></form>
         <div class="quick-stat-row" id="quickStatRow"></div>
       </div>
 
@@ -654,9 +719,9 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--bounty-gold
           <button class="weather-btn" data-mood="Cloudy"><i class="ti ti-cloud"></i> Cloudy</button>
           <button class="weather-btn" data-mood="Storm"><i class="ti ti-bolt"></i> Storm</button>
         </div>
-        <textarea id="quickLog" class="log-textarea" placeholder="Captain's Log — even one line counts…"></textarea>
+        <textarea id="quickLog" class="log-textarea" placeholder="Captain's Log — even one line counts…" aria-label="Captain's Log entry"></textarea>
         <div class="log-actions"><span class="muted">+15 ฿ · grants Morale</span><button class="primary-btn" id="quickLogSave"><i class="ti ti-device-floppy"></i> Save Log</button></div>
-        <form id="quickMemoryForm" class="memory-form quick-memory" autocomplete="off"><input type="text" id="quickMemoryText" placeholder="Quick memory… (+5 ฿)" maxlength="160" /><button type="submit" class="primary-btn"><i class="ti ti-plus"></i></button></form>
+        <form id="quickMemoryForm" class="memory-form quick-memory" autocomplete="off"><input type="text" id="quickMemoryText" placeholder="Quick memory… (+5 ฿)" maxlength="160" aria-label="Quick memory" /><button type="submit" class="primary-btn"><i class="ti ti-plus" aria-hidden="true"></i></button></form>
       </div>
 
       <div class="haki-grid" id="hakiGrid"></div>
@@ -675,7 +740,7 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--bounty-gold
     </section>
 
     <!-- HAKI (skill trees) -->
-    <section class="screen" data-screen="haki" hidden>
+    <section class="screen" data-screen="haki" hidden role="tabpanel" id="panel-haki" aria-labelledby="tab-haki">
       <h2 class="screen-title"><i class="ti ti-bolt"></i> Haki Trees</h2>
       <p class="screen-intro">Every stat level-up earns 1 Haki Point for that stat. Spend points on permanent passives.</p>
       <div class="haki-trees" id="hakiTrees"></div>
@@ -683,20 +748,20 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--bounty-gold
     </section>
 
     <!-- BOUNTIES (tasks) -->
-    <section class="screen" data-screen="bounties" hidden>
+    <section class="screen" data-screen="bounties" hidden role="tabpanel" id="panel-bounties" aria-labelledby="tab-bounties">
       <h2 class="screen-title"><i class="ti ti-flag"></i> Bounty Board</h2>
 
       <div class="card bounty-streak-banner" id="bountyStreakBanner"></div>
 
       <form class="add-bounty card" id="addBountyForm" autocomplete="off">
-        <input type="text" id="bountyTitle" placeholder="Name the bounty… (e.g. 30-min workout)" maxlength="120" required />
+        <input type="text" id="bountyTitle" placeholder="Name the bounty… (e.g. 30-min workout)" maxlength="120" required aria-label="Bounty title" />
         <div class="add-row">
-          <select id="bountyStat" title="Which crew / stat?"></select>
-          <select id="bountyTier" title="Difficulty"></select>
+          <select id="bountyStat" aria-label="Stat category"></select>
+          <select id="bountyTier" aria-label="Difficulty tier"></select>
         </div>
         <div class="add-row">
-          <input type="date" id="bountyDue" title="Due date (optional)" />
-          <select id="bountyRecurring" title="Repeat?">
+          <input type="date" id="bountyDue" aria-label="Due date (optional)" />
+          <select id="bountyRecurring" aria-label="Recurrence">
             <option value="">One-time</option>
             <option value="daily">Daily</option>
             <option value="weekdays">Weekdays</option>
@@ -712,7 +777,7 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--bounty-gold
         <div class="filter-row" id="bountyStatusFilters"></div>
         <div class="board-controls-row">
           <label class="sort-label">Sort
-            <select id="bountySort">
+            <select id="bountySort" aria-label="Sort bounties by">
               <option value="new">Newest</option>
               <option value="due">By due date</option>
               <option value="tier">By tier</option>
@@ -726,7 +791,7 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--bounty-gold
     </section>
 
     <!-- DUTIES (habits) -->
-    <section class="screen" data-screen="duties" hidden>
+    <section class="screen" data-screen="duties" hidden role="tabpanel" id="panel-duties" aria-labelledby="tab-duties">
       <h2 class="screen-title"><i class="ti ti-checklist"></i> Ship Duties</h2>
       <p class="screen-intro">Recurring routines. Check one in each day to feed its stat and build a streak.</p>
 
@@ -734,23 +799,23 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--bounty-gold
 
       <form class="add-duty card" id="addDutyForm" autocomplete="off">
         <div class="card-head"><i class="ti ti-plus"></i> New Ship Duty</div>
-        <input type="text" id="dutyTitle" placeholder="e.g. Stretch for 5 minutes" maxlength="80" required />
+        <input type="text" id="dutyTitle" placeholder="e.g. Stretch for 5 minutes" maxlength="80" required aria-label="Duty title" />
         <div class="add-row">
-          <select id="dutyStat" title="Which stat?"></select>
-          <select id="dutyTier" title="Reward size"></select>
+          <select id="dutyStat" aria-label="Stat category"></select>
+          <select id="dutyTier" aria-label="Reward tier"></select>
           <button type="submit" class="primary-btn">Add</button>
         </div>
       </form>
     </section>
 
     <!-- LOG (journal) -->
-    <section class="screen" data-screen="log" hidden>
+    <section class="screen" data-screen="log" hidden role="tabpanel" id="panel-log" aria-labelledby="tab-log">
       <h2 class="screen-title"><i class="ti ti-book"></i> Captain's Log</h2>
 
       <div class="card log-card">
         <div class="card-head"><i class="ti ti-feather"></i> Today's Entry <span class="muted" id="logReward">(+15 ฿, +10 Resolve, grants Morale)</span></div>
         <p class="prompt-hint" id="logPrompt"></p>
-        <textarea id="captainsLog" class="log-textarea" placeholder="Even one line counts…"></textarea>
+        <textarea id="captainsLog" class="log-textarea" placeholder="Even one line counts…" aria-label="Captain's Log entry"></textarea>
         <div class="log-actions">
           <span class="muted" id="logStatus"></span>
           <button class="primary-btn" id="saveLogBtn"><i class="ti ti-device-floppy"></i> Save Log</button>
@@ -760,7 +825,7 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--bounty-gold
       <div class="card">
         <div class="card-head"><i class="ti ti-message-2"></i> Quick Memory <span class="muted">(+5 ฿)</span></div>
         <form id="memoryForm" class="memory-form" autocomplete="off">
-          <input type="text" id="memoryText" placeholder="One-line snapshot… (Den Den Mushi)" maxlength="160" required />
+          <input type="text" id="memoryText" placeholder="One-line snapshot… (Den Den Mushi)" maxlength="160" required aria-label="Memory text" />
           <button type="submit" class="primary-btn"><i class="ti ti-plus"></i></button>
         </form>
       </div>
@@ -773,7 +838,7 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--bounty-gold
       <div class="card recap-card" id="recapCard">
         <div class="card-head"><i class="ti ti-wind"></i> Weekly Voyage Recap <span class="muted">(+100 ฿, +50 XP, Tailwind buff)</span></div>
         <p class="muted" id="recapStatus"></p>
-        <textarea id="recapText" class="log-textarea" placeholder="Look back on your week:&#10;1. Biggest win?&#10;2. What did you learn?&#10;3. What drained you?&#10;4. What are you grateful for?&#10;5. One focus for next week?"></textarea>
+        <textarea id="recapText" class="log-textarea" placeholder="Look back on your week:&#10;1. Biggest win?&#10;2. What did you learn?&#10;3. What drained you?&#10;4. What are you grateful for?&#10;5. One focus for next week?" aria-label="Weekly recap"></textarea>
         <div class="log-actions">
           <span></span>
           <button class="primary-btn" id="saveRecapBtn"><i class="ti ti-wind"></i> Log the Voyage</button>
@@ -782,14 +847,14 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--bounty-gold
 
       <div class="card">
         <div class="card-head"><i class="ti ti-history"></i> The Logbook</div>
-        <input type="text" id="journalSearch" class="journal-search" placeholder="Search your logbook…" />
+        <input type="text" id="journalSearch" class="journal-search" placeholder="Search your logbook…" aria-label="Search journal" />
         <div class="filter-row" id="journalFilters"></div>
         <ul class="journal-feed" id="journalFeed"></ul>
       </div>
     </section>
 
     <!-- LOG POSE (calendar) -->
-    <section class="screen" data-screen="pose" hidden>
+    <section class="screen" data-screen="pose" hidden role="tabpanel" id="panel-pose" aria-labelledby="tab-pose">
       <h2 class="screen-title"><i class="ti ti-map-2"></i> Log Pose</h2>
       <div class="card">
         <div class="pose-head">
@@ -809,7 +874,7 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--bounty-gold
     </section>
 
     <!-- TREASURE HOLD (shop) -->
-    <section class="screen" data-screen="hold" hidden>
+    <section class="screen" data-screen="hold" hidden role="tabpanel" id="panel-hold" aria-labelledby="tab-hold">
       <h2 class="screen-title"><i class="ti ti-diamond"></i> Treasure Hold</h2>
       <div class="hold-balance card">You have <strong>฿<span id="holdBalance">0</span></strong> to spend.</div>
 
@@ -817,9 +882,9 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--bounty-gold
 
       <form class="add-shop card" id="addShopForm" autocomplete="off">
         <div class="card-head"><i class="ti ti-plus"></i> Add your own reward</div>
-        <input type="text" id="shopName" placeholder="Reward (e.g. buy that game)" maxlength="80" required />
+        <input type="text" id="shopName" placeholder="Reward (e.g. buy that game)" maxlength="80" required aria-label="Reward name" />
         <div class="add-row">
-          <input type="number" id="shopCost" placeholder="Cost in Berries" min="1" required />
+          <input type="number" id="shopCost" placeholder="Cost in Berries" min="1" required aria-label="Cost in Berries" />
           <button type="submit" class="primary-btn">Add</button>
         </div>
       </form>
@@ -838,28 +903,28 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--bounty-gold
   </main>
 
   <!-- ===================== BOTTOM NAV ===================== -->
-  <nav class="tabbar" id="tabbar">
-    <button class="tab active" data-goto="quarters"><i class="ti ti-anchor"></i><span>Quarters</span></button>
-    <button class="tab" data-goto="bounties"><i class="ti ti-flag"></i><span>Bounties</span></button>
-    <button class="tab" data-goto="duties"><i class="ti ti-checklist"></i><span>Duties</span></button>
-    <button class="tab" data-goto="log"><i class="ti ti-book"></i><span>Log</span></button>
-    <button class="tab" data-goto="pose"><i class="ti ti-map-2"></i><span>Pose</span></button>
-    <button class="tab" data-goto="hold"><i class="ti ti-diamond"></i><span>Hold</span></button>
-    <button class="tab" data-goto="haki"><i class="ti ti-bolt"></i><span>Haki</span></button>
+  <nav class="tabbar" id="tabbar" role="tablist" aria-label="Main navigation">
+    <button class="tab active" role="tab" aria-selected="true" aria-controls="panel-quarters" id="tab-quarters" data-goto="quarters"><i class="ti ti-anchor" aria-hidden="true"></i><span>Quarters</span></button>
+    <button class="tab" role="tab" aria-selected="false" aria-controls="panel-bounties" id="tab-bounties" data-goto="bounties"><i class="ti ti-flag" aria-hidden="true"></i><span>Bounties</span></button>
+    <button class="tab" role="tab" aria-selected="false" aria-controls="panel-duties" id="tab-duties" data-goto="duties"><i class="ti ti-checklist" aria-hidden="true"></i><span>Duties</span></button>
+    <button class="tab" role="tab" aria-selected="false" aria-controls="panel-log" id="tab-log" data-goto="log"><i class="ti ti-book" aria-hidden="true"></i><span>Log</span></button>
+    <button class="tab" role="tab" aria-selected="false" aria-controls="panel-pose" id="tab-pose" data-goto="pose"><i class="ti ti-map-2" aria-hidden="true"></i><span>Pose</span></button>
+    <button class="tab" role="tab" aria-selected="false" aria-controls="panel-hold" id="tab-hold" data-goto="hold"><i class="ti ti-diamond" aria-hidden="true"></i><span>Hold</span></button>
+    <button class="tab" role="tab" aria-selected="false" aria-controls="panel-haki" id="tab-haki" data-goto="haki"><i class="ti ti-bolt" aria-hidden="true"></i><span>Haki</span></button>
   </nav>
 
   <!-- Toast + confetti layers -->
-  <div class="toast-wrap" id="toastWrap"></div>
+  <div class="toast-wrap" id="toastWrap" role="status" aria-live="polite" aria-atomic="true"></div>
   <div class="confetti-layer" id="confettiLayer"></div>
 
   <!-- Helm / settings modal -->
-  <div class="modal-backdrop" id="helmModal" hidden>
+  <div class="modal-backdrop" id="helmModal" hidden role="dialog" aria-modal="true" aria-labelledby="helmTitle">
     <div class="modal">
-      <h3><i class="ti ti-settings"></i> The Helm</h3>
+      <h3 id="helmTitle"><i class="ti ti-settings" aria-hidden="true"></i> The Helm</h3>
       <p class="muted">Manage your voyage.</p>
       <button class="ghost-btn" id="exportBtn"><i class="ti ti-download"></i> Back up my voyage (export)</button>
       <button class="ghost-btn" id="importBtn"><i class="ti ti-upload"></i> Restore from a backup (import)</button>
-      <input type="file" id="importFile" accept="application/json" hidden />
+      <input type="file" id="importFile" accept="application/json" hidden aria-label="Import backup file" />
       <button class="ghost-btn" id="installBtn" hidden><i class="ti ti-device-mobile"></i> Install on this device</button>
       <button class="ghost-btn" id="remindBtn"><i class="ti ti-bell"></i> Daily reminder: off</button>
       <button class="ghost-btn danger" id="resetBtn"><i class="ti ti-trash"></i> Scuttle the ship (reset all data)</button>
@@ -869,9 +934,9 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--bounty-gold
   </div>
 
   <!-- Themed confirm modal -->
-  <div class="modal-backdrop" id="confirmModal" hidden>
+  <div class="modal-backdrop" id="confirmModal" hidden role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
     <div class="modal">
-      <h3 id="confirmTitle"><i class="ti ti-alert-triangle"></i> Are you sure?</h3>
+      <h3 id="confirmTitle"><i class="ti ti-alert-triangle" aria-hidden="true"></i> Are you sure?</h3>
       <p class="muted" id="confirmMsg"></p>
       <button class="ghost-btn danger" id="confirmYes">Confirm</button>
       <button class="ghost-btn" id="confirmNo">Cancel</button>
@@ -1025,7 +1090,7 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--bounty-gold
 
   var THEMES = [
     { id: "grandline", name: "Grand Line", desc: "The classic wanted-poster parchment.", cost: 0, vars: {} },
-    { id: "marine", name: "Marine HQ", desc: "Justice blues and crisp white.", cost: 1500, vars: { "--parchment": "#eef3f9", "--parchment2": "#dbe6f2", "--parchment3": "#c7d8ea", "--ocean-navy": "#13315c", "--ocean-navy2": "#0d2547", "--bounty-gold": "#3f7fbf", "--bounty-gold2": "#2f63a0", "--wanted-red": "#b3473a", "--ink": "#16243a", "--ink-soft": "#5a6b85", "--paper-line": "#bcd0e6", "--sea-teal": "#2f8f86" } },
+    { id: "marine", name: "Marine HQ", desc: "Justice blues and crisp white.", cost: 1500, vars: { "--parchment": "#eef3f9", "--parchment2": "#dbe6f2", "--parchment3": "#c7d8ea", "--ocean-navy": "#13315c", "--ocean-navy2": "#0d2547", "--bounty-gold": "#3f7fbf", "--bounty-gold2": "#2f63a0", "--wanted-red": "#b3473a", "--ink": "#16243a", "--ink-soft": "#455570", "--paper-line": "#bcd0e6", "--sea-teal": "#2f8f86" } },
     { id: "mera", name: "Mera Mera no Mi", desc: "Embers and ash — fire fist.", cost: 4000, vars: { "--parchment": "#2c1d16", "--parchment2": "#3a2118", "--parchment3": "#48271b", "--ocean-navy": "#190f0b", "--ocean-navy2": "#110a07", "--bounty-gold": "#ff8a3d", "--bounty-gold2": "#e0631f", "--wanted-red": "#e23b2e", "--ink": "#f6e3d0", "--ink-soft": "#cba78d", "--paper-line": "#5a3526", "--sea-teal": "#e0913f", "--den-pink": "#ff9e7a", "--good": "#6fae52" } },
     { id: "yami", name: "Yami Yami no Mi", desc: "The void — true dark mode.", cost: 8000, vars: { "--parchment": "#1d2131", "--parchment2": "#262b3e", "--parchment3": "#2f3551", "--ocean-navy": "#0c0e16", "--ocean-navy2": "#070810", "--bounty-gold": "#c8a24a", "--bounty-gold2": "#a9852f", "--wanted-red": "#c2533f", "--ink": "#e7e3d4", "--ink-soft": "#9aa0b5", "--paper-line": "#3a4060", "--sea-teal": "#4fb6a8", "--den-pink": "#d98aa6", "--good": "#5cae6e" } }
   ];
@@ -1935,16 +2000,21 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--bounty-gold
       return true;
     });
     if (!items.length) {
-      feed.appendChild(el("li", "empty", save.journal.length ? "No entries match that filter or search." : "Your logbook is empty. Write your first entry above."));
+      if (!save.journal.length) {
+        feed.innerHTML = '<div class="empty-state"><i class="ti ti-book"></i><h4>Logbook empty</h4><p>Your first Captain\'s Log entry starts the voyage.</p><button class="primary-btn empty-state-action" onclick="document.querySelector(\'[data-goto=log]\').click(); document.getElementById(\'captainsLog\').focus();"><i class="ti ti-feather"></i> Write Log</button></div>';
+      } else {
+        feed.innerHTML = '<div class="empty-state"><i class="ti ti-search"></i><h4>No matches</h4><p>No entries match that filter or search.</p></div>';
+      }
+    } else {
+      items.slice(0, 60).forEach(function (e) {
+        var li = el("li");
+        var label = ({ captains_log: "Captain's Log", memory: "Memory", mood: "Weather", victory: "Victory", recap: "Recap" })[e.type] || e.type;
+        var text = e.type === "mood" ? ("Weather: " + e.mood) : escapeHtml(e.text);
+        li.innerHTML = '<div class="jf-head"><span class="jf-type ' + e.type + '">' + label + '</span><span>' + e.date + '</span></div>' +
+          (text ? '<div class="jf-text">' + text + '</div>' : "");
+        feed.appendChild(li);
+      });
     }
-    items.slice(0, 60).forEach(function (e) {
-      var li = el("li");
-      var label = ({ captains_log: "Captain's Log", memory: "Memory", mood: "Weather", victory: "Victory", recap: "Recap" })[e.type] || e.type;
-      var text = e.type === "mood" ? ("Weather: " + e.mood) : escapeHtml(e.text);
-      li.innerHTML = '<div class="jf-head"><span class="jf-type ' + e.type + '">' + label + '</span><span>' + e.date + '</span></div>' +
-        (text ? '<div class="jf-text">' + text + '</div>' : "");
-      feed.appendChild(li);
-    });
   }
 
   function renderJournalFilters() {
@@ -1979,17 +2049,21 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--bounty-gold
     var days = new Date(year, month + 1, 0).getDate();
     for (var i = 0; i < first; i++) grid.appendChild(el("div", "pose-cell empty"));
     var today = state.todayStr();
+    var hasAny = false;
     for (var d = 1; d <= days; d++) {
       var ds = year + "-" + String(month + 1).padStart(2, "0") + "-" + String(d).padStart(2, "0");
       var entry = save.logPose[ds];
       var cls = "pose-cell";
-      if (entry) { cls += " visited"; if ((entry.tasksDone || 0) + (entry.journaled || 0) >= 3) cls += " full"; }
+      if (entry) { cls += " visited"; if ((entry.tasksDone || 0) + (entry.journaled || 0) >= 3) cls += " full"; hasAny = true; }
       if (ds === today) cls += " today";
       if (ds === poseSelectedDay) cls += " sel";
       var cell = el("div", cls, String(d));
       cell.style.cursor = "pointer";
       (function (dsx) { cell.onclick = function () { poseSelectedDay = dsx; renderPose(); }; })(ds);
       grid.appendChild(cell);
+    }
+    if (!hasAny && poseOffset === 0) {
+      grid.innerHTML += '<div class="empty-state" style="grid-column: 1 / -1;"><i class="ti ti-map-2"></i><h4>No voyage logged yet</h4><p>Complete a bounty or write a log entry to mark today on your Log Pose.</p></div>';
     }
     var loggedThisMonth = 0;
     for (var dd = 1; dd <= days; dd++) {
@@ -2035,21 +2109,25 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--bounty-gold
   function renderHold() {
     $("#holdBalance").textContent = fmt(save.player.berries);
     var list = $("#shopList"); list.innerHTML = "";
-    save.shop.forEach(function (item) {
-      var li = el("li", "shop-item");
-      var days = Math.max(1, Math.ceil(item.cost / DAILY_EST));
-      var afford = save.player.berries >= item.cost;
-      li.innerHTML = '<div class="si-body"><div class="si-name">' + escapeHtml(item.name) + (item.owned ? ' ✓' : '') + '</div>' +
-        '<div class="si-cost">฿' + fmt(item.cost) + '</div>' +
-        '<div class="si-days">≈ ' + days + ' day' + (days > 1 ? "s" : "") + ' to afford</div></div>';
-      var btn = el("button", "buy-btn", item.type === "cosmetic" && item.owned ? "Owned" : (afford ? "Claim" : "฿" + fmt(item.cost - save.player.berries)));
-      btn.disabled = (item.type === "cosmetic" && item.owned) || !afford;
-      btn.onclick = function () { doBuy(item.id); };
-      var del = el("button", "del-btn", '<i class="ti ti-x"></i>');
-      del.onclick = function () { game.deleteShopItem(save, item.id); renderHold(); };
-      li.appendChild(btn); li.appendChild(del);
-      list.appendChild(li);
-    });
+    if (!save.shop.length) {
+      list.innerHTML = '<div class="empty-state"><i class="ti ti-diamond"></i><h4>No rewards yet</h4><p>Add a personal reward to spend your Berries on.</p></div>';
+    } else {
+      save.shop.forEach(function (item) {
+        var li = el("li", "shop-item");
+        var days = Math.max(1, Math.ceil(item.cost / DAILY_EST));
+        var afford = save.player.berries >= item.cost;
+        li.innerHTML = '<div class="si-body"><div class="si-name">' + escapeHtml(item.name) + (item.owned ? ' ✓' : '') + '</div>' +
+          '<div class="si-cost">฿' + fmt(item.cost) + '</div>' +
+          '<div class="si-days">≈ ' + days + ' day' + (days > 1 ? "s" : "") + ' to afford</div></div>';
+        var btn = el("button", "buy-btn", item.type === "cosmetic" && item.owned ? "Owned" : (afford ? "Claim" : "฿" + fmt(item.cost - save.player.berries)));
+        btn.disabled = (item.type === "cosmetic" && item.owned) || !afford;
+        btn.onclick = function () { doBuy(item.id); };
+        var del = el("button", "del-btn", '<i class="ti ti-x"></i>');
+        del.onclick = function () { game.deleteShopItem(save, item.id); renderHold(); };
+        li.appendChild(btn); li.appendChild(del);
+        list.appendChild(li);
+      });
+    }
     var crew = $("#crewList"); crew.innerHTML = "";
     economy.CREW.forEach(function (def) {
       var c = save.crew.find(function (x) { return x.id === def.id; }) || {};
@@ -2071,6 +2149,7 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--bounty-gold
 
   function renderHakiTrees() {
     var wrap = $("#hakiTrees"); wrap.innerHTML = "";
+    var anyUnlocked = false;
     economy.STAT_KEYS.forEach(function (k) {
       var meta = economy.STATS[k];
       var pts = (save.hakiPoints && save.hakiPoints[k]) || 0;
@@ -2082,6 +2161,7 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--bounty-gold
       economy.HAKI_TREE[k].forEach(function (node) {
         var owned = save.haki && save.haki[node.id];
         var affordable = pts >= node.cost;
+        if (owned) anyUnlocked = true;
         var card = el("div", "haki-node" + (owned ? " owned" : ""));
         var btn;
         if (owned) {
@@ -2096,6 +2176,9 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--bounty-gold
       });
       wrap.appendChild(col);
     });
+    if (!anyUnlocked) {
+      wrap.innerHTML += '<div class="empty-state" style="grid-column: 1 / -1;"><i class="ti ti-bolt"></i><h4>No Haki unlocked yet</h4><p>Level up stats to earn Haki Points, then spend them here.</p></div>';
+    }
     $$("#hakiTrees .haki-buy").forEach(function (b) {
       b.onclick = function () { doUnlockHaki(b.dataset.node); };
     });
@@ -2188,6 +2271,7 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--bounty-gold
   }
 
   function confetti(accentHex) {
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     var colors = accentHex
       ? [accentHex, "#c8a24a", "#fffdf6", accentHex, "#fff"]
       : ["#c8a24a", "#8a3b2e", "#2e6e6a", "#1b2a4a", "#e8a0a8"];
@@ -2218,20 +2302,29 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--bounty-gold
     confetti(accent(stat));
   }
 
+  var lastFocused = null;
   function showConfirm(title, msg, yesLabel, onYes) {
-    $("#confirmTitle").innerHTML = '<i class="ti ti-alert-triangle"></i> ' + title;
+    $("#confirmTitle").innerHTML = '<i class="ti ti-alert-triangle" aria-hidden="true"></i> ' + title;
     $("#confirmMsg").textContent = msg;
     $("#confirmYes").textContent = yesLabel || "Confirm";
     pendingConfirm = onYes;
+    lastFocused = document.activeElement;
     $("#confirmModal").hidden = false;
+    setTimeout(function () { $("#confirmYes").focus(); }, 0);
   }
 
   function show(screen) {
     current = screen;
     $$(".screen").forEach(function (s) { s.hidden = s.dataset.screen !== screen; });
-    $$(".tab").forEach(function (t) { t.classList.toggle("active", t.dataset.goto === screen); });
-    renderScreen();
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    $$(".tab").forEach(function (t) {
+      var active = t.dataset.goto === screen;
+      t.classList.toggle("active", active);
+      t.setAttribute("aria-selected", active);
+    });
+    showSkeleton(screen);
+    requestAnimationFrame(function () {
+      setTimeout(function () { renderScreen(); window.scrollTo({ top: 0, behavior: "smooth" }); }, 80);
+    });
   }
   function renderScreen() {
     if (current === "quarters") renderQuarters();
@@ -2241,6 +2334,20 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--bounty-gold
     else if (current === "pose") renderPose();
     else if (current === "hold") renderHold();
     else if (current === "haki") renderHakiTrees();
+  }
+
+  function showSkeleton(screen) {
+    var main = $("#screens");
+    var skeletons = {
+      quarters: '<div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div>',
+      bounties: '<div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div>',
+      duties: '<div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div>',
+      log: '<div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div>',
+      pose: '<div class="skeleton-card"></div>',
+      hold: '<div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div>',
+      haki: '<div class="skeleton-card"></div><div class="skeleton-card"></div>'
+    };
+    main.innerHTML = '<div class="skeleton-screen">' + (skeletons[screen] || '') + '</div>';
   }
   function refreshAll() { renderHeader(); renderScreen(); }
 
@@ -2344,11 +2451,12 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--bounty-gold
       });
     };
 
-    $("#confirmNo").onclick = function () { $("#confirmModal").hidden = true; pendingConfirm = null; };
-    $("#confirmYes").onclick = function () { var cb = pendingConfirm; $("#confirmModal").hidden = true; pendingConfirm = null; if (cb) cb(); };
+    $("#confirmNo").onclick = function () { $("#confirmModal").hidden = true; pendingConfirm = null; if (lastFocused) lastFocused.focus(); };
+    $("#confirmYes").onclick = function () { var cb = pendingConfirm; $("#confirmModal").hidden = true; pendingConfirm = null; if (cb) cb(); if (lastFocused) lastFocused.focus(); };
 
-    $("#helmBtn").onclick = function () { $("#helmModal").hidden = false; };
-    $("#closeHelm").onclick = function () { $("#helmModal").hidden = true; };
+    var helmLastFocused = null;
+    $("#helmBtn").onclick = function () { helmLastFocused = document.activeElement; $("#helmModal").hidden = false; setTimeout(function () { $("#closeHelm").focus(); }, 0); };
+    $("#closeHelm").onclick = function () { $("#helmModal").hidden = true; if (helmLastFocused) helmLastFocused.focus(); };
 
     $("#exportBtn").onclick = function () {
       var blob = new Blob([JSON.stringify(save, null, 2)], { type: "application/json" });
@@ -2386,6 +2494,13 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--bounty-gold
     window.addEventListener("beforeinstallprompt", function (e) {
       e.preventDefault(); deferredPrompt = e;
       var b = $("#installBtn"); if (b) b.hidden = false;
+      if (!localStorage.getItem("gl.installDismissed")) {
+        setTimeout(function () {
+          toastAction('<i class="ti ti-device-mobile"></i> Install Grand Line for offline access?', "Install", function () {
+            if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt.userChoice.then(function () { deferredPrompt = null; installBtn.hidden = true; }); }
+          });
+        }, 5000);
+      }
     });
     var installBtn = $("#installBtn");
     if (installBtn) installBtn.onclick = function () {
@@ -2393,6 +2508,15 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--bounty-gold
       deferredPrompt.prompt();
       deferredPrompt.userChoice.then(function () { deferredPrompt = null; installBtn.hidden = true; });
     };
+
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.addEventListener("message", function (e) {
+        if (e.data && e.data.type === "update-available") {
+          toastAction('<i class="ti ti-refresh"></i> New version available!', "Reload", function () { window.location.reload(); });
+        }
+      });
+      navigator.serviceWorker.register("sw.js").catch(function () {});
+    }
 
     var remindBtn = $("#remindBtn");
     if (remindBtn) remindBtn.onclick = function () {
@@ -2410,7 +2534,19 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--bounty-gold
       });
     };
 
+    function trapFocus(e) {
+      var modal = document.querySelector(".modal-backdrop:not([hidden]) .modal");
+      if (!modal) return;
+      var focusable = modal.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+      var first = focusable[0], last = focusable[focusable.length - 1];
+      if (e.key === "Tab") {
+        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+      }
+      if (e.key === "Escape") { modal.closest(".modal-backdrop").hidden = true; if (lastFocused) lastFocused.focus(); }
+    }
     document.addEventListener("keydown", function (e) {
+      if (document.querySelector(".modal-backdrop:not([hidden])")) { trapFocus(e); return; }
       if (/input|textarea|select/i.test(document.activeElement.tagName)) return;
       if (e.key === "n" || e.key === "N") { show("bounties"); setTimeout(function () { $("#bountyTitle").focus(); }, 50); }
       else if (e.key === "1") show("quarters");
@@ -2451,16 +2587,6 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--bounty-gold
     setTimeout(function () { toast('<i class="ti ti-skull"></i> Welcome aboard. Complete a bounty to raise your first bounty.', true); }, 600);
   }
 })();
-  </script>
-
-  <script>
-    /* Register the service worker for offline / installable app.
-       Silently no-ops on file:// — works under hosting (GitHub Pages). */
-    if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
-      window.addEventListener("load", function () {
-        navigator.serviceWorker.register("sw.js").catch(function () {});
-      });
-    }
   </script>
 </body>
 </html>
