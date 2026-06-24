@@ -675,7 +675,7 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
       <button class="icon-btn helm-btn" id="helmBtn" title="The Helm (settings)"><i class="ti ti-settings"></i></button>
     </div>
 
-    <div class="poster-face" id="posterFace">☠</div>
+    <div class="poster-face" id="posterFace">\u{2620}</div>
 
     <div class="poster-name" id="rankTitle">Stowaway</div>
     <div class="poster-bounty-label">BOUNTY</div>
@@ -1658,7 +1658,7 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
   var editingBounty = null;
   var pendingConfirm = null;
   var deferredPrompt = null;
-  var RANK_FACE = { "Stowaway": "🧭", "East Blue Rookie": "⚓", "Paradise Pirate": "🗺️", "Rising Supernova": "⭐", "Notorious Captain": "🏴‍☠️", "Warlord-Tier": "⚔️", "Emperor's Vanguard": "🔱", "Yonko": "👑", "Pirate King": "👑" };
+  var RANK_FACE = { "Stowaway": "\u{1F9ED}", "East Blue Rookie": "\u{2693}", "Paradise Pirate": "\u{1F5FA}\u{FE0F}", "Rising Supernova": "\u{2B50}", "Notorious Captain": "\u{1F3F4}\u{200D}\u{2620}\u{FE0F}", "Warlord-Tier": "\u{2694}\u{FE0F}", "Emperor's Vanguard": "\u{1F4F1}", "Yonko": "\u{1F451}", "Pirate King": "\u{1F451}" };
   var TIER_ORDER = { petty: 0, rookie: 1, notorious: 2, warlord: 3 };
   var STAT_FLAVOR = { strength: "Crushed it.", wisdom: "Outwitted them.", ambition: "Conquered.", resolve: "Endured." };
   var STAT_SIGIL = { strength: "ti-sword", wisdom: "ti-eye", ambition: "ti-crown", resolve: "ti-anchor" };
@@ -1712,17 +1712,17 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     $("#bountyNum").textContent = fmt(p.totalBounty);
     $("#berries").textContent = fmt(p.berries);
     var rk = economy.rankForBounty(p.totalBounty);
-    $("#posterFace").textContent = RANK_FACE[rk.current.title] || "☠";
+    $("#posterFace").textContent = RANK_FACE[rk.current.title] || "\u{2620}";
     $("#rankFill").style.width = rk.pct + "%";
     $("#rankNext").textContent = rk.next
       ? (fmt(rk.next.min - p.totalBounty) + " ฿ to " + rk.next.title)
-      : "Highest bounty in history. You are the Pirate King. ☠";
+      : "Highest bounty in history. You are the Pirate King. \u{2620}";
     var chips = $("#buffChips"); chips.innerHTML = "";
     rewards.activeBuffs(save, state.todayStr()).forEach(function (b) {
       chips.appendChild(el("span", "buff-chip " + b.name, b.name === "morale" ? "Morale" : "Tailwind"));
     });
     var streak = rewards.voyageStreak(save, state.todayStr());
-    if (streak > 1) chips.appendChild(el("span", "buff-chip", "🔥 " + streak + "d"));
+    if (streak > 1) chips.appendChild(el("span", "buff-chip", "\u{1F525} " + streak + "d"));
   }
 
   function renderHaki() {
@@ -1857,7 +1857,7 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
       : '<span class="bsb-streak cold"><i class="ti ti-target"></i> Clear a bounty today to start a streak</span>';
     var right = next
       ? '<span class="bsb-next">' + cleared + ' / ' + next.count + ' cleared → <strong>' + next.title + '</strong></span>'
-      : '<span class="bsb-next">' + cleared + ' cleared · top of the wanted list ☠</span>';
+      : '<span class="bsb-next">' + cleared + ' cleared · top of the wanted list \u{2620}</span>';
     banner.innerHTML = left + right;
     if (next) {
       var prev = 0;
@@ -2131,7 +2131,7 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     var crew = $("#crewList"); crew.innerHTML = "";
     economy.CREW.forEach(function (def) {
       var c = save.crew.find(function (x) { return x.id === def.id; }) || {};
-      var medal = ({ Crewmate: "🧑‍✈️", "Devil Fruit": "🍙", Title: "🏴‍☠️" })[def.role] || "⚓";
+      var medal = ({ Crewmate: "\u{1F9D1}\u{200D}\u{2708}\u{FE0F}", "Devil Fruit": "\u{1F359}", Title: "\u{1F3F4}\u{200D}\u{2620}\u{FE0F}" })[def.role] || "\u{2693}";
       var li = el("li", c.recruited ? "" : "crew-locked");
       var prog = "";
       if (!c.recruited) {
@@ -2580,7 +2580,7 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     var _td = state.todayStr();
     if (!save.logPose[_td]) {
       var _prev = rewards.voyageStreak(save, rewards.addDays(_td, -1));
-      if (_prev > 0) { try { new Notification("Grand Line", { body: "🔥 Your " + _prev + "-day course breaks tonight. Log anything to keep it alive." }); } catch (e) {} }
+      if (_prev > 0) { try { new Notification("Grand Line", { body: "\u{1F525} Your " + _prev + "-day course breaks tonight. Log anything to keep it alive." }); } catch (e) {} }
     }
   }
   if (save.player.createdAt === state.todayStr() && !save.journal.length && save.bounties.length) {
