@@ -1,6 +1,7 @@
 /* Grand Line — service worker. Stale-while-revalidate with update notification. */
-var CACHE = "grandline-v3";
+var CACHE = "grandline-v4";
 var CORE = ["./", "./index.html", "./manifest.json", "./icon.svg"];
+var updateNotified = false;
 
 self.addEventListener("install", function (e) {
   e.waitUntil(caches.open(CACHE).then(function (c) {
@@ -25,7 +26,10 @@ self.addEventListener("fetch", function (e) {
         var fetchPromise = fetch(e.request).then(function (networkResponse) {
           if (networkResponse && networkResponse.status === 200) {
             cache.put(e.request, networkResponse.clone());
-            notifyClients("update-available");
+            if (!updateNotified) {
+              updateNotified = true;
+              notifyClients("update-available");
+            }
           }
           return networkResponse;
         }).catch(function () {

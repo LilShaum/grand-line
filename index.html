@@ -2321,10 +2321,8 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
       t.classList.toggle("active", active);
       t.setAttribute("aria-selected", active);
     });
-    showSkeleton(screen);
-    requestAnimationFrame(function () {
-      setTimeout(function () { renderScreen(); window.scrollTo({ top: 0, behavior: "smooth" }); }, 80);
-    });
+    renderScreen();
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
   function renderScreen() {
     if (current === "quarters") renderQuarters();
@@ -2336,19 +2334,6 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     else if (current === "haki") renderHakiTrees();
   }
 
-  function showSkeleton(screen) {
-    var main = $("#screens");
-    var skeletons = {
-      quarters: '<div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div>',
-      bounties: '<div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div>',
-      duties: '<div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div>',
-      log: '<div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div>',
-      pose: '<div class="skeleton-card"></div>',
-      hold: '<div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div>',
-      haki: '<div class="skeleton-card"></div><div class="skeleton-card"></div>'
-    };
-    main.innerHTML = '<div class="skeleton-screen">' + (skeletons[screen] || '') + '</div>';
-  }
   function refreshAll() { renderHeader(); renderScreen(); }
 
   function wire() {
