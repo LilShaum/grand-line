@@ -632,6 +632,24 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
 .bsb-bar { flex-basis: 100%; height: 5px; background: rgba(43,32,23,.14); border-radius: 4px; overflow: hidden; margin-top: 2px; }
 .bsb-fill { height: 100%; background: linear-gradient(90deg, var(--bounty-gold), var(--wanted-red)); border-radius: 4px; transition: width .4s ease; }
 
+/* ===================== JOURNALING PHASE ===================== */
+.log-textarea.short { min-height: 70px; }
+.daily-journal .card-head .ti { color: var(--bounty-gold2); }
+.logbook-controls { display: flex; gap: 8px; align-items: center; margin-bottom: 10px; }
+.logbook-controls .journal-search { flex: 1; margin-bottom: 0; }
+.journal-date { width: auto; flex-shrink: 0; }
+#journalDateClear { flex-shrink: 0; }
+.jf-type.morning_intent { background: var(--bounty-gold); color: var(--ink); }
+.jf-type.evening_reflection { background: var(--sea-teal); color: #fff; }
+.jf-type.free_write { background: var(--parchment3); color: var(--ink); }
+.jf-type.victory { background: var(--good); color: #fff; }
+.dev-panel { margin-top: 12px; border-top: 1px dashed var(--paper-line); padding-top: 6px; }
+.dev-panel summary { cursor: pointer; font-size: .7rem; color: var(--ink-soft); list-style: none; padding: 5px 0; text-transform: uppercase; letter-spacing: .5px; }
+.dev-panel summary::-webkit-details-marker { display: none; }
+.dev-panel summary::before { content: "⚙ "; }
+.dev-panel[open] summary { color: var(--wanted-red); }
+.dev-panel .ghost-btn { font-size: .76rem; padding: 7px 10px; }
+
 /* ===================== ACTION TOAST ===================== */
 .toast.action { display: flex; align-items: center; gap: 12px; justify-content: space-between; }
 .toast-btn {
@@ -812,22 +830,24 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     <section class="screen" data-screen="log" hidden role="tabpanel" id="panel-log" aria-labelledby="tab-log">
       <h2 class="screen-title"><i class="ti ti-book"></i> Captain's Log</h2>
 
-      <div class="card log-card">
-        <div class="card-head"><i class="ti ti-feather"></i> Today's Entry <span class="muted" id="logReward">(+15 ฿, +10 Resolve, grants Morale)</span></div>
-        <p class="prompt-hint" id="logPrompt"></p>
-        <textarea id="captainsLog" class="log-textarea" placeholder="Even one line counts…" aria-label="Captain's Log entry"></textarea>
-        <div class="log-actions">
-          <span class="muted" id="logStatus"></span>
-          <button class="primary-btn" id="saveLogBtn"><i class="ti ti-device-floppy"></i> Save Log</button>
-        </div>
+      <div class="card daily-journal">
+        <div class="card-head"><i class="ti ti-sunrise"></i> Morning Intent <span class="muted" id="intentStatus"></span></div>
+        <p class="prompt-hint" id="intentPrompt"></p>
+        <textarea id="morningIntent" class="log-textarea short" placeholder="Set today's course…"></textarea>
+        <div class="log-actions"><span class="muted">+10 ฿ · +8 Ambition</span><button class="primary-btn" id="saveIntentBtn"><i class="ti ti-compass"></i> Set Course</button></div>
+      </div>
+
+      <div class="card daily-journal">
+        <div class="card-head"><i class="ti ti-moon"></i> Evening Reflection <span class="muted" id="reflectStatus"></span></div>
+        <p class="prompt-hint" id="reflectPrompt"></p>
+        <textarea id="eveningReflect" class="log-textarea short" placeholder="Log the day's voyage…"></textarea>
+        <div class="log-actions"><span class="muted">+12 ฿ · +10 Wisdom · grants Morale</span><button class="primary-btn" id="saveReflectBtn"><i class="ti ti-device-floppy"></i> Log Reflection</button></div>
       </div>
 
       <div class="card">
-        <div class="card-head"><i class="ti ti-message-2"></i> Quick Memory <span class="muted">(+5 ฿)</span></div>
-        <form id="memoryForm" class="memory-form" autocomplete="off">
-          <input type="text" id="memoryText" placeholder="One-line snapshot… (Den Den Mushi)" maxlength="160" required aria-label="Memory text" />
-          <button type="submit" class="primary-btn"><i class="ti ti-plus"></i></button>
-        </form>
+        <div class="card-head"><i class="ti ti-feather"></i> Free Log <span class="muted" id="freeStatus"></span></div>
+        <textarea id="freeWrite" class="log-textarea" placeholder="Open waters — write whatever's on your mind…"></textarea>
+        <div class="log-actions"><span class="muted">+5 ฿ · +5 Resolve</span><button class="primary-btn" id="saveFreeBtn"><i class="ti ti-device-floppy"></i> Save</button></div>
       </div>
 
       <div class="card">
@@ -846,8 +866,12 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
       </div>
 
       <div class="card">
-        <div class="card-head"><i class="ti ti-history"></i> The Logbook</div>
-        <input type="text" id="journalSearch" class="journal-search" placeholder="Search your logbook…" aria-label="Search journal" />
+        <div class="card-head"><i class="ti ti-history"></i> The Captain's Log</div>
+        <div class="logbook-controls">
+          <input type="text" id="journalSearch" class="journal-search" placeholder="Search your log…" />
+          <input type="date" id="journalDate" class="journal-date" title="Filter by date" />
+          <button class="icon-btn" id="journalDateClear" title="Clear date"><i class="ti ti-x"></i></button>
+        </div>
         <div class="filter-row" id="journalFilters"></div>
         <ul class="journal-feed" id="journalFeed"></ul>
       </div>
@@ -930,6 +954,14 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
       <button class="ghost-btn danger" id="resetBtn"><i class="ti ti-trash"></i> Scuttle the ship (reset all data)</button>
       <button class="ghost-btn" id="closeHelm">Close</button>
       <p class="tiny muted">Grand Line • all data stored locally on this device • free forever ☠</p>
+
+      <details class="dev-panel">
+        <summary>Dev tools — testing only</summary>
+        <button class="ghost-btn" id="devBerries"><i class="ti ti-coin"></i> +1000 Berries</button>
+        <button class="ghost-btn" id="devXp"><i class="ti ti-arrow-up-circle"></i> +500 XP (all stats)</button>
+        <button class="ghost-btn" id="devHaki"><i class="ti ti-bolt"></i> +50 Haki Points (each stat)</button>
+        <button class="ghost-btn danger" id="devReset"><i class="ti ti-alert-triangle"></i> Reset Save (wipe everything)</button>
+      </details>
     </div>
   </div>
 
@@ -1002,12 +1034,39 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
   }
 
   var JOURNAL = {
-    captains_log: { berries: 15, xp: 10, stat: "resolve", grants: "morale" },
+    captains_log:       { berries: 15, xp: 10, stat: "resolve",  grants: "morale" },
+    morning_intent:     { berries: 10, xp: 8,  stat: "ambition", grants: null },
+    evening_reflection: { berries: 12, xp: 10, stat: "wisdom",   grants: "morale" },
+    free_write:         { berries: 5,  xp: 5,  stat: "resolve",  grants: null },
     memory:       { berries: 5,  xp: 0,  stat: null,       grants: null },
     mood:         { berries: 3,  xp: 0,  stat: null,       grants: null },
     victory:      { berries: 5,  xp: 0,  stat: null,       grants: null },
     recap:        { berries: 100,xp: 50, stat: "resolve",  grants: "tailwind" }
   };
+
+  var MORNING_PROMPTS = [
+    "What's your mission today, Captain?",
+    "Which bounties will you hunt today?",
+    "What's the one thing that must get done?",
+    "Where do you point the Log Pose today?",
+    "What would make today a victory?",
+    "What's the first move when you set sail?"
+  ];
+  var EVENING_PROMPTS = [
+    "What did your crew accomplish today?",
+    "What was today's biggest haul?",
+    "What slowed the ship down today?",
+    "What are you grateful for after today's voyage?",
+    "What will you do differently tomorrow?",
+    "Where did you show real Haki today?"
+  ];
+  function _doy(dateStr) {
+    var d = dateStr ? new Date(dateStr + "T00:00:00") : new Date();
+    var start = new Date(d.getFullYear(), 0, 0);
+    return Math.floor((d - start) / 86400000);
+  }
+  function morningPrompt(dateStr) { return MORNING_PROMPTS[_doy(dateStr) % MORNING_PROMPTS.length]; }
+  function eveningPrompt(dateStr) { return EVENING_PROMPTS[_doy(dateStr) % EVENING_PROMPTS.length]; }
 
   var BUFFS = {
     streakPerDay: 0.05,
@@ -1117,6 +1176,7 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     STATS: STATS, STAT_KEYS: STAT_KEYS,
     HAKI_TREE: HAKI_TREE, HAKI_NODES: HAKI_NODES,
     PROMPTS: PROMPTS, promptForDay: promptForDay,
+    morningPrompt: morningPrompt, eveningPrompt: eveningPrompt,
     THEMES: THEMES,
     BOUNTY_MILESTONES: BOUNTY_MILESTONES, nextBountyMilestone: nextBountyMilestone,
     TIERS: TIERS, TIER_KEYS: TIER_KEYS,
@@ -1516,8 +1576,9 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     var today = state.todayStr();
     var def = economy.JOURNAL[type];
     if (!def) return null;
-    if (type === "captains_log") {
-      var existing = save.journal.find(function (e) { return e.type === "captains_log" && e.date === today; });
+    var DAILY_SINGLE = { captains_log: 1, morning_intent: 1, evening_reflection: 1, free_write: 1 };
+    if (DAILY_SINGLE[type]) {
+      var existing = save.journal.find(function (e) { return e.type === type && e.date === today; });
       if (existing) {
         existing.text = payload.text || existing.text;
         state.save(save);
@@ -1652,6 +1713,7 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
   try { quickStat = localStorage.getItem("gl.quickStat") || "resolve"; } catch (e) {}
   var journalFilter = "all";
   var journalQuery = "";
+  var journalDate = "";
   var poseSelectedDay = null;
   var bountyStatus = "open";
   var bountySort = "new";
@@ -1662,6 +1724,7 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
   var TIER_ORDER = { petty: 0, rookie: 1, notorious: 2, warlord: 3 };
   var STAT_FLAVOR = { strength: "Crushed it.", wisdom: "Outwitted them.", ambition: "Conquered.", resolve: "Endured." };
   var STAT_SIGIL = { strength: "ti-sword", wisdom: "ti-eye", ambition: "ti-crown", resolve: "ti-anchor" };
+  var LOG_LABEL = { captains_log: "Captain's Log", morning_intent: "Intent", evening_reflection: "Reflection", free_write: "Free Log", memory: "Memory", mood: "Weather", victory: "Victory", recap: "Recap" };
 
   var $ = function (sel, root) { return (root || document).querySelector(sel); };
   var $$ = function (sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); };
@@ -1978,52 +2041,67 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
   }
 
   function renderLog() {
-    var todays = game.todaysLog(save);
-    var ta = $("#captainsLog");
-    if (document.activeElement !== ta) ta.value = todays ? todays.text : "";
-    $("#logStatus").textContent = todays ? "Logged today \u{2713}" : "Not logged yet today";
-    var prompt = economy.promptForDay(state.todayStr());
-    $("#logPrompt").textContent = prompt; ta.placeholder = prompt;
+    var today = state.todayStr();
+    function tEntry(type) { return save.journal.find(function (e) { return e.type === type && e.date === today; }); }
+    var mi = tEntry("morning_intent"), miEl = $("#morningIntent");
+    if (document.activeElement !== miEl) miEl.value = mi ? mi.text : "";
+    $("#intentStatus").textContent = mi ? "set ✓" : "";
+    $("#intentPrompt").textContent = economy.morningPrompt(today);
+    var er = tEntry("evening_reflection"), erEl = $("#eveningReflect");
+    if (document.activeElement !== erEl) erEl.value = er ? er.text : "";
+    $("#reflectStatus").textContent = er ? "logged ✓" : "";
+    $("#reflectPrompt").textContent = economy.eveningPrompt(today);
+    var fw = tEntry("free_write"), fwEl = $("#freeWrite");
+    if (document.activeElement !== fwEl) fwEl.value = fw ? fw.text : "";
+    $("#freeStatus").textContent = fw ? "saved ✓" : "";
+
     var canRecap = game.canRecap(save);
     $("#saveRecapBtn").disabled = !canRecap;
     $("#recapText").disabled = !canRecap;
     $("#recapStatus").textContent = canRecap
-      ? "Available now \u{2014} reflect on your week for a big payout + Tailwind."
+      ? "Available now — reflect on your week for a big payout + Tailwind."
       : "Next recap in " + game.recapDaysLeft(save) + " day(s). Pace yourself, captain.";
+
     renderMoodStrip();
     renderJournalFilters();
+
     var feed = $("#journalFeed"); feed.innerHTML = "";
     var q = journalQuery.trim().toLowerCase();
     var items = save.journal.filter(function (e) {
       if (journalFilter !== "all" && e.type !== journalFilter) return false;
+      if (journalDate && e.date !== journalDate) return false;
       if (q) { var hay = ((e.text || "") + " " + (e.mood || "")).toLowerCase(); if (hay.indexOf(q) === -1) return false; }
       return true;
     });
     if (!items.length) {
-      if (!save.journal.length) {
-        feed.innerHTML = '<div class="empty-state"><i class="ti ti-book"></i><h4>Logbook empty</h4><p>Your first Captain\'s Log entry starts the voyage.</p><button class="primary-btn empty-state-action" onclick="document.querySelector(\'[data-goto=log]\').click(); document.getElementById(\'captainsLog\').focus();"><i class="ti ti-feather"></i> Write Log</button></div>';
-      } else {
-        feed.innerHTML = '<div class="empty-state"><i class="ti ti-search"></i><h4>No matches</h4><p>No entries match that filter or search.</p></div>';
-      }
-    } else {
-      items.slice(0, 60).forEach(function (e) {
-        var li = el("li");
-        var label = ({ captains_log: "Captain's Log", memory: "Memory", mood: "Weather", victory: "Victory", recap: "Recap" })[e.type] || e.type;
-        var text = e.type === "mood" ? ("Weather: " + e.mood) : escapeHtml(e.text);
-        li.innerHTML = '<div class="jf-head"><span class="jf-type ' + e.type + '">' + label + '</span><span>' + e.date + '</span></div>' +
-          (text ? '<div class="jf-text">' + text + '</div>' : "");
-        feed.appendChild(li);
-      });
+      feed.appendChild(el("li", "empty", save.journal.length ? "No entries match these filters." : "Your log is empty. Write your first entry above."));
     }
+    items.slice(0, 80).forEach(function (e) {
+      var li = el("li");
+      var label = LOG_LABEL[e.type] || e.type;
+      var text = e.type === "mood" ? ("Weather: " + e.mood) : escapeHtml(e.text);
+      li.innerHTML = '<div class="jf-head"><span class="jf-type ' + e.type + '">' + label + '</span><span>' + e.date + '</span></div>' +
+        (text ? '<div class="jf-text">' + text + '</div>' : "");
+      feed.appendChild(li);
+    });
   }
 
   function renderJournalFilters() {
     var fr = $("#journalFilters"); fr.innerHTML = "";
-    [["all", "All"], ["captains_log", "Logs"], ["memory", "Memories"], ["mood", "Weather"], ["victory", "Victories"], ["recap", "Recaps"]].forEach(function (o) {
+    [["all", "All"], ["morning_intent", "Intent"], ["evening_reflection", "Reflection"], ["free_write", "Free Log"], ["captains_log", "Logs"], ["memory", "Memories"], ["mood", "Weather"], ["victory", "Victories"], ["recap", "Recaps"]].forEach(function (o) {
       var c = el("button", "chip" + (journalFilter === o[0] ? " active" : ""), o[1]);
       c.onclick = function () { journalFilter = o[0]; renderLog(); };
       fr.appendChild(c);
     });
+  }
+
+  function saveDaily(type, sel) {
+    var text = $(sel).value.trim();
+    if (!text) { toast('<i class="ti ti-pencil"></i> Write at least one line.'); return; }
+    var ev = game.addJournal(save, type, { text: text });
+    if (ev && ev.updated) toast('<i class="ti ti-check"></i> Updated.');
+    else if (ev) celebrate(ev);
+    refreshAll();
   }
 
   function renderMoodStrip() {
@@ -2356,14 +2434,9 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
       };
     });
 
-    $("#saveLogBtn").onclick = function () {
-      var text = $("#captainsLog").value.trim();
-      if (!text) { toast('<i class="ti ti-pencil"></i> Write at least one line.'); return; }
-      var ev = game.addJournal(save, "captains_log", { text: text });
-      if (ev.updated) toast('<i class="ti ti-check"></i> Log updated.');
-      else celebrate(ev);
-      refreshAll();
-    };
+    $("#saveIntentBtn").onclick = function () { saveDaily("morning_intent", "#morningIntent"); };
+    $("#saveReflectBtn").onclick = function () { saveDaily("evening_reflection", "#eveningReflect"); };
+    $("#saveFreeBtn").onclick = function () { saveDaily("free_write", "#freeWrite"); };
 
     $("#quickBountyForm").onsubmit = function (e) {
       e.preventDefault();
@@ -2389,13 +2462,6 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
       celebrate(ev); refreshAll();
     };
 
-    $("#memoryForm").onsubmit = function (e) {
-      e.preventDefault();
-      var text = $("#memoryText").value.trim(); if (!text) return;
-      var ev = game.addJournal(save, "memory", { text: text });
-      $("#memoryText").value = "";
-      celebrate(ev); refreshAll();
-    };
 
     $("#addDutyForm").onsubmit = function (e) {
       e.preventDefault();
@@ -2426,6 +2492,8 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     $("#poseControlNext").onclick = function () { poseOffset++; poseSelectedDay = null; renderPose(); };
 
     $("#journalSearch").oninput = function () { journalQuery = this.value; renderLog(); };
+    $("#journalDate").onchange = function () { journalDate = this.value; renderLog(); };
+    $("#journalDateClear").onclick = function () { journalDate = ""; $("#journalDate").value = ""; renderLog(); };
 
     $("#bountySort").onchange = function () { bountySort = this.value; renderBounties(); };
     $("#clearCompletedBtn").onclick = function () {
@@ -2473,6 +2541,32 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
         save = state.reset(); save = game.onLoad(save);
         show("quarters");
         toast('<i class="ti ti-refresh"></i> A new voyage begins.');
+      });
+    };
+
+    if ($("#devBerries")) $("#devBerries").onclick = function () {
+      save.player.berries += 1000; state.save(save);
+      toast('<i class="ti ti-coin"></i> +1000 ฿ (dev)'); refreshAll();
+    };
+    if ($("#devXp")) $("#devXp").onclick = function () {
+      economy.STAT_KEYS.forEach(function (k) { rewards.applyReward(save, { xp: 500, stat: k, berries: 0, isTask: false }); });
+      state.save(save);
+      toast('<i class="ti ti-arrow-up-circle"></i> +500 XP to all stats (dev)'); refreshAll();
+    };
+    if ($("#devHaki")) $("#devHaki").onclick = function () {
+      economy.STAT_KEYS.forEach(function (k) { save.hakiPoints[k] = (save.hakiPoints[k] || 0) + 50; });
+      state.save(save);
+      toast('<i class="ti ti-bolt"></i> +50 Haki Points to each stat (dev)'); refreshAll();
+    };
+    if ($("#devReset")) $("#devReset").onclick = function () {
+      $("#helmModal").hidden = true;
+      showConfirm("Abandon ship?", "This wipes ALL progress and cannot be undone.", "Abandon ship", function () {
+        showConfirm("Are you certain, Captain?", "Last chance — every Berry, level, and log is lost forever.", "Scuttle it all", function () {
+          try { localStorage.clear(); } catch (e) {}
+          save = state.reset(); save = game.onLoad(save);
+          show("quarters");
+          toast('<i class="ti ti-refresh"></i> A new voyage begins.');
+        });
       });
     };
 
