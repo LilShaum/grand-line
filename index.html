@@ -632,6 +632,10 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
 .bsb-bar { flex-basis: 100%; height: 5px; background: rgba(43,32,23,.14); border-radius: 4px; overflow: hidden; margin-top: 2px; }
 .bsb-fill { height: 100%; background: linear-gradient(90deg, var(--bounty-gold), var(--wanted-red)); border-radius: 4px; transition: width .4s ease; }
 
+/* ===================== AUTO-BACKUP ===================== */
+.backup-block { margin: 8px 0; padding: 8px 0; border-top: 1px dashed var(--paper-line); border-bottom: 1px dashed var(--paper-line); }
+.backup-status { margin: 2px 0 8px; font-size: .72rem; }
+
 /* ===================== JOURNALING PHASE ===================== */
 .log-textarea.short { min-height: 70px; }
 .daily-journal .card-head .ti { color: var(--bounty-gold2); }
@@ -949,6 +953,14 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
       <button class="ghost-btn" id="exportBtn"><i class="ti ti-download"></i> Back up my voyage (export)</button>
       <button class="ghost-btn" id="importBtn"><i class="ti ti-upload"></i> Restore from a backup (import)</button>
       <input type="file" id="importFile" accept="application/json" hidden aria-label="Import backup file" />
+
+      <div class="backup-block">
+        <p class="backup-status muted">Auto-backup: <span id="backupStatus">off — your progress saves in this browser only</span></p>
+        <button class="ghost-btn" id="linkBackupBtn"><i class="ti ti-link"></i> Link a backup file (auto-save to disk)</button>
+        <button class="ghost-btn" id="reconnectBackupBtn" hidden><i class="ti ti-plug-connected"></i> Reconnect backup file</button>
+        <button class="ghost-btn" id="restoreBackupBtn"><i class="ti ti-file-import"></i> Restore from a linked file</button>
+        <button class="ghost-btn" id="unlinkBackupBtn" hidden><i class="ti ti-unlink"></i> Unlink backup file</button>
+      </div>
       <button class="ghost-btn" id="installBtn" hidden><i class="ti ti-device-mobile"></i> Install on this device</button>
       <button class="ghost-btn" id="remindBtn"><i class="ti ti-bell"></i> Daily reminder: off</button>
       <button class="ghost-btn danger" id="resetBtn"><i class="ti ti-trash"></i> Scuttle the ship (reset all data)</button>
@@ -1284,12 +1296,18 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
       return JSON.parse(raw);
     } catch (e) { return null; }
   }
+  var saveListeners = [];
+  function onSave(fn) { if (typeof fn === "function") saveListeners.push(fn); }
+
   function write(save) {
     var raw = JSON.stringify(save);
     try {
       if (typeof localStorage !== "undefined") localStorage.setItem(KEY, raw);
       else memoryStore = raw;
     } catch (e) { memoryStore = raw; }
+    for (var i = 0; i < saveListeners.length; i++) {
+      try { saveListeners[i](save, raw); } catch (e) {}
+    }
     return save;
   }
   function load() {
@@ -1303,7 +1321,7 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     KEY: KEY, uid: uid, todayStr: todayStr,
     freshSave: freshSave, seedBounty: seedBounty,
     cloneLevels: cloneLevels,
-    load: load, save: write, reset: reset
+    load: load, save: write, reset: reset, onSave: onSave
   };
 
   GL.state = state;
@@ -1736,6 +1754,112 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
   function fmt(n) { return Number(n).toLocaleString(); }
   function el(tag, cls, html) { var e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; }
 
+  /* ---------------- DRAFT PERSISTENCE (never lose typing) ---------------- */
+  var DRAFT_KEY = "grandline.drafts.v1";
+  var DRAFT_FIELDS = ["morningIntent", "eveningReflect", "freeWrite", "recapText", "quickLog", "quickMemoryText", "bountyTitle", "quickBountyTitle"];
+  function getDrafts() { try { return JSON.parse(localStorage.getItem(DRAFT_KEY) || "{}"); } catch (e) { return {}; } }
+  function setDraft(id, val) { var d = getDrafts(); if (val) d[id] = val; else delete d[id]; try { localStorage.setItem(DRAFT_KEY, JSON.stringify(d)); } catch (e) {} }
+  function clearDraft(id) { setDraft(id, ""); }
+  function restoreDrafts() {
+    var d = getDrafts();
+    DRAFT_FIELDS.forEach(function (id) {
+      var x = document.getElementById(id);
+      if (x && !x.value && document.activeElement !== x && d[id]) x.value = d[id];
+    });
+  }
+  function flushSave() { try { state.save(save); } catch (e) {} }
+
+  /* ---------------- FILE AUTO-BACKUP (my-tasks "Link file" pattern) ---------------- */
+  var backup = (function () {
+    var DB = "grandline-backup", STORE = "handles", HK = "fileHandle";
+    var handle = null, ready = false, writing = false, pending = null;
+    function supported() { return typeof window.showSaveFilePicker === "function"; }
+    function idb() {
+      return new Promise(function (res, rej) {
+        var r = indexedDB.open(DB, 1);
+        r.onupgradeneeded = function () { r.result.createObjectStore(STORE); };
+        r.onsuccess = function () { res(r.result); };
+        r.onerror = function () { rej(r.error); };
+      });
+    }
+    function idbGet() { return idb().then(function (db) { return new Promise(function (res) { var t = db.transaction(STORE, "readonly").objectStore(STORE).get(HK); t.onsuccess = function () { res(t.result || null); }; t.onerror = function () { res(null); }; }); }); }
+    function idbSet(v) { return idb().then(function (db) { return new Promise(function (res) { var s = db.transaction(STORE, "readwrite").objectStore(STORE); s.put(v, HK); s.transaction.oncomplete = function () { res(); }; }); }); }
+    function idbDel() { return idb().then(function (db) { return new Promise(function (res) { var s = db.transaction(STORE, "readwrite").objectStore(STORE); s.delete(HK); s.transaction.oncomplete = function () { res(); }; }); }); }
+    function verify(h, request) {
+      var opts = { mode: "readwrite" };
+      if (!h.queryPermission) return Promise.resolve(true);
+      return h.queryPermission(opts).then(function (p) {
+        if (p === "granted") return true;
+        if (request && h.requestPermission) return h.requestPermission(opts).then(function (p2) { return p2 === "granted"; });
+        return false;
+      });
+    }
+    function writeNow(raw) {
+      if (!handle || !ready) return Promise.resolve();
+      if (writing) { pending = raw; return Promise.resolve(); }
+      writing = true;
+      return handle.createWritable().then(function (w) {
+        return w.write(raw).then(function () { return w.close(); });
+      }).then(function () {
+        writing = false;
+        if (pending != null) { var p = pending; pending = null; return writeNow(p); }
+      }).catch(function () { writing = false; ready = false; renderStatus(); });
+    }
+    function onSaveWrite(s, raw) { if (handle && ready) writeNow(raw); }
+    function link() {
+      if (!supported()) { toast('<i class="ti ti-alert-triangle"></i> File backup isn\'t supported in this browser.'); return; }
+      return window.showSaveFilePicker({ suggestedName: "grand-line-backup.json", types: [{ description: "JSON", accept: { "application/json": [".json"] } }] }).then(function (h) {
+        handle = h; ready = true;
+        return idbSet(h).then(function () { return writeNow(JSON.stringify(save)); }).then(function () {
+          renderStatus(); toast('<i class="ti ti-link"></i> Auto-backup linked — every change saves to your file.');
+        });
+      }).catch(function () {});
+    }
+    function unlink() {
+      handle = null; ready = false;
+      return idbDel().then(function () { renderStatus(); toast('<i class="ti ti-unlink"></i> Auto-backup unlinked.'); });
+    }
+    function restore() {
+      if (typeof window.showOpenFilePicker !== "function") { toast('<i class="ti ti-alert-triangle"></i> Not supported here.'); return; }
+      return window.showOpenFilePicker({ types: [{ description: "JSON", accept: { "application/json": [".json"] } }] }).then(function (arr) {
+        return arr[0].getFile();
+      }).then(function (f) { return f.text(); }).then(function (text) {
+        var data = JSON.parse(text);
+        if (!data || !data.player || !data.stats) throw new Error("bad");
+        save = state.save(data); save = game.onLoad(save);
+        $("#helmModal").hidden = true; show("quarters");
+        toast('<i class="ti ti-upload"></i> Voyage restored from your file.');
+      }).catch(function (e) { if (e && e.name !== "AbortError") toast('<i class="ti ti-alert-triangle"></i> Could not restore from that file.'); });
+    }
+    function reconnect() {
+      if (!handle) return Promise.resolve();
+      return verify(handle, true).then(function (ok) { ready = ok; renderStatus(); if (ok) return writeNow(JSON.stringify(save)); });
+    }
+    function init() {
+      if (!supported()) { renderStatus(); return Promise.resolve(); }
+      return idbGet().then(function (h) {
+        if (h) { handle = h; return verify(h, false).then(function (ok) { ready = ok; }); }
+      }).then(renderStatus).catch(renderStatus);
+    }
+    function renderStatus() {
+      var st = $("#backupStatus");
+      if (st) {
+        st.textContent = !supported() ? "not supported in this browser"
+          : (handle && ready) ? "on — every change saves to your file"
+          : (handle && !ready) ? "linked — tap Reconnect to resume"
+          : "off — your progress saves in this browser only";
+      }
+      var lk = $("#linkBackupBtn"), un = $("#unlinkBackupBtn"), rc = $("#reconnectBackupBtn");
+      if (lk) lk.hidden = !supported() || !!handle;
+      if (un) un.hidden = !handle;
+      if (rc) rc.hidden = !(handle && !ready);
+    }
+    state.onSave(onSaveWrite);
+    return { link: link, unlink: unlink, restore: restore, init: init, reconnect: reconnect, renderStatus: renderStatus, supported: supported,
+      _setHandle: function (h) { handle = h; ready = true; }, _writeNow: writeNow };
+  })();
+  if (window.GL) window.GL.backup = backup;
+
   function applyTheme() {
     var t = economy.THEMES.find(function (x) { return x.id === save.player.activeTheme; }) || economy.THEMES[0];
     var root = document.documentElement.style;
@@ -2099,6 +2223,7 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     var text = $(sel).value.trim();
     if (!text) { toast('<i class="ti ti-pencil"></i> Write at least one line.'); return; }
     var ev = game.addJournal(save, type, { text: text });
+    clearDraft(sel.replace("#", ""));
     if (ev && ev.updated) toast('<i class="ti ti-check"></i> Updated.');
     else if (ev) celebrate(ev);
     refreshAll();
@@ -2410,6 +2535,7 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     else if (current === "pose") renderPose();
     else if (current === "hold") renderHold();
     else if (current === "haki") renderHakiTrees();
+    restoreDrafts();
   }
 
   function refreshAll() { renderHeader(); renderScreen(); }
@@ -2421,7 +2547,7 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
       e.preventDefault();
       var title = $("#bountyTitle").value.trim(); if (!title) return;
       game.addBounty(save, title, $("#bountyStat").value, $("#bountyTier").value, $("#bountyDue").value || null, $("#bountyRecurring").value || null);
-      $("#bountyTitle").value = ""; $("#bountyDue").value = ""; $("#bountyRecurring").value = "";
+      $("#bountyTitle").value = ""; $("#bountyDue").value = ""; $("#bountyRecurring").value = ""; clearDraft("bountyTitle");
       renderBounties();
     };
 
@@ -2442,7 +2568,7 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
       e.preventDefault();
       var t = $("#quickBountyTitle").value.trim(); if (!t) return;
       game.addBounty(save, t, quickStat, "rookie");
-      $("#quickBountyTitle").value = "";
+      $("#quickBountyTitle").value = ""; clearDraft("quickBountyTitle");
       toast('<i class="ti ti-flag"></i> Bounty posted to ' + economy.STATS[quickStat].name + '.');
       refreshAll();
     };
@@ -2450,6 +2576,7 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
       var text = $("#quickLog").value.trim();
       if (!text) { toast('<i class="ti ti-pencil"></i> Write at least one line.'); return; }
       var ev = game.addJournal(save, "captains_log", { text: text });
+      clearDraft("quickLog");
       if (ev.updated) toast('<i class="ti ti-check"></i> Log updated.');
       else celebrate(ev);
       refreshAll();
@@ -2458,7 +2585,7 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
       e.preventDefault();
       var text = $("#quickMemoryText").value.trim(); if (!text) return;
       var ev = game.addJournal(save, "memory", { text: text });
-      $("#quickMemoryText").value = "";
+      $("#quickMemoryText").value = ""; clearDraft("quickMemoryText");
       celebrate(ev); refreshAll();
     };
 
@@ -2475,7 +2602,7 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
       var text = $("#recapText").value.trim();
       var ev = game.addJournal(save, "recap", { text: text || "(weekly recap)" });
       if (ev.locked) { toast('<i class="ti ti-lock"></i> Recap recharges in ' + ev.daysLeft + ' day(s).'); return; }
-      $("#recapText").value = "";
+      $("#recapText").value = ""; clearDraft("recapText");
       celebrate(ev); refreshAll();
     };
 
@@ -2494,6 +2621,15 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     $("#journalSearch").oninput = function () { journalQuery = this.value; renderLog(); };
     $("#journalDate").onchange = function () { journalDate = this.value; renderLog(); };
     $("#journalDateClear").onclick = function () { journalDate = ""; $("#journalDate").value = ""; renderLog(); };
+
+    DRAFT_FIELDS.forEach(function (id) {
+      var x = document.getElementById(id);
+      if (x) x.addEventListener("input", function () { setDraft(id, x.value); });
+    });
+    if ($("#linkBackupBtn")) $("#linkBackupBtn").onclick = function () { backup.link(); };
+    if ($("#unlinkBackupBtn")) $("#unlinkBackupBtn").onclick = function () { backup.unlink(); };
+    if ($("#reconnectBackupBtn")) $("#reconnectBackupBtn").onclick = function () { backup.reconnect(); };
+    if ($("#restoreBackupBtn")) $("#restoreBackupBtn").onclick = function () { backup.restore(); };
 
     $("#bountySort").onchange = function () { bountySort = this.value; renderBounties(); };
     $("#clearCompletedBtn").onclick = function () {
@@ -2655,6 +2791,9 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
   renderHeader();
   renderRemindBtn();
   show("quarters");
+  backup.init();
+  document.addEventListener("visibilitychange", function () { if (document.visibilityState === "hidden") flushSave(); });
+  window.addEventListener("pagehide", flushSave);
   if (save.player.remindersOn && "Notification" in window && Notification.permission === "granted") {
     var _td = state.todayStr();
     if (!save.logPose[_td]) {
