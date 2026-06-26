@@ -654,6 +654,24 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
 .dev-panel[open] summary { color: var(--wanted-red); }
 .dev-panel .ghost-btn { font-size: .76rem; padding: 7px 10px; }
 
+/* ===================== CONSUMABLE ITEMS ===================== */
+.item-list { list-style: none; margin: 0; padding: 0; }
+.item-card { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px dashed var(--paper-line); }
+.item-card:last-child { border-bottom: none; }
+.item-card.item-empty { opacity: .5; }
+.item-info { flex: 1; min-width: 0; }
+.item-name { font-weight: 600; color: var(--ink); font-size: .9rem; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.item-name .ti { color: var(--bounty-gold2); font-size: 1.05rem; }
+.item-count { font-family: "Pirata One", serif; color: var(--wanted-red); font-size: 1rem; }
+.item-blurb { font-size: .68rem; color: var(--ink-soft); margin-top: 2px; }
+.item-use-btn { background: var(--ocean-navy); color: #fff; border: none; border-radius: 8px; padding: 6px 14px; font-weight: 700; cursor: pointer; font-family: inherit; font-size: .74rem; white-space: nowrap; }
+.item-use-btn:disabled { background: #b9ad92; cursor: not-allowed; }
+.item-auto { font-size: .62rem; font-weight: 700; color: var(--sea-teal); border: 1px solid var(--sea-teal); border-radius: 999px; padding: 3px 10px; white-space: nowrap; }
+.buff-chip.item { background: var(--wanted-red); color: #fff; }
+.insight-banner { border-left: 5px solid var(--bounty-gold); font-size: .8rem; color: var(--ink); padding: 11px 14px; line-height: 1.45; }
+.insight-banner .ti { color: var(--bounty-gold2); }
+.insight-banner em { color: var(--wanted-red); font-style: italic; }
+
 /* ===================== ACTION TOAST ===================== */
 .toast.action { display: flex; align-items: center; gap: 12px; justify-content: space-between; }
 .toast-btn {
@@ -834,6 +852,8 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     <section class="screen" data-screen="log" hidden role="tabpanel" id="panel-log" aria-labelledby="tab-log">
       <h2 class="screen-title"><i class="ti ti-book"></i> Captain's Log</h2>
 
+      <div class="card insight-banner" id="insightBanner" hidden></div>
+
       <div class="card daily-journal">
         <div class="card-head"><i class="ti ti-sunrise"></i> Morning Intent <span class="muted" id="intentStatus"></span></div>
         <p class="prompt-hint" id="intentPrompt"></p>
@@ -905,6 +925,11 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     <section class="screen" data-screen="hold" hidden role="tabpanel" id="panel-hold" aria-labelledby="tab-hold">
       <h2 class="screen-title"><i class="ti ti-diamond"></i> Treasure Hold</h2>
       <div class="hold-balance card">You have <strong>฿<span id="holdBalance">0</span></strong> to spend.</div>
+
+      <div class="card inventory-card">
+        <div class="card-head"><i class="ti ti-briefcase"></i> Inventory <span class="muted">consumables earned through your voyage</span></div>
+        <ul class="item-list" id="inventoryList"></ul>
+      </div>
 
       <ul class="shop-list" id="shopList"></ul>
 
@@ -1166,6 +1191,18 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     { id: "yami", name: "Yami Yami no Mi", desc: "The void \u{2014} true dark mode.", cost: 8000, vars: { "--parchment": "#1d2131", "--parchment2": "#262b3e", "--parchment3": "#2f3551", "--ocean-navy": "#0c0e16", "--ocean-navy2": "#070810", "--bounty-gold": "#c8a24a", "--bounty-gold2": "#a9852f", "--wanted-red": "#c2533f", "--ink": "#e7e3d4", "--ink-soft": "#9aa0b5", "--paper-line": "#3a4060", "--sea-teal": "#4fb6a8", "--den-pink": "#d98aa6", "--good": "#5cae6e" } }
   ];
 
+  var ITEMS = {
+    xp_surge:      { name: "XP Surge",      icon: "ti-flame",       blurb: "Doubles the XP from your next bounty or journal entry.", use: "active" },
+    berry_haul:    { name: "Berry Haul",    icon: "ti-coins",       blurb: "Instantly hauls in 500 ฿.", use: "instant", berries: 500 },
+    streak_shield: { name: "Streak Shield", icon: "ti-shield-half", blurb: "Auto-protects your streak from one missed day.", use: "passive" },
+    haki_focus:    { name: "Haki Focus",    icon: "ti-bolt",        blurb: "Your next bounty or journal earns bonus Haki Points.", use: "active" },
+    log_insight:   { name: "Log Insight",   icon: "ti-bulb",        blurb: "Adds a bonus reflection prompt to your next entry (+5 ฿).", use: "active" }
+  };
+  var ITEM_KEYS = ["xp_surge", "berry_haul", "streak_shield", "haki_focus", "log_insight"];
+  var CREW_ITEM = { swordsman: "haki_focus", navigator: "berry_haul", cook: "log_insight", shipwright: "xp_surge", gomu: "streak_shield", supernova: "xp_surge", yonko: "haki_focus" };
+  var BERRY_SPEND_MILESTONE = 5000;
+  function randomItemKey() { return ITEM_KEYS[Math.floor(Math.random() * ITEM_KEYS.length)]; }
+
   var BOUNTY_MILESTONES = [
     { count: 10,  bonus: 100,  title: "Rookie Bounty Hunter" },
     { count: 25,  bonus: 250,  title: "Seasoned Hunter" },
@@ -1191,6 +1228,7 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     morningPrompt: morningPrompt, eveningPrompt: eveningPrompt,
     THEMES: THEMES,
     BOUNTY_MILESTONES: BOUNTY_MILESTONES, nextBountyMilestone: nextBountyMilestone,
+    ITEMS: ITEMS, ITEM_KEYS: ITEM_KEYS, CREW_ITEM: CREW_ITEM, BERRY_SPEND_MILESTONE: BERRY_SPEND_MILESTONE, randomItemKey: randomItemKey,
     TIERS: TIERS, TIER_KEYS: TIER_KEYS,
     XP_BASE: XP_BASE,
     xpToNext: xpToNext,
@@ -1253,11 +1291,15 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
         ownedThemes: ["grandline"],
         remindersOn: false,
         bountiesCleared: 0,
+        berriesSpent: 0,
+        lastStreakShieldDay: null,
         firstRun: true
       },
       stats: stats,
       hakiPoints: hakiPoints,
       haki: {},
+      inventory: { xp_surge: 0, berry_haul: 0, streak_shield: 0, haki_focus: 0, log_insight: 0 },
+      activeItems: { xpSurge: false, hakiFocus: false, logInsight: false },
       bounties: [
         seedBounty("Make the bed", "resolve", "petty"),
         seedBounty("30-minute workout", "strength", "rookie"),
@@ -1402,6 +1444,7 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     if (opts.xp && opts.stat) {
       var mult = xpMultiplier(save, opts.stat, today, { tier: opts.tier, isJournal: !opts.isTask });
       var gainedXp = Math.round(opts.xp * mult);
+      if (opts.xpSurge) { gainedXp *= 2; events.xpSurged = true; }
       var s = save.stats[opts.stat];
       var before = economy.levelFromXp(s.xp).level;
       s.xp += gainedXp;
@@ -1415,6 +1458,14 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
         save.hakiPoints[opts.stat] = (save.hakiPoints[opts.stat] || 0) + gainedLevels;
         events.hakiPointsGained = gainedLevels;
         events.hakiStat = opts.stat;
+      }
+      if (opts.hakiFocus) {
+        var hb = Math.max(1, gainedLevels);
+        if (!save.hakiPoints) save.hakiPoints = {};
+        save.hakiPoints[opts.stat] = (save.hakiPoints[opts.stat] || 0) + hb;
+        events.hakiPointsGained = (events.hakiPointsGained || 0) + hb;
+        events.hakiStat = opts.stat;
+        events.hakiFocusBonus = hb;
       }
       var beforeBounty = save.player.totalBounty;
       save.player.totalBounty += opts.xp;
@@ -1447,6 +1498,12 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
       if (!c.recruited && afterBounty >= c.unlock && beforeBounty < c.unlock) {
         c.recruited = true;
         events.crewUnlocked.push(c);
+        var drop = economy.CREW_ITEM[c.id];
+        if (drop) {
+          if (!save.inventory) save.inventory = {};
+          save.inventory[drop] = (save.inventory[drop] || 0) + 1;
+          (events.itemsEarned = events.itemsEarned || []).push(drop);
+        }
       }
     });
   }
@@ -1494,6 +1551,56 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
   var state   = GL.state   || (typeof require !== "undefined" ? require("./state") : null);
   var rewards = GL.rewards || (typeof require !== "undefined" ? require("./rewards") : null);
 
+  function grantItem(save, key, ev) {
+    if (!key) return null;
+    if (!save.inventory) save.inventory = {};
+    save.inventory[key] = (save.inventory[key] || 0) + 1;
+    if (ev) (ev.itemsEarned = ev.itemsEarned || []).push(key);
+    return key;
+  }
+  function checkStreakReward(save, ev) {
+    var today = state.todayStr();
+    var streak = rewards.voyageStreak(save, today);
+    if (streak > 0 && streak % 7 === 0 && save.player.lastStreakShieldDay !== today) {
+      save.player.lastStreakShieldDay = today;
+      grantItem(save, "streak_shield", ev);
+    }
+  }
+  function trackSpend(save, cost, ev) {
+    var before = save.player.berriesSpent || 0;
+    var after = before + cost;
+    save.player.berriesSpent = after;
+    var step = economy.BERRY_SPEND_MILESTONE;
+    var crossed = Math.floor(after / step) - Math.floor(before / step);
+    for (var i = 0; i < crossed; i++) grantItem(save, "berry_haul", ev);
+  }
+  function useItem(save, key) {
+    if (!save.inventory || (save.inventory[key] || 0) <= 0) return { error: "empty" };
+    var def = economy.ITEMS[key];
+    if (!def) return { error: "missing" };
+    if (def.use === "passive") return { error: "passive" };
+    if (!save.activeItems) save.activeItems = {};
+    var res = { ok: true, key: key };
+    if (key === "berry_haul") { save.player.berries += def.berries; res.berries = def.berries; }
+    else if (key === "xp_surge") { save.activeItems.xpSurge = true; res.armed = true; }
+    else if (key === "haki_focus") { save.activeItems.hakiFocus = true; res.armed = true; }
+    else if (key === "log_insight") { save.activeItems.logInsight = true; res.armed = true; }
+    save.inventory[key] -= 1;
+    state.save(save);
+    return res;
+  }
+  function applyStreakShield(save) {
+    if (!save.inventory || (save.inventory.streak_shield || 0) <= 0) return;
+    var today = state.todayStr();
+    var yest = rewards.addDays(today, -1);
+    var dayBefore = rewards.addDays(today, -2);
+    if (!save.logPose[yest] && save.logPose[dayBefore]) {
+      save.inventory.streak_shield -= 1;
+      save.logPose[yest] = { tasksDone: 0, journaled: 0, shielded: true };
+      save._shieldUsed = today;
+    }
+  }
+
   function addBounty(save, title, stat, tier, dueDate, recurring) {
     var b = state.seedBounty(title, stat, tier);
     if (dueDate) b.dueDate = dueDate;
@@ -1522,10 +1629,16 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
       return null;
     }
     var t = economy.TIERS[b.tier];
-    var ev = rewards.applyReward(save, { xp: t.xp, stat: b.stat, berries: t.berries, isTask: true, tier: b.tier });
+    var _ai = save.activeItems || (save.activeItems = {});
+    var _surge = !!_ai.xpSurge, _focus = !!_ai.hakiFocus;
+    var ev = rewards.applyReward(save, { xp: t.xp, stat: b.stat, berries: t.berries, isTask: true, tier: b.tier, xpSurge: _surge, hakiFocus: _focus });
+    if (_surge) _ai.xpSurge = false;
+    if (_focus) _ai.hakiFocus = false;
     save.player.bountiesCleared = (save.player.bountiesCleared || 0) + 1;
     var ms = economy.BOUNTY_MILESTONES.find(function (m) { return m.count === save.player.bountiesCleared; });
     if (ms) { save.player.berries += ms.bonus; ev.bountyMilestone = ms; }
+    if (b.tier === "warlord") grantItem(save, economy.randomItemKey(), ev);
+    checkStreakReward(save, ev);
     if (b.recurring) {
       b.lastCompleted = today;
       b.status = "open";
@@ -1573,8 +1686,13 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     h.streak = (h.lastCheckDate === yesterday) ? h.streak + 1 : 1;
     h.lastCheckDate = today;
     var t = economy.TIERS[h.tier];
-    var ev = rewards.applyReward(save, { xp: t.xp, stat: h.stat, berries: t.berries, isTask: true, tier: h.tier });
+    var ai = save.activeItems || (save.activeItems = {});
+    var sg = !!ai.xpSurge, fc = !!ai.hakiFocus;
+    var ev = rewards.applyReward(save, { xp: t.xp, stat: h.stat, berries: t.berries, isTask: true, tier: h.tier, xpSurge: sg, hakiFocus: fc });
+    if (sg) ai.xpSurge = false;
+    if (fc) ai.hakiFocus = false;
     ev.habitStreak = h.streak;
+    checkStreakReward(save, ev);
     state.save(save);
     return ev;
   }
@@ -1614,9 +1732,16 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     };
     save.journal.unshift(entry);
     rewards.markLogPose(save, today, "journaled");
-    var ev = rewards.applyReward(save, { xp: def.xp, stat: def.stat, berries: def.berries, isTask: false });
+    var ai = save.activeItems || (save.activeItems = {});
+    var grantsXp = def.xp > 0 && def.stat;
+    var sg = grantsXp && !!ai.xpSurge, fc = grantsXp && !!ai.hakiFocus;
+    var ev = rewards.applyReward(save, { xp: def.xp, stat: def.stat, berries: def.berries, isTask: false, xpSurge: sg, hakiFocus: fc });
+    if (sg) ai.xpSurge = false;
+    if (fc) ai.hakiFocus = false;
+    if (grantsXp && ai.logInsight) { save.player.berries += 5; ev.berries = (ev.berries || 0) + 5; ev.logInsightBonus = 5; ai.logInsight = false; }
     if (def.grants) rewards.grantBuff(save, def.grants, today);
     ev.buffGranted = def.grants || null;
+    checkStreakReward(save, ev);
     state.save(save);
     return ev;
   }
@@ -1645,8 +1770,10 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     if (save.player.berries < item.cost) return { error: "broke", short: item.cost - save.player.berries };
     save.player.berries -= item.cost;
     if (item.type === "cosmetic") item.owned = true;
+    var r = { ok: true, item: item };
+    trackSpend(save, item.cost, r);
     state.save(save);
-    return { ok: true, item: item };
+    return r;
   }
   function addShopItem(save, name, cost, type) {
     var item = { id: state.uid(), name: name, cost: Number(cost) || 0, type: type || "reward", owned: false };
@@ -1668,8 +1795,10 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     if (have < node.cost) return { error: "broke", short: node.cost - have };
     save.hakiPoints[node.stat] = have - node.cost;
     save.haki[node.id] = true;
+    var r = { ok: true, node: node };
+    grantItem(save, "haki_focus", r);
     state.save(save);
-    return { ok: true, node: node };
+    return r;
   }
 
   function buyTheme(save, id) {
@@ -1679,8 +1808,10 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     if (save.player.berries < t.cost) return { error: "broke", short: t.cost - save.player.berries };
     save.player.berries -= t.cost;
     save.player.ownedThemes.push(id);
+    var r = { ok: true, theme: t };
+    trackSpend(save, t.cost, r);
     state.save(save);
-    return { ok: true, theme: t };
+    return r;
   }
   function setActiveTheme(save, id) {
     if (save.player.ownedThemes.indexOf(id) === -1) return { error: "locked" };
@@ -1696,6 +1827,10 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     if (!save.player.ownedThemes) save.player.ownedThemes = ["grandline"];
     if (!save.player.activeTheme) save.player.activeTheme = "grandline";
     if (save.player.bountiesCleared == null) save.player.bountiesCleared = 0;
+    if (save.player.berriesSpent == null) save.player.berriesSpent = 0;
+    if (!save.inventory) save.inventory = { xp_surge: 0, berry_haul: 0, streak_shield: 0, haki_focus: 0, log_insight: 0 };
+    if (!save.activeItems) save.activeItems = { xpSurge: false, hakiFocus: false, logInsight: false };
+    applyStreakShield(save);
     save.player.firstRun = false;
     state.save(save);
     return save;
@@ -1711,6 +1846,7 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     buyReward: buyReward, addShopItem: addShopItem, deleteShopItem: deleteShopItem,
     unlockHakiNode: unlockHakiNode, nextDue: nextDue,
     buyTheme: buyTheme, setActiveTheme: setActiveTheme,
+    useItem: useItem, grantItem: grantItem,
     onLoad: onLoad
   };
   GL.game = game;
@@ -1886,10 +2022,48 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
         var afford = save.player.berries >= t.cost;
         btn.textContent = afford ? "Unlock" : "\u{0E3F}" + fmt(t.cost - save.player.berries);
         btn.disabled = !afford;
-        btn.onclick = function () { var r = game.buyTheme(save, t.id); if (r.ok) { game.setActiveTheme(save, t.id); applyTheme(); toast('<i class="ti ti-palette"></i> Unlocked the ' + r.theme.name + ' theme!', true); confetti(); renderHold(); renderHeader(); } };
+        btn.onclick = function () { var r = game.buyTheme(save, t.id); if (r.ok) { game.setActiveTheme(save, t.id); applyTheme(); toast('<i class="ti ti-palette"></i> Unlocked the ' + r.theme.name + ' theme!', true); confetti(); announceItems(r.itemsEarned); renderHold(); renderHeader(); } };
       }
       li.appendChild(sw); li.appendChild(info); li.appendChild(btn);
       list.appendChild(li);
+    });
+  }
+
+  function renderInventory() {
+    var wrap = $("#inventoryList"); if (!wrap) return;
+    wrap.innerHTML = "";
+    var inv = save.inventory || {};
+    economy.ITEM_KEYS.forEach(function (key) {
+      var def = economy.ITEMS[key];
+      var count = inv[key] || 0;
+      var li = el("li", "item-card" + (count > 0 ? "" : " item-empty"));
+      var info = el("div", "item-info");
+      info.innerHTML = '<div class="item-name"><i class="ti ' + def.icon + '"></i> ' + def.name + ' <span class="item-count">×' + count + '</span></div>' +
+        '<div class="item-blurb">' + def.blurb + '</div>';
+      var ctl;
+      if (def.use === "passive") { ctl = el("span", "item-auto", "Auto"); ctl.title = "Used automatically"; }
+      else {
+        ctl = el("button", "item-use-btn", def.use === "instant" ? "Use" : "Activate");
+        ctl.disabled = count <= 0;
+        ctl.onclick = function () { doUseItem(key); };
+      }
+      li.appendChild(info); li.appendChild(ctl);
+      wrap.appendChild(li);
+    });
+  }
+  function doUseItem(key) {
+    var r = game.useItem(save, key);
+    if (r.error === "empty") return;
+    if (r.error === "passive") { toast('<i class="ti ti-shield-half"></i> Streak Shield protects you automatically.'); return; }
+    var def = economy.ITEMS[key];
+    if (r.berries) toast('<i class="ti ' + def.icon + '"></i> ' + def.name + ': +' + fmt(r.berries) + ' ฿!', true);
+    else if (r.armed) toast('<i class="ti ' + def.icon + '"></i> ' + def.name + ' armed — applies to your next action.', true);
+    refreshAll();
+  }
+  function announceItems(keys) {
+    (keys || []).forEach(function (key) {
+      var def = economy.ITEMS[key];
+      if (def) { toast('<i class="ti ' + def.icon + '"></i> Earned an item: ' + def.name + '!', true); confetti("#c8a24a"); }
     });
   }
 
@@ -1910,6 +2084,10 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     });
     var streak = rewards.voyageStreak(save, state.todayStr());
     if (streak > 1) chips.appendChild(el("span", "buff-chip", "\u{1F525} " + streak + "d"));
+    var _ai2 = save.activeItems || {};
+    if (_ai2.xpSurge) chips.appendChild(el("span", "buff-chip item", "⚡ XP Surge"));
+    if (_ai2.hakiFocus) chips.appendChild(el("span", "buff-chip item", "🔱 Haki Focus"));
+    if (_ai2.logInsight) chips.appendChild(el("span", "buff-chip item", "💡 Log Insight"));
   }
 
   function renderHaki() {
@@ -2179,6 +2357,14 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     if (document.activeElement !== fwEl) fwEl.value = fw ? fw.text : "";
     $("#freeStatus").textContent = fw ? "saved ✓" : "";
 
+    var insightBanner = $("#insightBanner");
+    if (insightBanner) {
+      if (save.activeItems && save.activeItems.logInsight) {
+        insightBanner.hidden = false;
+        insightBanner.innerHTML = '<i class="ti ti-bulb"></i> <strong>Log Insight active</strong> — your next entry earns +5 ฿. Bonus reflection: <em>' + economy.eveningPrompt(rewards.addDays(today, 1)) + '</em>';
+      } else { insightBanner.hidden = true; }
+    }
+
     var canRecap = game.canRecap(save);
     $("#saveRecapBtn").disabled = !canRecap;
     $("#recapText").disabled = !canRecap;
@@ -2348,6 +2534,7 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
       crew.appendChild(li);
     });
     renderThemes();
+    renderInventory();
   }
 
   function renderHakiTrees() {
@@ -2391,7 +2578,7 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     var r = game.unlockHakiNode(save, nodeId);
     if (r.error === "broke") toast('<i class="ti ti-lock"></i> Need ' + r.short + ' more Haki Point(s).');
     else if (r.ok) { toast('<i class="ti ti-bolt"></i> Haki unlocked: ' + r.node.name + ' \u{2014} ' + r.node.desc, true); confetti(); }
-    renderHakiTrees(); renderHeader();
+    announceItems(r.itemsEarned); renderHakiTrees(); renderHeader();
   }
 
   function doComplete(id) {
@@ -2425,7 +2612,7 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
   function doBuy(id) {
     var r = game.buyReward(save, id);
     if (r.error === "broke") toast('<i class="ti ti-lock"></i> Need \u{0E3F}' + fmt(r.short) + ' more.');
-    else if (r.ok) { toast('<i class="ti ti-diamond"></i> Claimed: ' + escapeHtml(r.item.name) + '. Enjoy it, captain!', true); }
+    else if (r.ok) { toast('<i class="ti ti-diamond"></i> Claimed: ' + escapeHtml(r.item.name) + '. Enjoy it, captain!', true); announceItems(r.itemsEarned); }
     refreshAll();
   }
 
@@ -2454,6 +2641,10 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
       toast('<i class="ti ti-trophy"></i> Most Wanted: ' + ev.bountyMilestone.title + '!  +' + fmt(ev.bountyMilestone.bonus) + ' \u{0E3F}', true);
       confetti("#8a3b2e");
     }
+    if (ev.xpSurged) toast('<i class="ti ti-flame"></i> XP Surge spent — double XP!');
+    if (ev.hakiFocusBonus) toast('<i class="ti ti-bolt"></i> Haki Focus spent — +' + ev.hakiFocusBonus + ' bonus Haki Point' + (ev.hakiFocusBonus > 1 ? "s" : "") + '!');
+    if (ev.logInsightBonus) toast('<i class="ti ti-bulb"></i> Log Insight — +' + ev.logInsightBonus + ' ฿');
+    announceItems(ev.itemsEarned);
   }
 
   function toast(html, big) {
@@ -2794,6 +2985,10 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
   backup.init();
   document.addEventListener("visibilitychange", function () { if (document.visibilityState === "hidden") flushSave(); });
   window.addEventListener("pagehide", flushSave);
+  if (save._shieldUsed === state.todayStr()) {
+    delete save._shieldUsed; state.save(save);
+    setTimeout(function () { toast('<i class="ti ti-shield-half"></i> Streak Shield used — your streak survived a missed day!', true); }, 800);
+  }
   if (save.player.remindersOn && "Notification" in window && Notification.permission === "granted") {
     var _td = state.todayStr();
     if (!save.logPose[_td]) {
