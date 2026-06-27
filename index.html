@@ -654,6 +654,35 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
 .dev-panel[open] summary { color: var(--wanted-red); }
 .dev-panel .ghost-btn { font-size: .76rem; padding: 7px 10px; }
 
+/* ===================== TREASURE HOLD ===================== */
+/* (1) The Vault — treasure banner */
+.vault { background: linear-gradient(135deg, var(--ocean-navy), var(--ocean-navy2)); border-color: var(--bounty-gold2); display: flex; flex-direction: column; gap: 12px; }
+.vault-main { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.vault-label { font-size: .78rem; letter-spacing: .5px; text-transform: uppercase; color: var(--bounty-gold); display: flex; align-items: center; gap: 6px; font-weight: 700; }
+.vault-label .ti { color: var(--bounty-gold); }
+.vault-berries { font-family: "Pirata One", serif; font-size: 2rem; line-height: 1; color: var(--bounty-gold); text-shadow: 0 1px 2px rgba(0,0,0,.35); }
+.vault-stats { display: flex; gap: 10px; border-top: 1px solid rgba(255,255,255,.13); padding-top: 10px; }
+.vault-stat { flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.vault-stat-val { font-family: "Pirata One", serif; font-size: 1.15rem; color: var(--parchment); line-height: 1.1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.vault-stat-lbl { font-size: .62rem; text-transform: uppercase; letter-spacing: .4px; color: rgba(244,236,216,.6); }
+.zone-head { font-family: "Instrument Serif", serif; color: var(--parchment); font-size: 1.1rem; margin: 20px 2px 10px; display: flex; align-items: center; gap: 8px; opacity: .92; }
+.zone-head .ti { color: var(--bounty-gold); font-size: 1rem; }
+.spoils-sub { font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--ink-soft); margin: 4px 0 8px; }
+.spoils-card .spoils-sub:nth-of-type(2) { margin-top: 16px; }
+.trophy-grid { list-style: none; margin: 0 0 4px; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+.trophy { display: flex; align-items: center; gap: 9px; padding: 9px 10px; border-radius: 10px; border: 1px solid var(--paper-line); background: var(--parchment2); }
+.trophy-seal { width: 34px; height: 34px; flex: none; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; background: var(--parchment3); color: var(--ink-soft); border: 1px solid var(--paper-line); }
+.trophy-info { min-width: 0; }
+.trophy-title { font-weight: 700; font-size: .82rem; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.trophy-req { font-size: .64rem; color: var(--ink-soft); }
+.trophy.earned { background: linear-gradient(135deg, rgba(200,162,74,.18), rgba(200,162,74,.05)); border-color: var(--bounty-gold); }
+.trophy.earned .trophy-seal { background: var(--bounty-gold); color: #fff; border-color: var(--bounty-gold2); box-shadow: 0 0 0 2px rgba(200,162,74,.22); }
+.trophy.earned .trophy-title { color: var(--bounty-gold2); }
+.trophy.next { border-color: var(--sea-teal); border-style: dashed; }
+.trophy.next .trophy-seal { color: var(--sea-teal); }
+.trophy.locked { opacity: .55; }
+.trophy.locked .trophy-title { font-style: italic; color: var(--ink-soft); }
+
 /* ===================== CONSUMABLE ITEMS ===================== */
 .item-list { list-style: none; margin: 0; padding: 0; }
 .item-card { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px dashed var(--paper-line); }
@@ -924,32 +953,54 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     <!-- TREASURE HOLD (shop) -->
     <section class="screen" data-screen="hold" hidden role="tabpanel" id="panel-hold" aria-labelledby="tab-hold">
       <h2 class="screen-title"><i class="ti ti-diamond"></i> Treasure Hold</h2>
-      <div class="hold-balance card">You have <strong>฿<span id="holdBalance">0</span></strong> to spend.</div>
 
+      <!-- (1) THE VAULT -->
+      <div class="vault card">
+        <div class="vault-main">
+          <span class="vault-label"><i class="ti ti-coins"></i> Treasure aboard</span>
+          <span class="vault-berries">฿<span id="vaultBerries">0</span></span>
+        </div>
+        <div class="vault-stats">
+          <div class="vault-stat"><span class="vault-stat-val" id="vaultLifetime">0</span><span class="vault-stat-lbl">Total plundered</span></div>
+          <div class="vault-stat"><span class="vault-stat-val" id="vaultRank">—</span><span class="vault-stat-lbl">Bounty rank</span></div>
+        </div>
+      </div>
+
+      <div class="zone-head"><i class="ti ti-award"></i> What you've earned</div>
+
+      <!-- (2) SPOILS OF THE VOYAGE -->
+      <div class="card spoils-card">
+        <div class="card-head"><i class="ti ti-trophy"></i> Spoils of the Voyage <span class="muted">won on the seas — not for sale</span></div>
+        <div class="spoils-sub">Epithets</div>
+        <ul class="trophy-grid" id="epithetList"></ul>
+        <div class="spoils-sub">Crew &amp; Devil Fruits</div>
+        <ul class="crew-list" id="crewList"></ul>
+      </div>
+
+      <!-- (3) SHIP'S STORES -->
       <div class="card inventory-card">
-        <div class="card-head"><i class="ti ti-briefcase"></i> Inventory <span class="muted">consumables earned through your voyage</span></div>
+        <div class="card-head"><i class="ti ti-briefcase"></i> Ship's Stores <span class="muted">provisions stocked from your voyage</span></div>
         <ul class="item-list" id="inventoryList"></ul>
       </div>
 
-      <ul class="shop-list" id="shopList"></ul>
+      <div class="zone-head"><i class="ti ti-anchor"></i> Make port — spend your plunder</div>
 
-      <form class="add-shop card" id="addShopForm" autocomplete="off">
-        <div class="card-head"><i class="ti ti-plus"></i> Add your own reward</div>
-        <input type="text" id="shopName" placeholder="Reward (e.g. buy that game)" maxlength="80" required aria-label="Reward name" />
-        <div class="add-row">
-          <input type="number" id="shopCost" placeholder="Cost in Berries" min="1" required aria-label="Cost in Berries" />
-          <button type="submit" class="primary-btn">Add</button>
-        </div>
-      </form>
-
+      <!-- (4) MAKE PORT -->
       <div class="card">
-        <div class="card-head"><i class="ti ti-palette"></i> Themes (Devil Fruits)</div>
+        <div class="card-head"><i class="ti ti-palette"></i> Devil Fruits <span class="muted">take on a new look</span></div>
         <ul class="theme-list" id="themeList"></ul>
       </div>
 
       <div class="card">
-        <div class="card-head"><i class="ti ti-users"></i> Your Crew & Devil Fruits</div>
-        <ul class="crew-list" id="crewList"></ul>
+        <div class="card-head"><i class="ti ti-map-pin"></i> Shore Leave <span class="muted">cash your bounty in for real-world rewards</span></div>
+        <ul class="shop-list" id="shopList"></ul>
+        <form class="add-shop" id="addShopForm" autocomplete="off">
+          <input type="text" id="shopName" placeholder="Reward (e.g. buy that game)" maxlength="80" required />
+          <div class="add-row">
+            <input type="number" id="shopCost" placeholder="Cost in Berries" min="1" required />
+            <button type="submit" class="primary-btn">Add</button>
+          </div>
+        </form>
       </div>
     </section>
 
@@ -2495,8 +2546,37 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     panel.innerHTML = html;
   }
 
+  /* ---------------- THE VAULT ---------------- */
+  function renderVault() {
+    var b = save.player.berries || 0;
+    var vb = $("#vaultBerries"); if (vb) vb.textContent = fmt(b);
+    var vl = $("#vaultLifetime"); if (vl) vl.textContent = "฿" + fmt(b + (save.player.berriesSpent || 0));
+    var vr = $("#vaultRank"); if (vr) vr.textContent = save.player.rankTitle || "—";
+  }
+
+  /* ---------------- SPOILS: EPITHET TROPHIES ---------------- */
+  function renderEpithets() {
+    var wrap = $("#epithetList"); if (!wrap) return;
+    wrap.innerHTML = "";
+    var cleared = save.player.bountiesCleared || 0;
+    var nextShown = false;
+    economy.BOUNTY_MILESTONES.forEach(function (m) {
+      var earned = cleared >= m.count;
+      var isNext = !earned && !nextShown;
+      if (isNext) nextShown = true;
+      var reveal = earned || isNext;
+      var icon = earned ? "ti-rosette" : isNext ? "ti-target-arrow" : "ti-lock";
+      var li = el("li", "trophy" + (earned ? " earned" : isNext ? " next" : " locked"));
+      li.innerHTML = '<div class="trophy-seal"><i class="ti ' + icon + '"></i></div>' +
+        '<div class="trophy-info"><div class="trophy-title">' + (reveal ? m.title : "Rumored bounty") + '</div>' +
+        '<div class="trophy-req">' + (earned ? "Earned · " + m.count + " cleared" : "Clear " + m.count + " (" + cleared + "/" + m.count + ")") + '</div></div>';
+      wrap.appendChild(li);
+    });
+  }
+
   function renderHold() {
-    $("#holdBalance").textContent = fmt(save.player.berries);
+    renderVault();
+    renderEpithets();
     var list = $("#shopList"); list.innerHTML = "";
     if (!save.shop.length) {
       list.innerHTML = '<div class="empty-state"><i class="ti ti-diamond"></i><h4>No rewards yet</h4><p>Add a personal reward to spend your Berries on.</p></div>';
