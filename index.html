@@ -1940,6 +1940,7 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     if (!save.inventory) save.inventory = { xp_surge: 0, berry_haul: 0, streak_shield: 0, haki_focus: 0, log_insight: 0 };
     if (!save.activeItems) save.activeItems = { xpSurge: false, hakiFocus: false, logInsight: false };
     if (save.player.bountyDayDate === undefined) save.player.bountyDayDate = null;
+    save.player.rankTitle = economy.rankForBounty(save.player.totalBounty || 0).current.title;
     var recruitedIds = {};
     (save.crew || []).forEach(function (c) { if (c.recruited) recruitedIds[c.id] = true; });
     save.crew = economy.CREW.map(function (def) {
