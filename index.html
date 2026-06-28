@@ -29,6 +29,7 @@
   --parchment3: #e2cf9a;
   --ocean-navy: #1b2a4a;
   --ocean-navy2:#12203c;
+  --steel:      #466fa6;
   --sea-teal:   #2e6e6a;
   --bounty-gold:#b89038;
   --bounty-gold2:#9a7a2a;
@@ -656,15 +657,25 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
 
 /* ===================== TREASURE HOLD ===================== */
 /* (1) The Vault — treasure banner */
-.vault { background: linear-gradient(135deg, var(--ocean-navy), var(--ocean-navy2)); border-color: var(--bounty-gold2); display: flex; flex-direction: column; gap: 12px; }
-.vault-main { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
-.vault-label { font-size: .78rem; letter-spacing: .5px; text-transform: uppercase; color: var(--bounty-gold); display: flex; align-items: center; gap: 6px; font-weight: 700; }
-.vault-label .ti { color: var(--bounty-gold); }
-.vault-berries { font-family: "Pirata One", serif; font-size: 2rem; line-height: 1; color: var(--bounty-gold); text-shadow: 0 1px 2px rgba(0,0,0,.35); }
-.vault-stats { display: flex; gap: 10px; border-top: 1px solid rgba(255,255,255,.13); padding-top: 10px; }
-.vault-stat { flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-.vault-stat-val { font-family: "Pirata One", serif; font-size: 1.15rem; color: var(--parchment); line-height: 1.1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.vault-stat-lbl { font-size: .62rem; text-transform: uppercase; letter-spacing: .4px; color: rgba(244,236,216,.6); }
+.vault { background: linear-gradient(135deg, var(--ocean-navy), var(--ocean-navy2)); border-color: var(--bounty-gold2); display: flex; flex-direction: column; gap: 9px; }
+.vault-title-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.vault-title { font-family: "Pirata One", serif; font-size: 1.5rem; line-height: 1; color: var(--bounty-gold); }
+.vault-berries-chip { font-size: .78rem; font-weight: 700; color: var(--parchment); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.16); border-radius: 999px; padding: 4px 10px; display: flex; align-items: center; gap: 4px; white-space: nowrap; }
+.vault-berries-chip .ti { color: var(--bounty-gold); }
+.vault-bounty-row { display: flex; align-items: baseline; gap: 8px; }
+.vault-bounty-label { font-size: .62rem; text-transform: uppercase; letter-spacing: 1px; color: rgba(244,236,216,.6); }
+.vault-bounty { font-family: "Pirata One", serif; font-size: 2.2rem; line-height: 1; color: var(--parchment); text-shadow: 0 1px 3px rgba(0,0,0,.4); }
+.vault-progress { height: 6px; background: rgba(255,255,255,.12); border-radius: 4px; overflow: hidden; }
+.vault-progress-fill { height: 100%; width: 0%; background: var(--bounty-gold); border-radius: 4px; transition: width .5s ease; }
+.vault-next { font-size: .68rem; color: rgba(244,236,216,.7); }
+.crew-card { gap: 11px; }
+.crew-icon { width: 40px; height: 40px; flex: none; border-radius: 10px; display: flex; align-items: center; justify-content: center; background: var(--parchment2); border: 1px solid var(--paper-line); color: var(--ink); }
+.crew-card.recruited .crew-icon { background: var(--ocean-navy); border-color: var(--bounty-gold2); color: var(--bounty-gold); }
+.crew-svg { width: 23px; height: 23px; display: block; }
+.crew-recruit-btn { background: var(--bounty-gold); color: var(--ink); border: none; border-radius: 8px; padding: 7px 12px; font-weight: 700; font-family: inherit; font-size: .74rem; cursor: pointer; white-space: nowrap; }
+.crew-recruit-btn:disabled { background: var(--parchment3); color: var(--ink-soft); cursor: not-allowed; }
+.float-pop { position: fixed; left: 50%; top: 40%; transform: translateX(-50%); font-family: "Pirata One", serif; font-size: 2.1rem; color: var(--stat, var(--bounty-gold)); text-shadow: 0 2px 8px rgba(0,0,0,.35); pointer-events: none; z-index: 9999; animation: floatPop .75s ease-out forwards; }
+@keyframes floatPop { 0% { opacity: 0; transform: translate(-50%, 10px) scale(.8); } 25% { opacity: 1; transform: translate(-50%, 0) scale(1.12); } 100% { opacity: 0; transform: translate(-50%, -40px) scale(1); } }
 .zone-head { font-family: "Instrument Serif", serif; color: var(--parchment); font-size: 1.1rem; margin: 20px 2px 10px; display: flex; align-items: center; gap: 8px; opacity: .92; }
 .zone-head .ti { color: var(--bounty-gold); font-size: 1rem; }
 .spoils-sub { font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--ink-soft); margin: 4px 0 8px; }
@@ -732,7 +743,12 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
   }
   .confetti { display: none !important; }
 }
-  </style>
+  
+.bounty-check { min-width: 50px; width: auto; height: auto; padding: 6px 6px; border-radius: 10px; flex-direction: column; gap: 1px; line-height: 1; color: var(--stat, var(--ocean-navy)); }
+.bounty-check .ti { font-size: 1.05rem; }
+.chk-label { font-size: .54rem; font-weight: 800; text-transform: uppercase; letter-spacing: .3px; }
+.bounty.done .bounty-check, .bounty-check.is-done { background: var(--good); border-color: var(--good); color: #fff; }
+</style>
 </head>
 <body>
 
@@ -956,28 +972,35 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
 
       <!-- (1) THE VAULT -->
       <div class="vault card">
-        <div class="vault-main">
-          <span class="vault-label"><i class="ti ti-coins"></i> Treasure aboard</span>
-          <span class="vault-berries">฿<span id="vaultBerries">0</span></span>
+        <div class="vault-title-row">
+          <span class="vault-title" id="vaultTitle">East Blue Pirate</span>
+          <span class="vault-berries-chip"><i class="ti ti-coins"></i> ฿<span id="vaultBerries">0</span></span>
         </div>
-        <div class="vault-stats">
-          <div class="vault-stat"><span class="vault-stat-val" id="vaultLifetime">0</span><span class="vault-stat-lbl">Total plundered</span></div>
-          <div class="vault-stat"><span class="vault-stat-val" id="vaultRank">—</span><span class="vault-stat-lbl">Bounty rank</span></div>
+        <div class="vault-bounty-row">
+          <span class="vault-bounty-label">Bounty</span>
+          <span class="vault-bounty">฿<span id="vaultBounty">0</span></span>
         </div>
+        <div class="vault-progress"><div class="vault-progress-fill" id="vaultTitleFill"></div></div>
+        <div class="vault-next" id="vaultNext"></div>
       </div>
 
       <div class="zone-head"><i class="ti ti-award"></i> What you've earned</div>
 
-      <!-- (2) SPOILS OF THE VOYAGE -->
       <div class="card spoils-card">
-        <div class="card-head"><i class="ti ti-trophy"></i> Spoils of the Voyage <span class="muted">won on the seas — not for sale</span></div>
+        <div class="card-head"><i class="ti ti-trophy"></i> Spoils of the Voyage <span class="muted">notoriety won on the seas</span></div>
         <div class="spoils-sub">Epithets</div>
         <ul class="trophy-grid" id="epithetList"></ul>
-        <div class="spoils-sub">Crew &amp; Devil Fruits</div>
+      </div>
+
+      <div class="zone-head"><i class="ti ti-users"></i> Your crew</div>
+
+      <div class="card">
+        <div class="card-head"><i class="ti ti-anchor"></i> Recruit Crew <span class="muted">spend ฿ to bring nakama aboard</span></div>
         <ul class="crew-list" id="crewList"></ul>
       </div>
 
-      <!-- (3) SHIP'S STORES -->
+      <div class="zone-head"><i class="ti ti-briefcase"></i> Ship's stores</div>
+
       <div class="card inventory-card">
         <div class="card-head"><i class="ti ti-briefcase"></i> Ship's Stores <span class="muted">provisions stocked from your voyage</span></div>
         <ul class="item-list" id="inventoryList"></ul>
@@ -985,10 +1008,14 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
 
       <div class="zone-head"><i class="ti ti-anchor"></i> Make port — spend your plunder</div>
 
-      <!-- (4) MAKE PORT -->
       <div class="card">
-        <div class="card-head"><i class="ti ti-palette"></i> Devil Fruits <span class="muted">take on a new look</span></div>
-        <ul class="theme-list" id="themeList"></ul>
+        <div class="card-head"><i class="ti ti-map-2"></i> World Themes <span class="muted">locations &amp; factions</span></div>
+        <ul class="theme-list" id="themeListWorld"></ul>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><i class="ti ti-flame"></i> Devil Fruit Powers <span class="muted">eat a fruit, take on its look</span></div>
+        <ul class="theme-list" id="themeListFruit"></ul>
       </div>
 
       <div class="card">
@@ -1072,15 +1099,16 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     strength: { name: "Strength",  area: "Body",   haki: "Armament Haki",     crew: "The Dojo",    accent: "--wanted-red" },
     wisdom:   { name: "Wisdom",    area: "Mind",   haki: "Observation Haki",  crew: "The Library", accent: "--sea-teal" },
     ambition: { name: "Ambition",  area: "Work",   haki: "Conqueror's Haki",  crew: "The Helm",    accent: "--bounty-gold" },
-    resolve:  { name: "Resolve",   area: "Chores", haki: "Inherited Will",    crew: "The Deck",    accent: "--ocean-navy" }
+    resolve:  { name: "Resolve",   area: "Chores", haki: "Inherited Will",    crew: "The Deck",    accent: "--steel" }
   };
   var STAT_KEYS = ["strength", "wisdom", "ambition", "resolve"];
 
+  // bounty = notoriety added to your wanted poster (reputation track).
   var TIERS = {
-    petty:     { label: "Petty Crime",     xp: 10,  berries: 10  },
-    rookie:    { label: "Rookie Bounty",   xp: 25,  berries: 25  },
-    notorious: { label: "Notorious Bounty",xp: 50,  berries: 50  },
-    warlord:   { label: "Warlord Bounty",  xp: 100, berries: 100 }
+    petty:     { label: "Petty Crime",     xp: 10,  berries: 10,  bounty: 40   },
+    rookie:    { label: "Rookie Bounty",   xp: 25,  berries: 25,  bounty: 100  },
+    notorious: { label: "Notorious Bounty",xp: 50,  berries: 50,  bounty: 220  },
+    warlord:   { label: "Warlord Bounty",  xp: 100, berries: 100, bounty: 500  }
   };
   var TIER_KEYS = ["petty", "rookie", "notorious", "warlord"];
 
@@ -1098,15 +1126,11 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
   }
 
   var RANKS = [
-    { title: "Stowaway",          min: 0,      vibe: "Day one. The adventure begins." },
-    { title: "East Blue Rookie",  min: 500,    vibe: "You've left the home village." },
-    { title: "Paradise Pirate",   min: 2000,   vibe: "Entered the Grand Line proper." },
-    { title: "Rising Supernova",  min: 6000,   vibe: "The Worst Generation takes notice." },
-    { title: "Notorious Captain", min: 15000,  vibe: "Marines keep a file on you." },
-    { title: "Warlord-Tier",      min: 35000,  vibe: "Courted by the World Government." },
-    { title: "Emperor's Vanguard",min: 70000,  vibe: "Brushing shoulders with the Yonko." },
-    { title: "Yonko",             min: 130000, vibe: "One of the four pillars of the sea." },
-    { title: "Pirate King",       min: 250000, vibe: "You found the One Piece." }
+    { title: "East Blue Pirate",    min: 0,      vibe: "Every legend starts in a small sea." },
+    { title: "Notorious Pirate",    min: 10000,  vibe: "The Marines have a file on your name now." },
+    { title: "Warlord of the Sea",  min: 45000,  vibe: "The World Government offers you a Warlord's seat." },
+    { title: "Yonko",               min: 130000, vibe: "One of the four Emperors who rule the New World." },
+    { title: "King of the Pirates", min: 200000, vibe: "You found the One Piece. The seas are yours." }
   ];
   function rankForBounty(bounty) {
     var current = RANKS[0], next = null;
@@ -1122,14 +1146,14 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
   }
 
   var JOURNAL = {
-    captains_log:       { berries: 15, xp: 10, stat: "resolve",  grants: "morale" },
-    morning_intent:     { berries: 10, xp: 8,  stat: "ambition", grants: null },
-    evening_reflection: { berries: 12, xp: 10, stat: "wisdom",   grants: "morale" },
-    free_write:         { berries: 5,  xp: 5,  stat: "resolve",  grants: null },
-    memory:       { berries: 5,  xp: 0,  stat: null,       grants: null },
-    mood:         { berries: 3,  xp: 0,  stat: null,       grants: null },
-    victory:      { berries: 5,  xp: 0,  stat: null,       grants: null },
-    recap:        { berries: 100,xp: 50, stat: "resolve",  grants: "tailwind" }
+    captains_log:       { berries: 15, xp: 10, bounty: 50,  stat: "resolve",  grants: "morale" },
+    morning_intent:     { berries: 10, xp: 8,  bounty: 40,  stat: "ambition", grants: null },
+    evening_reflection: { berries: 12, xp: 10, bounty: 50,  stat: "wisdom",   grants: "morale" },
+    free_write:         { berries: 5,  xp: 5,  bounty: 25,  stat: "resolve",  grants: null },
+    memory:       { berries: 5,  xp: 0,  bounty: 10, stat: null,       grants: null },
+    mood:         { berries: 3,  xp: 0,  bounty: 5,  stat: null,       grants: null },
+    victory:      { berries: 5,  xp: 0,  bounty: 15, stat: null,       grants: null },
+    recap:        { berries: 100,xp: 50, bounty: 300,stat: "resolve",  grants: "tailwind" }
   };
 
   var MORNING_PROMPTS = [
@@ -1157,12 +1181,14 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
   function eveningPrompt(dateStr) { return EVENING_PROMPTS[_doy(dateStr) % EVENING_PROMPTS.length]; }
 
   var BUFFS = {
-    streakPerDay: 0.05,
-    streakCap:    0.50,
-    setSail:      10,
-    morale:       0.10,
-    tailwind:     0.15,
-    tailwindDays: 3,
+    streakPerTier:  0.05,
+    streakTierDays: 7,
+    streakCap:      0.25,
+    setSail:        10,
+    dailyBounty:    50,
+    morale:         0.10,
+    tailwind:       0.15,
+    tailwindDays:   3,
     recapCooldownDays: 7
   };
 
@@ -1182,13 +1208,15 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
   ];
 
   var CREW = [
-    { id: "swordsman",  name: "First Mate (Swordsman)", role: "Crewmate",    unlock: 2000,   bonus: "+10% XP from Body tasks",        effect: { type: "statXp", stat: "strength", mult: 0.10 } },
-    { id: "navigator",  name: "Navigator",              role: "Crewmate",    unlock: 6000,   bonus: "+10% XP from Mind tasks",        effect: { type: "statXp", stat: "wisdom",   mult: 0.10 } },
-    { id: "cook",       name: "Cook",                   role: "Crewmate",    unlock: 15000,  bonus: "+10% Berries from health habits",effect: { type: "info" } },
-    { id: "shipwright", name: "Shipwright",             role: "Crewmate",    unlock: 35000,  bonus: "+10% XP from Chores tasks",      effect: { type: "statXp", stat: "resolve",  mult: 0.10 } },
-    { id: "gomu",       name: "Gomu Gomu no Mi",        role: "Devil Fruit", unlock: 10000,  bonus: "Streak cap raised to +75%",      effect: { type: "streakCap", value: 0.75 } },
-    { id: "supernova",  name: "Title: 'Supernova'",     role: "Title",       unlock: 6000,   bonus: "Shows on your bounty poster",    effect: { type: "title", title: "Supernova" } },
-    { id: "yonko",      name: "Title: 'Yonko'",         role: "Title",       unlock: 130000, bonus: "Shows on your bounty poster",    effect: { type: "title", title: "Yonko" } }
+    { id: "swordsman",     name: "Swordsman",     role: "Crewmate", icon: "swords",    cost: 1500,   bonus: "+10% XP from Body bounties",   effect: { type: "statXp", stat: "strength", mult: 0.10 } },
+    { id: "navigator",     name: "Navigator",     role: "Crewmate", icon: "compass",   cost: 4000,   bonus: "+10% XP from Mind bounties",   effect: { type: "statXp", stat: "wisdom",   mult: 0.10 } },
+    { id: "sniper",        name: "Sniper",        role: "Crewmate", icon: "slingshot", cost: 9000,   bonus: "+10% XP from Work bounties",   effect: { type: "statXp", stat: "ambition", mult: 0.10 } },
+    { id: "cook",          name: "Cook",          role: "Crewmate", icon: "flame",     cost: 18000,  bonus: "+10% Berries earned",          effect: { type: "berry", mult: 0.10 } },
+    { id: "doctor",        name: "Doctor",        role: "Crewmate", icon: "cross",     cost: 32000,  bonus: "+15% XP from journaling",      effect: { type: "journalXp", value: 0.15 } },
+    { id: "shipwright",    name: "Shipwright",    role: "Crewmate", icon: "wrench",    cost: 55000,  bonus: "+10% XP from Chores bounties", effect: { type: "statXp", stat: "resolve",  mult: 0.10 } },
+    { id: "archaeologist", name: "Archaeologist", role: "Crewmate", icon: "book",      cost: 90000,  bonus: "+15% XP from Mind bounties",   effect: { type: "statXp", stat: "wisdom",   mult: 0.15 } },
+    { id: "musician",      name: "Musician",      role: "Crewmate", icon: "note",      cost: 140000, bonus: "+15% Berries earned",          effect: { type: "berry", mult: 0.15 } },
+    { id: "helmsman",      name: "Helmsman",      role: "Crewmate", icon: "wheel",     cost: 200000, bonus: "Streak XP cap +15%",           effect: { type: "streakCap", value: 0.15 } }
   ];
 
   var PROMPTS = [
@@ -1236,10 +1264,12 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
   };
 
   var THEMES = [
-    { id: "grandline", name: "Grand Line", desc: "The classic wanted-poster parchment.", cost: 0, vars: {} },
-    { id: "marine", name: "Marine HQ", desc: "Justice blues and crisp white.", cost: 1500, vars: { "--parchment": "#eef3f9", "--parchment2": "#dbe6f2", "--parchment3": "#c7d8ea", "--ocean-navy": "#13315c", "--ocean-navy2": "#0d2547", "--bounty-gold": "#3f7fbf", "--bounty-gold2": "#2f63a0", "--wanted-red": "#b3473a", "--ink": "#16243a", "--ink-soft": "#455570", "--paper-line": "#bcd0e6", "--sea-teal": "#2f8f86" } },
-    { id: "mera", name: "Mera Mera no Mi", desc: "Embers and ash \u{2014} fire fist.", cost: 4000, vars: { "--parchment": "#2c1d16", "--parchment2": "#3a2118", "--parchment3": "#48271b", "--ocean-navy": "#190f0b", "--ocean-navy2": "#110a07", "--bounty-gold": "#ff8a3d", "--bounty-gold2": "#e0631f", "--wanted-red": "#e23b2e", "--ink": "#f6e3d0", "--ink-soft": "#cba78d", "--paper-line": "#5a3526", "--sea-teal": "#e0913f", "--den-pink": "#ff9e7a", "--good": "#6fae52" } },
-    { id: "yami", name: "Yami Yami no Mi", desc: "The void \u{2014} true dark mode.", cost: 8000, vars: { "--parchment": "#1d2131", "--parchment2": "#262b3e", "--parchment3": "#2f3551", "--ocean-navy": "#0c0e16", "--ocean-navy2": "#070810", "--bounty-gold": "#c8a24a", "--bounty-gold2": "#a9852f", "--wanted-red": "#c2533f", "--ink": "#e7e3d4", "--ink-soft": "#9aa0b5", "--paper-line": "#3a4060", "--sea-teal": "#4fb6a8", "--den-pink": "#d98aa6", "--good": "#5cae6e" } }
+    { id: "grandline", name: "Grand Line", desc: "The classic wanted-poster parchment.", cost: 0, cat: "world", vars: {} },
+    { id: "marine", name: "Marine HQ", desc: "Justice blues and crisp white.", cost: 1500, cat: "world", vars: { "--parchment": "#eef3f9", "--parchment2": "#dbe6f2", "--parchment3": "#c7d8ea", "--ocean-navy": "#13315c", "--ocean-navy2": "#0d2547", "--bounty-gold": "#3f7fbf", "--bounty-gold2": "#2f63a0", "--wanted-red": "#b3473a", "--ink": "#16243a", "--ink-soft": "#455570", "--paper-line": "#bcd0e6", "--sea-teal": "#2f8f86" } },
+    { id: "mera", name: "Mera Mera no Mi", desc: "Embers and ash \u{2014} fire fist.", cost: 4000, cat: "fruit", vars: { "--parchment": "#2c1d16", "--parchment2": "#3a2118", "--parchment3": "#48271b", "--ocean-navy": "#190f0b", "--ocean-navy2": "#110a07", "--bounty-gold": "#ff8a3d", "--bounty-gold2": "#e0631f", "--wanted-red": "#e23b2e", "--ink": "#f6e3d0", "--ink-soft": "#cba78d", "--paper-line": "#5a3526", "--sea-teal": "#e0913f", "--den-pink": "#ff9e7a", "--good": "#6fae52" } },
+    { id: "yami", name: "Yami Yami no Mi", desc: "The void \u{2014} true dark mode.", cost: 8000, cat: "fruit", vars: { "--parchment": "#1d2131", "--parchment2": "#262b3e", "--parchment3": "#2f3551", "--ocean-navy": "#0c0e16", "--ocean-navy2": "#070810", "--bounty-gold": "#c8a24a", "--bounty-gold2": "#a9852f", "--wanted-red": "#c2533f", "--ink": "#e7e3d4", "--ink-soft": "#9aa0b5", "--paper-line": "#3a4060", "--sea-teal": "#4fb6a8", "--den-pink": "#d98aa6", "--good": "#5cae6e" } },
+    { id: "gomu", name: "Gomu Gomu no Mi", desc: "Straw-hat reds and sun-warmed rope.", cost: 6000, cat: "fruit", vars: { "--parchment": "#f6ead2", "--parchment2": "#efdcb8", "--parchment3": "#e6cd9e", "--ocean-navy": "#9c2b1f", "--ocean-navy2": "#7c2017", "--bounty-gold": "#e0a32f", "--bounty-gold2": "#c4861c", "--wanted-red": "#cf3b2c", "--ink": "#3a2417", "--ink-soft": "#7a5a3e", "--paper-line": "#d8c099", "--sea-teal": "#2f8f86" } },
+    { id: "hie", name: "Hie Hie no Mi", desc: "Glacial blues — absolute zero.", cost: 6000, cat: "fruit", vars: { "--parchment": "#eef5fb", "--parchment2": "#dcebf6", "--parchment3": "#c6def0", "--ocean-navy": "#10405e", "--ocean-navy2": "#0a2c43", "--bounty-gold": "#4aa3c8", "--bounty-gold2": "#3585a8", "--wanted-red": "#5a86b8", "--ink": "#12303f", "--ink-soft": "#5a7488", "--paper-line": "#bcd6ea", "--sea-teal": "#3fb6c8" } }
   ];
 
   var ITEMS = {
@@ -1255,12 +1285,12 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
   function randomItemKey() { return ITEM_KEYS[Math.floor(Math.random() * ITEM_KEYS.length)]; }
 
   var BOUNTY_MILESTONES = [
-    { count: 10,  bonus: 100,  title: "Rookie Bounty Hunter" },
-    { count: 25,  bonus: 250,  title: "Seasoned Hunter" },
-    { count: 50,  bonus: 500,  title: "Notorious Hunter" },
+    { count: 10,  bonus: 100,  title: "Wanted Rookie" },
+    { count: 25,  bonus: 250,  title: "Rising Outlaw" },
+    { count: 50,  bonus: 500,  title: "Notorious Outlaw" },
     { count: 100, bonus: 1000, title: "Veteran of a Hundred Bounties" },
-    { count: 250, bonus: 2500, title: "Legendary Bounty Hunter" },
-    { count: 500, bonus: 5000, title: "The Hunter Kings Fear" }
+    { count: 250, bonus: 2500, title: "Feared Across the Seas" },
+    { count: 500, bonus: 5000, title: "Living Legend" }
   ];
   function nextBountyMilestone(cleared) {
     for (var i = 0; i < BOUNTY_MILESTONES.length; i++) {
@@ -1325,7 +1355,7 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
       return { id: uid(), name: s.name, cost: s.cost, type: s.type, owned: false };
     });
     var crew = economy.CREW.map(function (c) {
-      return { id: c.id, name: c.name, role: c.role, unlock: c.unlock, bonus: c.bonus, recruited: false };
+      return { id: c.id, name: c.name, role: c.role, cost: c.cost, bonus: c.bonus, recruited: false };
     });
     return {
       version: 1,
@@ -1336,6 +1366,7 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
         activeTitle: null,
         createdAt: todayStr(),
         lastActiveDate: null,
+        bountyDayDate: null,
         setSailDate: null,
         lastRecapDate: null,
         activeTheme: "grandline",
@@ -1438,8 +1469,12 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     return economy.HAKI_NODES.filter(function (n) { return save.haki[n.id]; });
   }
   function streakCap(save) {
-    var gomu = save.crew.find(function (c) { return c.id === "gomu" && c.recruited; });
-    var cap = gomu ? 0.75 : economy.BUFFS.streakCap;
+    var cap = economy.BUFFS.streakCap;
+    (save.crew || []).forEach(function (c) {
+      if (!c.recruited) return;
+      var def = economy.CREW.find(function (d) { return d.id === c.id; });
+      if (def && def.effect.type === "streakCap") cap += def.effect.value;
+    });
     hakiUnlocked(save).forEach(function (n) { if (n.effect.type === "streakCap") cap += n.effect.value; });
     return cap;
   }
@@ -1460,15 +1495,17 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
   }
   function xpMultiplier(save, stat, today, opts) {
     opts = opts || {};
-    var streakDays = Math.max(0, voyageStreak(save, today) - 1);
-    var streakBonus = Math.min(streakCap(save), streakDays * economy.BUFFS.streakPerDay);
+    var streakTiers = Math.floor(voyageStreak(save, today) / economy.BUFFS.streakTierDays);
+    var streakBonus = Math.min(streakCap(save), streakTiers * economy.BUFFS.streakPerTier);
     var tailwind = 0;
     activeBuffs(save, today).forEach(function (b) { if (b.name === "tailwind") tailwind += b.value; });
     var crewBonus = 0;
     save.crew.forEach(function (c) {
       if (!c.recruited) return;
       var def = economy.CREW.find(function (d) { return d.id === c.id; });
-      if (def && def.effect.type === "statXp" && def.effect.stat === stat) crewBonus += def.effect.mult;
+      if (!def) return;
+      if (def.effect.type === "statXp" && def.effect.stat === stat) crewBonus += def.effect.mult;
+      else if (def.effect.type === "journalXp" && opts.isJournal) crewBonus += def.effect.value;
     });
     var hakiBonus = 0;
     hakiUnlocked(save).forEach(function (n) {
@@ -1480,9 +1517,14 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     return 1 + streakBonus + tailwind + crewBonus + hakiBonus;
   }
   function berryMultiplier(save, today) {
-    var morale = 0;
-    activeBuffs(save, today).forEach(function (b) { if (b.name === "morale") morale += b.value; });
-    return 1 + morale;
+    var bonus = 0;
+    activeBuffs(save, today).forEach(function (b) { if (b.name === "morale") bonus += b.value; });
+    (save.crew || []).forEach(function (c) {
+      if (!c.recruited) return;
+      var def = economy.CREW.find(function (d) { return d.id === c.id; });
+      if (def && def.effect.type === "berry") bonus += def.effect.mult;
+    });
+    return 1 + bonus;
   }
   function markLogPose(save, today, field) {
     if (!save.logPose[today]) save.logPose[today] = { tasksDone: 0, journaled: 0 };
@@ -1491,7 +1533,9 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
   function applyReward(save, opts) {
     var today = opts.today || state.todayStr();
     var events = { berries: 0, xp: 0, leveledUp: [], rankUp: null, crewUnlocked: [], setSail: false };
+
     markLogPose(save, today, opts.isTask ? "tasksDone" : null);
+
     if (opts.xp && opts.stat) {
       var mult = xpMultiplier(save, opts.stat, today, { tier: opts.tier, isJournal: !opts.isTask });
       var gainedXp = Math.round(opts.xp * mult);
@@ -1502,7 +1546,9 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
       var after = economy.levelFromXp(s.xp).level;
       s.level = after;
       events.xp += gainedXp;
-      for (var L = before + 1; L <= after; L++) { events.leveledUp.push({ stat: opts.stat, level: L }); }
+      for (var L = before + 1; L <= after; L++) {
+        events.leveledUp.push({ stat: opts.stat, level: L });
+      }
       var gainedLevels = after - before;
       if (gainedLevels > 0) {
         if (!save.hakiPoints) save.hakiPoints = {};
@@ -1518,15 +1564,24 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
         events.hakiStat = opts.stat;
         events.hakiFocusBonus = hb;
       }
-      var beforeBounty = save.player.totalBounty;
-      save.player.totalBounty += opts.xp;
+    }
+
+    var bountyGain = opts.bounty || 0;
+    if (opts.isTask && save.player.bountyDayDate !== today) {
+      save.player.bountyDayDate = today;
+      bountyGain += economy.BUFFS.dailyBounty;
+      events.dailyBounty = economy.BUFFS.dailyBounty;
+    }
+    if (bountyGain > 0) {
+      save.player.totalBounty = (save.player.totalBounty || 0) + bountyGain;
+      events.bountyGain = bountyGain;
       var rk = economy.rankForBounty(save.player.totalBounty);
       if (rk.current.title !== save.player.rankTitle) {
         save.player.rankTitle = rk.current.title;
         events.rankUp = rk.current;
       }
-      unlockCrew(save, beforeBounty, save.player.totalBounty, events);
     }
+
     if (opts.berries) {
       if (opts.isTask && save.player.setSailDate !== today) {
         save.player.setSailDate = today;
@@ -1541,23 +1596,11 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
       save.player.berries += gainedBerries;
       events.berries += gainedBerries;
     }
+
     save.player.lastActiveDate = today;
     return events;
   }
-  function unlockCrew(save, beforeBounty, afterBounty, events) {
-    save.crew.forEach(function (c) {
-      if (!c.recruited && afterBounty >= c.unlock && beforeBounty < c.unlock) {
-        c.recruited = true;
-        events.crewUnlocked.push(c);
-        var drop = economy.CREW_ITEM[c.id];
-        if (drop) {
-          if (!save.inventory) save.inventory = {};
-          save.inventory[drop] = (save.inventory[drop] || 0) + 1;
-          (events.itemsEarned = events.itemsEarned || []).push(drop);
-        }
-      }
-    });
-  }
+  
   function grantBuff(save, name, today) {
     today = today || state.todayStr();
     if (name === "morale") {
@@ -1682,7 +1725,7 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     var t = economy.TIERS[b.tier];
     var _ai = save.activeItems || (save.activeItems = {});
     var _surge = !!_ai.xpSurge, _focus = !!_ai.hakiFocus;
-    var ev = rewards.applyReward(save, { xp: t.xp, stat: b.stat, berries: t.berries, isTask: true, tier: b.tier, xpSurge: _surge, hakiFocus: _focus });
+    var ev = rewards.applyReward(save, { xp: t.xp, stat: b.stat, berries: t.berries, isTask: true, tier: b.tier, bounty: t.bounty, xpSurge: _surge, hakiFocus: _focus });
     if (_surge) _ai.xpSurge = false;
     if (_focus) _ai.hakiFocus = false;
     save.player.bountiesCleared = (save.player.bountiesCleared || 0) + 1;
@@ -1739,7 +1782,7 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     var t = economy.TIERS[h.tier];
     var ai = save.activeItems || (save.activeItems = {});
     var sg = !!ai.xpSurge, fc = !!ai.hakiFocus;
-    var ev = rewards.applyReward(save, { xp: t.xp, stat: h.stat, berries: t.berries, isTask: true, tier: h.tier, xpSurge: sg, hakiFocus: fc });
+    var ev = rewards.applyReward(save, { xp: t.xp, stat: h.stat, berries: t.berries, isTask: true, tier: h.tier, bounty: t.bounty, xpSurge: sg, hakiFocus: fc });
     if (sg) ai.xpSurge = false;
     if (fc) ai.hakiFocus = false;
     ev.habitStreak = h.streak;
@@ -1786,7 +1829,7 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     var ai = save.activeItems || (save.activeItems = {});
     var grantsXp = def.xp > 0 && def.stat;
     var sg = grantsXp && !!ai.xpSurge, fc = grantsXp && !!ai.hakiFocus;
-    var ev = rewards.applyReward(save, { xp: def.xp, stat: def.stat, berries: def.berries, isTask: false, xpSurge: sg, hakiFocus: fc });
+    var ev = rewards.applyReward(save, { xp: def.xp, stat: def.stat, berries: def.berries, isTask: false, bounty: def.bounty, xpSurge: sg, hakiFocus: fc });
     if (sg) ai.xpSurge = false;
     if (fc) ai.hakiFocus = false;
     if (grantsXp && ai.logInsight) { save.player.berries += 5; ev.berries = (ev.berries || 0) + 5; ev.logInsightBonus = 5; ai.logInsight = false; }
@@ -1871,6 +1914,21 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     return { ok: true };
   }
 
+  function recruitCrew(save, id) {
+    var def = economy.CREW.find(function (d) { return d.id === id; });
+    if (!def) return { error: "missing" };
+    var c = save.crew.find(function (x) { return x.id === id; });
+    if (c && c.recruited) return { error: "owned" };
+    if (save.player.berries < def.cost) return { error: "broke", short: def.cost - save.player.berries };
+    save.player.berries -= def.cost;
+    if (!c) { c = { id: def.id, name: def.name, role: def.role, cost: def.cost, bonus: def.bonus, recruited: false }; save.crew.push(c); }
+    c.recruited = true;
+    var r = { ok: true, crew: def };
+    trackSpend(save, def.cost, r);
+    state.save(save);
+    return r;
+  }
+
   function onLoad(save) {
     rewards.pruneBuffs(save);
     if (!save.hakiPoints) { save.hakiPoints = {}; economy.STAT_KEYS.forEach(function (k) { save.hakiPoints[k] = 0; }); }
@@ -1881,6 +1939,12 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     if (save.player.berriesSpent == null) save.player.berriesSpent = 0;
     if (!save.inventory) save.inventory = { xp_surge: 0, berry_haul: 0, streak_shield: 0, haki_focus: 0, log_insight: 0 };
     if (!save.activeItems) save.activeItems = { xpSurge: false, hakiFocus: false, logInsight: false };
+    if (save.player.bountyDayDate === undefined) save.player.bountyDayDate = null;
+    var recruitedIds = {};
+    (save.crew || []).forEach(function (c) { if (c.recruited) recruitedIds[c.id] = true; });
+    save.crew = economy.CREW.map(function (def) {
+      return { id: def.id, name: def.name, role: def.role, cost: def.cost, bonus: def.bonus, recruited: !!recruitedIds[def.id] };
+    });
     applyStreakShield(save);
     save.player.firstRun = false;
     state.save(save);
@@ -1897,6 +1961,7 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     buyReward: buyReward, addShopItem: addShopItem, deleteShopItem: deleteShopItem,
     unlockHakiNode: unlockHakiNode, nextDue: nextDue,
     buyTheme: buyTheme, setActiveTheme: setActiveTheme,
+    recruitCrew: recruitCrew,
     useItem: useItem, grantItem: grantItem,
     onLoad: onLoad
   };
@@ -1925,7 +1990,22 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
   var editingBounty = null;
   var pendingConfirm = null;
   var deferredPrompt = null;
-  var RANK_FACE = { "Stowaway": "\u{1F9ED}", "East Blue Rookie": "\u{2693}", "Paradise Pirate": "\u{1F5FA}\u{FE0F}", "Rising Supernova": "\u{2B50}", "Notorious Captain": "\u{1F3F4}\u{200D}\u{2620}\u{FE0F}", "Warlord-Tier": "\u{2694}\u{FE0F}", "Emperor's Vanguard": "\u{1F4F1}", "Yonko": "\u{1F451}", "Pirate King": "\u{1F451}" };
+  var RANK_FACE = { "East Blue Pirate": "⚓", "Notorious Pirate": "🏴‍☠️", "Warlord of the Sea": "⚔️", "Yonko": "🔱", "King of the Pirates": "👑" };
+  function crewIcon(key) {
+    var s = '<svg class="crew-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">';
+    var p = {
+      swords:   '<path d="M4 4l8 8M6 4H4v2"/><path d="M20 4l-8 8M18 4h2v2"/><path d="M9 15l-5 5M4 18v2h2"/>',
+      compass:  '<circle cx="12" cy="12" r="9"/><path d="M16 8l-2.5 5.5L8 16l2.5-5.5z" fill="currentColor" stroke="none"/>',
+      slingshot:'<path d="M8 3v6M16 3v6M8 9c0 4 8 4 8 0"/><path d="M12 13v8M9 21h6"/>',
+      flame:    '<path d="M12 3c1 4 5 5 5 9a5 5 0 0 1-10 0c0-2 1-3 2-4 0 2 1 3 2 3 0-3-1-5-1-11z" fill="currentColor" stroke="none"/>',
+      cross:    '<circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8" stroke="var(--parchment)"/>',
+      wrench:   '<path d="M15 4a4 4 0 0 0-5 5l-6 6 3 3 6-6a4 4 0 0 0 5-5l-2.5 2.5L13 7l1.5-3z" fill="currentColor" stroke="none"/>',
+      book:     '<path d="M4 5h7v15H4zM20 5h-7v15h7z"/><path d="M11 5v15"/>',
+      note:     '<path d="M9 18V6l9-2v12"/><circle cx="6.5" cy="18" r="2.5" fill="currentColor" stroke="none"/><circle cx="15.5" cy="16" r="2.5" fill="currentColor" stroke="none"/>',
+      wheel:    '<circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="9"/><path d="M12 3v4M12 17v4M3 12h4M17 12h4"/>'
+    };
+    return s + (p[key] || '<circle cx="12" cy="12" r="8"/>') + '</svg>';
+  }
   var TIER_ORDER = { petty: 0, rookie: 1, notorious: 2, warlord: 3 };
   var STAT_FLAVOR = { strength: "Crushed it.", wisdom: "Outwitted them.", ambition: "Conquered.", resolve: "Endured." };
   var STAT_SIGIL = { strength: "ti-sword", wisdom: "ti-eye", ambition: "ti-crown", resolve: "ti-anchor" };
@@ -2055,23 +2135,27 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
   }
 
   function renderThemes() {
-    var list = $("#themeList"); list.innerHTML = "";
+    var world = $("#themeListWorld"), fruit = $("#themeListFruit");
+    if (world) world.innerHTML = "";
+    if (fruit) fruit.innerHTML = "";
     economy.THEMES.forEach(function (t) {
+      var list = (t.cat === "fruit") ? fruit : world;
+      if (!list) return;
       var owned = save.player.ownedThemes.indexOf(t.id) !== -1;
       var active = save.player.activeTheme === t.id;
       var li = el("li");
       var sw = el("div", "theme-swatch");
       var palette = t.id === "grandline" ? ["#1b2a4a", "#f4ecd8", "#c8a24a", "#8a3b2e"]
         : [t.vars["--ocean-navy"], t.vars["--parchment"], t.vars["--bounty-gold"], t.vars["--wanted-red"]];
-      palette.forEach(function (c) { var s = el("div", "theme-sw"); s.style.background = c; sw.appendChild(s); });
+      palette.forEach(function (c) { var sq = el("div", "theme-sw"); sq.style.background = c; sw.appendChild(sq); });
       var info = el("div", "theme-info");
-      info.innerHTML = '<div class="theme-name">' + t.name + '</div><div class="theme-desc">' + t.desc + (owned || t.cost === 0 ? '' : '  \u{00B7}  \u{0E3F}' + fmt(t.cost)) + '</div>';
+      info.innerHTML = '<div class="theme-name">' + t.name + '</div><div class="theme-desc">' + t.desc + (owned || t.cost === 0 ? '' : '  ·  ฿' + fmt(t.cost)) + '</div>';
       var btn = el("button", "theme-btn" + (active ? " active" : ""));
       if (active) { btn.textContent = "Active"; btn.disabled = true; }
       else if (owned) { btn.textContent = "Apply"; btn.onclick = function () { game.setActiveTheme(save, t.id); applyTheme(); renderHold(); renderHeader(); }; }
       else {
         var afford = save.player.berries >= t.cost;
-        btn.textContent = afford ? "Unlock" : "\u{0E3F}" + fmt(t.cost - save.player.berries);
+        btn.textContent = afford ? "Unlock" : "฿" + fmt(t.cost - save.player.berries);
         btn.disabled = !afford;
         btn.onclick = function () { var r = game.buyTheme(save, t.id); if (r.ok) { game.setActiveTheme(save, t.id); applyTheme(); toast('<i class="ti ti-palette"></i> Unlocked the ' + r.theme.name + ' theme!', true); confetti(); announceItems(r.itemsEarned); renderHold(); renderHeader(); } };
       }
@@ -2309,7 +2393,10 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
       var li = el("li", "bounty poster rarity-" + b.tier + (b.status === "done" ? " done" : ""));
       li.dataset.id = b.id;
       li.style.setProperty("--stat", accent(b.stat));
-      var chk = el("button", "bounty-check", b.status === "done" ? '<i class="ti ti-check"></i>' : "");
+      var chk = el("button", "bounty-check" + (b.status === "done" ? " is-done" : ""),
+        b.status === "done" ? '<i class="ti ti-check"></i>' : '<i class="ti ti-circle-check"></i><span class="chk-label">Clear</span>');
+      chk.setAttribute("aria-label", b.status === "done" ? "Reopen bounty" : "Clear bounty");
+      chk.title = b.status === "done" ? "Reopen bounty" : "Clear bounty";
       chk.onclick = function () { b.status === "done" ? doUncomplete(b.id) : doComplete(b.id); };
       var body = el("div", "bounty-body");
       var dueHtml = "";
@@ -2549,9 +2636,16 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
   /* ---------------- THE VAULT ---------------- */
   function renderVault() {
     var b = save.player.berries || 0;
+    var bounty = save.player.totalBounty || 0;
     var vb = $("#vaultBerries"); if (vb) vb.textContent = fmt(b);
-    var vl = $("#vaultLifetime"); if (vl) vl.textContent = "฿" + fmt(b + (save.player.berriesSpent || 0));
-    var vr = $("#vaultRank"); if (vr) vr.textContent = save.player.rankTitle || "—";
+    var vbo = $("#vaultBounty"); if (vbo) vbo.textContent = fmt(bounty);
+    var vt = $("#vaultTitle"); if (vt) vt.textContent = save.player.rankTitle || "—";
+    var rk = economy.rankForBounty(bounty);
+    var fill = $("#vaultTitleFill"); if (fill) fill.style.width = (rk.next ? rk.pct : 100) + "%";
+    var nx = $("#vaultNext");
+    if (nx) nx.textContent = rk.next
+      ? "Next title: " + rk.next.title + " — ฿" + fmt(rk.next.min - bounty) + " bounty to go"
+      : "Highest title reached — King of the Pirates.";
   }
 
   /* ---------------- SPOILS: EPITHET TROPHIES ---------------- */
@@ -2600,18 +2694,23 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     var crew = $("#crewList"); crew.innerHTML = "";
     economy.CREW.forEach(function (def) {
       var c = save.crew.find(function (x) { return x.id === def.id; }) || {};
-      var medal = ({ Crewmate: "\u{1F9D1}\u{200D}\u{2708}\u{FE0F}", "Devil Fruit": "\u{1F359}", Title: "\u{1F3F4}\u{200D}\u{2620}\u{FE0F}" })[def.role] || "\u{2693}";
-      var li = el("li", c.recruited ? "" : "crew-locked");
-      var prog = "";
-      if (!c.recruited) {
-        var pct = Math.min(100, Math.round(save.player.totalBounty / def.unlock * 100));
-        prog = '<div class="crew-progress"><div class="crew-progress-fill" style="width:' + pct + '%"></div></div>';
+      var li = el("li", "crew-card" + (c.recruited ? " recruited" : ""));
+      var icon = '<span class="crew-icon">' + crewIcon(def.icon) + '</span>';
+      var info = '<div class="crew-info"><div class="crew-name">' + def.name + '</div>' +
+        '<div class="crew-bonus">' + def.bonus + '</div></div>';
+      var ctl;
+      if (c.recruited) {
+        ctl = '<span class="crew-status unlocked"><i class="ti ti-check"></i> Aboard</span>';
+      } else {
+        var afford = save.player.berries >= def.cost;
+        ctl = '<button class="crew-recruit-btn" data-crew="' + def.id + '"' + (afford ? "" : " disabled") + '>' +
+          (afford ? "Recruit \u00b7 \u0e3f" + fmt(def.cost) : "\u0e3f" + fmt(def.cost)) + '</button>';
       }
-      li.innerHTML = '<span class="crew-medal">' + medal + '</span>' +
-        '<div class="crew-info"><div class="crew-name">' + def.name + '</div>' +
-        '<div class="crew-bonus">' + def.bonus + ' \u{00B7} unlocks at \u{0E3F}' + fmt(def.unlock) + '</div>' + prog + '</div>' +
-        '<span class="crew-status ' + (c.recruited ? "unlocked" : "locked") + '">' + (c.recruited ? "Recruited" : "Locked") + '</span>';
+      li.innerHTML = icon + info + ctl;
       crew.appendChild(li);
+    });
+    $$("#crewList .crew-recruit-btn").forEach(function (b) {
+      b.onclick = function () { doRecruit(b.dataset.crew); };
     });
     renderThemes();
     renderInventory();
@@ -2667,6 +2766,7 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     if (!ev) { refreshAll(); return; }
     if (ev.already) { toast('<i class="ti ti-clock"></i> Already cleared today.'); refreshAll(); return; }
     stampCard(id, b ? b.stat : "resolve");
+    if (ev.berries) floatPop("+" + fmt(ev.berries) + " ฿", b ? b.stat : null);
     if (b) clearedFlavor(b.stat, "bounty cleared");
     celebrate(ev);
     if (b) offerVictory(b.title);
@@ -2695,12 +2795,22 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     else if (r.ok) { toast('<i class="ti ti-diamond"></i> Claimed: ' + escapeHtml(r.item.name) + '. Enjoy it, captain!', true); announceItems(r.itemsEarned); }
     refreshAll();
   }
+  function doRecruit(id) {
+    var r = game.recruitCrew(save, id);
+    if (r.error === "broke") { toast('<i class="ti ti-lock"></i> Need ฿' + fmt(r.short) + ' more to recruit.'); return; }
+    if (r.error) return;
+    toast('<i class="ti ti-anchor"></i> ' + r.crew.name + ' joined your crew! ' + r.crew.bonus, true);
+    confetti("#c8a24a");
+    announceItems(r.itemsEarned);
+    refreshAll();
+  }
 
   function celebrate(ev) {
     if (ev.already) { toast('<i class="ti ti-clock"></i> Already done today.'); return; }
     var bits = [];
     if (ev.berries) bits.push("+" + fmt(ev.berries) + " \u{0E3F}");
     if (ev.xp) bits.push("+" + fmt(ev.xp) + " XP");
+    if (ev.bountyGain) bits.push("+" + fmt(ev.bountyGain) + " bounty");
     if (bits.length) toast('<i class="ti ti-coin"></i> ' + bits.join("  \u{00B7}  "));
     if (ev.setSail) toast('<i class="ti ti-sailboat"></i> Set Sail bonus! +' + (ev.setSailAmount || 10) + ' \u{0E3F}');
     if (ev.recurredTo) toast('<i class="ti ti-repeat"></i> Repeats \u{2014} next due ' + ev.recurredTo);
@@ -2712,7 +2822,7 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
       toast('<i class="ti ti-arrow-up-circle"></i> ' + economy.STATS[l.stat].name + ' reached Level ' + l.level + '!', true);
       confetti();
     });
-    if (ev.rankUp) { toast('<i class="ti ti-crown"></i> New rank: ' + ev.rankUp.title + '!', true); confetti(); }
+    if (ev.rankUp) { toast('<i class="ti ti-crown"></i> New title: ' + ev.rankUp.title + '! — ' + ev.rankUp.vibe, true); confetti(); }
     (ev.crewUnlocked || []).forEach(function (c) {
       toast('<i class="ti ti-users"></i> Unlocked: ' + c.name + ' \u{2014} ' + c.bonus, true);
       confetti();
@@ -2760,6 +2870,14 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
       layer.appendChild(c);
       (function (node) { setTimeout(function () { node.remove(); }, 3200); })(c);
     }
+  }
+
+  function floatPop(text, stat) {
+    var layer = $("#confettiLayer") || document.body;
+    var pop = el("div", "float-pop", text);
+    if (stat) pop.style.setProperty("--stat", accent(stat));
+    layer.appendChild(pop);
+    setTimeout(function () { pop.remove(); }, 750);
   }
 
   function stampCard(id, stat) {
