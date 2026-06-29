@@ -712,6 +712,20 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
 .insight-banner .ti { color: var(--bounty-gold2); }
 .insight-banner em { color: var(--wanted-red); font-style: italic; }
 
+/* ===================== MARINE DISPATCH ===================== */
+.dispatch-card { border-left: 5px solid var(--bounty-gold); }
+.dispatch-card.done { border-left-color: var(--good); }
+.dispatch-head { font-weight: 700; color: var(--ocean-navy); font-size: .82rem; letter-spacing: .5px; text-transform: uppercase; display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
+.dispatch-head .ti { color: var(--wanted-red); }
+.dispatch-reward { margin-left: auto; font-size: .66rem; font-weight: 700; text-transform: none; letter-spacing: 0; color: var(--bounty-gold2); display: flex; align-items: center; gap: 3px; background: var(--parchment2); border: 1px solid var(--paper-line); border-radius: 999px; padding: 2px 8px; }
+.dispatch-title { font-family: "Pirata One", serif; font-size: 1.2rem; color: var(--ink); line-height: 1.1; }
+.dispatch-obj { font-size: .8rem; color: var(--ink-soft); margin-top: 2px; }
+.dispatch-status { margin-top: 9px; font-size: .72rem; font-weight: 700; color: var(--sea-teal); display: flex; align-items: center; gap: 5px; }
+.dispatch-card.done .dispatch-status { color: var(--good); }
+.dispatch-prog { background: var(--ocean-navy); color: var(--parchment); border-radius: 999px; padding: 2px 10px; font-family: "Pirata One", serif; letter-spacing: .5px; }
+.dispatch-prog.done { background: var(--good); }
+.cat-desc { font-size: .72rem; color: var(--ink-soft); margin: 6px 2px 0; line-height: 1.4; min-height: 1em; }
+
 /* ===================== ACTION TOAST ===================== */
 .toast.action { display: flex; align-items: center; gap: 12px; justify-content: space-between; }
 .toast-btn {
@@ -790,10 +804,13 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
         <div class="today-status" id="todayStatus"></div>
       </div>
 
+      <div class="card dispatch-card" id="dispatchCard"></div>
+
       <div class="card">
         <div class="card-head"><i class="ti ti-plus"></i> Quick Bounty</div>
         <form id="quickBountyForm" autocomplete="off"><input type="text" id="quickBountyTitle" placeholder="New bounty… press Enter" maxlength="120" aria-label="New bounty title" /></form>
         <div class="quick-stat-row" id="quickStatRow"></div>
+        <p class="cat-desc" id="quickStatDesc"></p>
       </div>
 
       <div class="card">
@@ -844,6 +861,7 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
           <select id="bountyStat" aria-label="Stat category"></select>
           <select id="bountyTier" aria-label="Difficulty tier"></select>
         </div>
+        <p class="cat-desc" id="bountyStatDesc"></p>
         <div class="add-row">
           <input type="date" id="bountyDue" aria-label="Due date (optional)" />
           <select id="bountyRecurring" aria-label="Recurrence">
@@ -890,6 +908,7 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
           <select id="dutyTier" aria-label="Reward tier"></select>
           <button type="submit" class="primary-btn">Add</button>
         </div>
+        <p class="cat-desc" id="dutyStatDesc"></p>
       </form>
     </section>
 
@@ -1096,10 +1115,10 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
   "use strict";
 
   var STATS = {
-    strength: { name: "Strength",  area: "Body",   haki: "Armament Haki",     crew: "The Dojo",    accent: "--wanted-red" },
-    wisdom:   { name: "Wisdom",    area: "Mind",   haki: "Observation Haki",  crew: "The Library", accent: "--sea-teal" },
-    ambition: { name: "Ambition",  area: "Work",   haki: "Conqueror's Haki",  crew: "The Helm",    accent: "--bounty-gold" },
-    resolve:  { name: "Resolve",   area: "Chores", haki: "Inherited Will",    crew: "The Deck",    accent: "--steel" }
+    strength: { name: "Strength",  area: "Body",   haki: "Armament Haki",     crew: "The Dojo",    accent: "--wanted-red",  desc: "Workouts, sport, sleep, eating well — anything that builds your body." },
+    wisdom:   { name: "Wisdom",    area: "Mind",   haki: "Observation Haki",  crew: "The Library", accent: "--sea-teal",    desc: "Reading, studying, learning, deep work — anything that sharpens your mind." },
+    ambition: { name: "Ambition",  area: "Work",   haki: "Conqueror's Haki",  crew: "The Helm",    accent: "--bounty-gold", desc: "Career, projects, goals, side-hustles — the work that builds your future." },
+    resolve:  { name: "Resolve",   area: "Chores", haki: "Inherited Will",    crew: "The Deck",    accent: "--steel",       desc: "Errands, cleaning, admin — the boring-but-necessary that takes grit." }
   };
   var STAT_KEYS = ["strength", "wisdom", "ambition", "resolve"];
 
@@ -1179,6 +1198,16 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
   }
   function morningPrompt(dateStr) { return MORNING_PROMPTS[_doy(dateStr) % MORNING_PROMPTS.length]; }
   function eveningPrompt(dateStr) { return EVENING_PROMPTS[_doy(dateStr) % EVENING_PROMPTS.length]; }
+
+  var DISPATCH_EVENTS = [
+    { id: "raid",     title: "Pirate Raid",     objective: "Clear any 3 bounties today",           reward: "xp_surge",    need: 3, match: { kind: "bounty" } },
+    { id: "fortress", title: "Marine Fortress",  objective: "Clear a Notorious or Warlord bounty",  reward: "xp_surge",    need: 1, match: { kind: "bounty", minTier: "notorious" } },
+    { id: "report",   title: "Evening Report",   objective: "Log an evening reflection",            reward: "haki_focus",  need: 1, match: { kind: "journal", jtype: "evening_reflection" } },
+    { id: "orders",   title: "Morning Orders",   objective: "Set your morning intent",              reward: "haki_focus",  need: 1, match: { kind: "journal", jtype: "morning_intent" } },
+    { id: "logbook",  title: "Open Waters",      objective: "Write a free-log entry",               reward: "log_insight", need: 1, match: { kind: "journal", jtype: "free_write" } },
+    { id: "swab",     title: "Swab the Decks",   objective: "Complete 2 ship duties",               reward: "log_insight", need: 2, match: { kind: "duty" } }
+  ];
+  function dispatchForDay(dateStr) { return DISPATCH_EVENTS[_doy(dateStr) % DISPATCH_EVENTS.length]; }
 
   var BUFFS = {
     streakPerTier:  0.05,
@@ -1307,6 +1336,7 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     HAKI_TREE: HAKI_TREE, HAKI_NODES: HAKI_NODES,
     PROMPTS: PROMPTS, promptForDay: promptForDay,
     morningPrompt: morningPrompt, eveningPrompt: eveningPrompt,
+    DISPATCH_EVENTS: DISPATCH_EVENTS, dispatchForDay: dispatchForDay,
     THEMES: THEMES,
     BOUNTY_MILESTONES: BOUNTY_MILESTONES, nextBountyMilestone: nextBountyMilestone,
     ITEMS: ITEMS, ITEM_KEYS: ITEM_KEYS, CREW_ITEM: CREW_ITEM, BERRY_SPEND_MILESTONE: BERRY_SPEND_MILESTONE, randomItemKey: randomItemKey,
@@ -1668,6 +1698,38 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     var crossed = Math.floor(after / step) - Math.floor(before / step);
     for (var i = 0; i < crossed; i++) grantItem(save, "berry_haul", ev);
   }
+
+  function currentDispatch(save) {
+    var today = state.todayStr();
+    var def = economy.dispatchForDay(today);
+    if (!save.dispatch || save.dispatch.date !== today || save.dispatch.id !== def.id) {
+      save.dispatch = { date: today, id: def.id, progress: 0, done: false };
+    }
+    return { state: save.dispatch, def: def };
+  }
+  function dispatchMatches(def, action) {
+    var m = def.match;
+    if (m.kind !== action.kind) return false;
+    if (m.kind === "bounty" && m.minTier) {
+      return economy.TIER_KEYS.indexOf(action.tier) >= economy.TIER_KEYS.indexOf(m.minTier);
+    }
+    if (m.kind === "journal" && m.jtype) return action.jtype === m.jtype;
+    return true;
+  }
+  function dispatchProgress(save, action, ev) {
+    var d = currentDispatch(save);
+    if (d.state.done) return;
+    if (!dispatchMatches(d.def, action)) return;
+    d.state.progress = (d.state.progress || 0) + 1;
+    if (d.state.progress >= d.def.need) {
+      d.state.done = true;
+      grantItem(save, d.def.reward, ev);
+      if (ev) ev.dispatchCleared = d.def;
+    } else if (ev) {
+      ev.dispatchProgress = { def: d.def, progress: d.state.progress };
+    }
+  }
+
   function useItem(save, key) {
     if (!save.inventory || (save.inventory[key] || 0) <= 0) return { error: "empty" };
     var def = economy.ITEMS[key];
@@ -1731,8 +1793,8 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     save.player.bountiesCleared = (save.player.bountiesCleared || 0) + 1;
     var ms = economy.BOUNTY_MILESTONES.find(function (m) { return m.count === save.player.bountiesCleared; });
     if (ms) { save.player.berries += ms.bonus; ev.bountyMilestone = ms; }
-    if (b.tier === "warlord") grantItem(save, economy.randomItemKey(), ev);
     checkStreakReward(save, ev);
+    dispatchProgress(save, { kind: "bounty", tier: b.tier }, ev);
     if (b.recurring) {
       b.lastCompleted = today;
       b.status = "open";
@@ -1787,6 +1849,7 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     if (fc) ai.hakiFocus = false;
     ev.habitStreak = h.streak;
     checkStreakReward(save, ev);
+    dispatchProgress(save, { kind: "duty" }, ev);
     state.save(save);
     return ev;
   }
@@ -1836,6 +1899,7 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     if (def.grants) rewards.grantBuff(save, def.grants, today);
     ev.buffGranted = def.grants || null;
     checkStreakReward(save, ev);
+    dispatchProgress(save, { kind: "journal", jtype: type }, ev);
     state.save(save);
     return ev;
   }
@@ -1890,7 +1954,6 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     save.hakiPoints[node.stat] = have - node.cost;
     save.haki[node.id] = true;
     var r = { ok: true, node: node };
-    grantItem(save, "haki_focus", r);
     state.save(save);
     return r;
   }
@@ -1963,6 +2026,7 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     unlockHakiNode: unlockHakiNode, nextDue: nextDue,
     buyTheme: buyTheme, setActiveTheme: setActiveTheme,
     recruitCrew: recruitCrew,
+    currentDispatch: currentDispatch,
     useItem: useItem, grantItem: grantItem,
     onLoad: onLoad
   };
@@ -2274,10 +2338,12 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
       b.onclick = function () { quickStat = k; try { localStorage.setItem("gl.quickStat", k); } catch (e) {} renderQuickStatRow(); };
       row.appendChild(b);
     });
+    var d = $("#quickStatDesc"); if (d) d.textContent = economy.STATS[quickStat].desc;
   }
 
   function renderQuarters() {
     renderTodayBand();
+    renderDispatch();
     renderQuickStatRow();
     var qlog = $("#quickLog"), qtoday = game.todaysLog(save);
     if (document.activeElement !== qlog) qlog.value = qtoday ? qtoday.text : "";
@@ -2305,6 +2371,31 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
       li.appendChild(btn);
       li.appendChild(el("span", null, b.title + ' <span class="muted">(' + economy.TIERS[b.tier].xp + ' \u{0E3F})</span>'));
       list.appendChild(li);
+    });
+  }
+
+  function renderDispatch() {
+    var wrap = $("#dispatchCard"); if (!wrap) return;
+    var d = game.currentDispatch(save);
+    var def = d.def, st = d.state;
+    var rewardDef = economy.ITEMS[def.reward];
+    var prog = def.need > 1
+      ? '<span class="dispatch-prog">' + Math.min(st.progress, def.need) + " / " + def.need + '</span>'
+      : (st.done ? '<span class="dispatch-prog done">cleared</span>' : '<span class="dispatch-prog">not yet</span>');
+    wrap.classList.toggle("done", !!st.done);
+    wrap.innerHTML =
+      '<div class="dispatch-head"><i class="ti ti-bell-ringing"></i> Marine Dispatch' +
+        '<span class="dispatch-reward" title="Reward"><i class="ti ' + rewardDef.icon + '"></i> ' + rewardDef.name + '</span></div>' +
+      '<div class="dispatch-body"><div class="dispatch-title">' + def.title + '</div>' +
+        '<div class="dispatch-obj">' + def.objective + '</div></div>' +
+      '<div class="dispatch-status">' + (st.done
+        ? '<i class="ti ti-circle-check"></i> Reward claimed'
+        : prog) + '</div>';
+  }
+  function syncStatDescs() {
+    [["#bountyStat", "#bountyStatDesc"], ["#dutyStat", "#dutyStatDesc"]].forEach(function (p) {
+      var sel = $(p[0]), d = $(p[1]);
+      if (sel && d && economy.STATS[sel.value]) d.textContent = economy.STATS[sel.value].desc;
     });
   }
 
@@ -2370,6 +2461,7 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
 
   function renderBounties() {
     populateSelects();
+    syncStatDescs();
     renderBountyStatusFilters();
     renderBountyStreakBanner();
     $$("#bountyFilters .chip").forEach(function (c) {
@@ -2456,6 +2548,7 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
 
   function renderDuties() {
     populateDutySelects();
+    syncStatDescs();
     var today = state.todayStr();
     var list = $("#dutyList"); list.innerHTML = "";
     if (!save.habits.length) { list.appendChild(el("li", "empty", "No ship duties yet. Add a daily routine below.")); }
@@ -2835,6 +2928,12 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     if (ev.xpSurged) toast('<i class="ti ti-flame"></i> XP Surge spent — double XP!');
     if (ev.hakiFocusBonus) toast('<i class="ti ti-bolt"></i> Haki Focus spent — +' + ev.hakiFocusBonus + ' bonus Haki Point' + (ev.hakiFocusBonus > 1 ? "s" : "") + '!');
     if (ev.logInsightBonus) toast('<i class="ti ti-bulb"></i> Log Insight — +' + ev.logInsightBonus + ' ฿');
+    if (ev.dispatchProgress) toast('<i class="ti ti-bell-ringing"></i> Marine Dispatch — ' + ev.dispatchProgress.progress + ' / ' + ev.dispatchProgress.def.need);
+    if (ev.dispatchCleared) {
+      var rd = economy.ITEMS[ev.dispatchCleared.reward];
+      toast('<i class="ti ti-bell-ringing"></i> Dispatch cleared! Earned ' + rd.name, true);
+      confetti("#3f7fbf");
+    }
     announceItems(ev.itemsEarned);
   }
 
@@ -2940,6 +3039,8 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
       $("#bountyTitle").value = ""; $("#bountyDue").value = ""; $("#bountyRecurring").value = ""; clearDraft("bountyTitle");
       renderBounties();
     };
+    if ($("#bountyStat")) $("#bountyStat").onchange = syncStatDescs;
+    if ($("#dutyStat")) $("#dutyStat").onchange = syncStatDescs;
 
     $$("#weatherRow .weather-btn").forEach(function (b) {
       b.onclick = function () {
