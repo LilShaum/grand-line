@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Grand Line — Pirate Productivity</title>
+  <title>Grand Line — Become the Pirate King</title>
 
   <!-- Fonts (explicit CDN links so it never breaks outside the editor) -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -712,6 +712,15 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
 .insight-banner .ti { color: var(--bounty-gold2); }
 .insight-banner em { color: var(--wanted-red); font-style: italic; }
 
+/* ===================== HAKI PERKS ===================== */
+.streak-warn { border-left: 5px solid var(--wanted-red); font-size: .8rem; color: var(--ink); display: flex; align-items: center; gap: 7px; }
+.streak-warn .ti { color: var(--wanted-red); font-size: 1.1rem; }
+.decree-btn { background: transparent; border: 1px solid var(--bounty-gold2); color: var(--bounty-gold2); border-radius: 8px; width: 30px; height: 30px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: .95rem; }
+.decree-btn.on { background: var(--bounty-gold); color: #fff; border-color: var(--bounty-gold2); }
+.decree-btn:disabled { opacity: .35; cursor: not-allowed; }
+.bounty.decreed { box-shadow: 0 0 0 2px var(--bounty-gold) inset; }
+.bounty-reward.previewed .br-xp { color: var(--sea-teal); font-weight: 700; }
+
 /* ===================== MARINE DISPATCH ===================== */
 .dispatch-card { border-left: 5px solid var(--bounty-gold); }
 .dispatch-card.done { border-left-color: var(--good); }
@@ -790,7 +799,7 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     </div>
   </header>
 
-  <h1 class="visually-hidden">Grand Line — Pirate Productivity</h1>
+  <h1 class="visually-hidden">Grand Line — Become the Pirate King</h1>
 
   <!-- ===================== SCREENS ===================== -->
   <main id="screens">
@@ -805,6 +814,8 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
       </div>
 
       <div class="card dispatch-card" id="dispatchCard"></div>
+
+      <div class="card streak-warn" id="streakWarn" hidden></div>
 
       <div class="card">
         <div class="card-head"><i class="ti ti-plus"></i> Quick Bounty</div>
@@ -1271,24 +1282,24 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
 
   var HAKI_TREE = {
     strength: [
-      { id: "iron_body",   stat: "strength", name: "Iron Body",        desc: "+10% XP from Body tasks",        cost: 1, effect: { type: "statXp", value: 0.10 } },
-      { id: "unbreakable", stat: "strength", name: "Unbreakable",      desc: "Streak XP cap +10%",             cost: 2, effect: { type: "streakCap", value: 0.10 } },
-      { id: "hardening",   stat: "strength", name: "Hardening",        desc: "+15% XP from Body tasks",        cost: 3, effect: { type: "statXp", value: 0.15 } }
+      { id: "h_armament",  stat: "strength", name: "Armament Haki", desc: "Completions never grant less than 20 XP — grinding always pays.", cost: 1, effect: { type: "xpFloor", value: 20 } },
+      { id: "h_hardening", stat: "strength", name: "Hardening",     desc: "Back-to-back clears in a day pay escalating bonus ฿.",            cost: 2, effect: { type: "backToBack", value: 6 } },
+      { id: "h_armscolor", stat: "strength", name: "Color of Arms", desc: "Your bounty (notoriety) gain also has a floor of 60.",            cost: 3, effect: { type: "floorBounty", value: 60 } }
     ],
     wisdom: [
-      { id: "sharp_eye",    stat: "wisdom",  name: "Sharp Eye",        desc: "+10% XP from Mind tasks",        cost: 1, effect: { type: "statXp", value: 0.10 } },
-      { id: "future_sight", stat: "wisdom",  name: "Future Sight",     desc: "+25% XP from journaling",        cost: 2, effect: { type: "journalXp", value: 0.25 } },
-      { id: "omniscience",  stat: "wisdom",  name: "Omniscience",      desc: "+15% XP from Mind tasks",        cost: 3, effect: { type: "statXp", value: 0.15 } }
+      { id: "h_observe", stat: "wisdom", name: "Observation Haki", desc: "See a bounty's exact XP & ฿ reward before you commit.", cost: 1, effect: { type: "preview" } },
+      { id: "h_future",  stat: "wisdom", name: "Future Sight",     desc: "Get a warning when your streak is about to break.",      cost: 2, effect: { type: "streakWarn" } },
+      { id: "h_kenbun",  stat: "wisdom", name: "Kenbunshoku",      desc: "See projected days to your next Title on your poster.",  cost: 3, effect: { type: "forecast" } }
     ],
     ambition: [
-      { id: "kings_will",      stat: "ambition", name: "King's Will",      desc: "+10% XP from Work tasks",            cost: 1, effect: { type: "statXp", value: 0.10 } },
-      { id: "conquerors_haki", stat: "ambition", name: "Conqueror's Haki", desc: "+20% XP from Warlord-tier bounties", cost: 2, effect: { type: "tierXp", tier: "warlord", value: 0.20 } },
-      { id: "supreme_king",    stat: "ambition", name: "Supreme King",     desc: "+15% XP from Work tasks",            cost: 3, effect: { type: "statXp", value: 0.15 } }
+      { id: "h_conqueror", stat: "ambition", name: "Conqueror's Haki", desc: "Once a day, decree a bounty — it pays double rewards.", cost: 1, effect: { type: "decree" } },
+      { id: "h_supreme",   stat: "ambition", name: "Supreme King",     desc: "Clear 15+ bounties in a week for a bonus payout.",      cost: 2, effect: { type: "weeklyOutput", threshold: 15, berries: 500, xp: 200 } },
+      { id: "h_haoshoku",  stat: "ambition", name: "Haoshoku",         desc: "Your daily decree pays triple instead of double.",      cost: 3, effect: { type: "decreeBoost" } }
     ],
     resolve: [
-      { id: "discipline", stat: "resolve", name: "Discipline", desc: "+10% XP from Chores tasks",     cost: 1, effect: { type: "statXp", value: 0.10 } },
-      { id: "iron_will",  stat: "resolve", name: "Iron Will",  desc: "Set Sail bonus doubled (+20 \u{0E3F})", cost: 2, effect: { type: "setSailMult", value: 2 } },
-      { id: "unyielding", stat: "resolve", name: "Unyielding", desc: "Streak XP cap +15%",            cost: 3, effect: { type: "streakCap", value: 0.15 } }
+      { id: "h_inherited", stat: "resolve", name: "Inherited Will", desc: "Once a week, a missed day won't break your streak — free.", cost: 1, effect: { type: "streakInsure" } },
+      { id: "h_unbreak",   stat: "resolve", name: "Unbreakable",    desc: "Your first clear after a missed day grants +50% XP.",       cost: 2, effect: { type: "comeback", value: 0.5 } },
+      { id: "h_ironwill",  stat: "resolve", name: "Iron Will",      desc: "Raise your streak XP cap by +10%.",                         cost: 3, effect: { type: "streakCap", value: 0.10 } }
     ]
   };
 
@@ -1405,6 +1416,11 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
         bountiesCleared: 0,
         berriesSpent: 0,
         lastStreakShieldDay: null,
+        comboDate: null,
+        comboCount: 0,
+        lastInsureDate: null,
+        lastWeeklyPayout: null,
+        hakiVersion: 2,
         firstRun: true
       },
       stats: stats,
@@ -1412,6 +1428,7 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
       haki: {},
       inventory: { xp_surge: 0, berry_haul: 0, streak_shield: 0, haki_focus: 0, log_insight: 0 },
       activeItems: { xpSurge: false, hakiFocus: false, logInsight: false },
+      decree: null,
       bounties: [
         seedBounty("Make the bed", "resolve", "petty"),
         seedBounty("30-minute workout", "strength", "rookie"),
@@ -1498,6 +1515,12 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     if (!save.haki) return [];
     return economy.HAKI_NODES.filter(function (n) { return save.haki[n.id]; });
   }
+  function hakiEffect(save, type) {
+    var nodes = hakiUnlocked(save);
+    for (var i = 0; i < nodes.length; i++) { if (nodes[i].effect.type === type) return nodes[i].effect; }
+    return null;
+  }
+  function hasHaki(save, type) { return !!hakiEffect(save, type); }
   function streakCap(save) {
     var cap = economy.BUFFS.streakCap;
     (save.crew || []).forEach(function (c) {
@@ -1560,16 +1583,40 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     if (!save.logPose[today]) save.logPose[today] = { tasksDone: 0, journaled: 0 };
     if (field) save.logPose[today][field]++;
   }
+  function previewReward(save, stat, tier) {
+    var today = state.todayStr();
+    var t = economy.TIERS[tier];
+    var xp = Math.round(t.xp * xpMultiplier(save, stat, today, { tier: tier, isJournal: false }));
+    var fl = hakiEffect(save, "xpFloor"); if (fl) xp = Math.max(xp, fl.value);
+    var berries = Math.round(t.berries * berryMultiplier(save, today));
+    var bounty = t.bounty; var fb = hakiEffect(save, "floorBounty"); if (fb) bounty = Math.max(bounty, fb.value);
+    return { xp: xp, berries: berries, bounty: bounty };
+  }
   function applyReward(save, opts) {
     var today = opts.today || state.todayStr();
     var events = { berries: 0, xp: 0, leveledUp: [], rankUp: null, crewUnlocked: [], setSail: false };
 
+    var rewardMult = opts.rewardMult || 1;
+    var firstToday = !save.logPose[today];
     markLogPose(save, today, opts.isTask ? "tasksDone" : null);
+    var combo = 1;
+    if (opts.isTask) {
+      if (save.player.comboDate !== today) { save.player.comboDate = today; save.player.comboCount = 1; }
+      else { save.player.comboCount = (save.player.comboCount || 1) + 1; }
+      combo = save.player.comboCount;
+    }
 
     if (opts.xp && opts.stat) {
       var mult = xpMultiplier(save, opts.stat, today, { tier: opts.tier, isJournal: !opts.isTask });
       var gainedXp = Math.round(opts.xp * mult);
       if (opts.xpSurge) { gainedXp *= 2; events.xpSurged = true; }
+      var cb = hakiEffect(save, "comeback");
+      if (cb && firstToday && opts.isTask && !save.logPose[addDays(today, -1)]) {
+        gainedXp = Math.round(gainedXp * (1 + cb.value)); events.comeback = true;
+      }
+      var fl = hakiEffect(save, "xpFloor");
+      if (fl && opts.isTask) gainedXp = Math.max(gainedXp, fl.value);
+      if (rewardMult !== 1) gainedXp = Math.round(gainedXp * rewardMult);
       var s = save.stats[opts.stat];
       var before = economy.levelFromXp(s.xp).level;
       s.xp += gainedXp;
@@ -1603,6 +1650,9 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
       events.dailyBounty = economy.BUFFS.dailyBounty;
     }
     if (bountyGain > 0) {
+      var fbo = hakiEffect(save, "floorBounty");
+      if (fbo && opts.isTask) bountyGain = Math.max(bountyGain, fbo.value);
+      if (rewardMult !== 1) bountyGain = Math.round(bountyGain * rewardMult);
       save.player.totalBounty = (save.player.totalBounty || 0) + bountyGain;
       events.bountyGain = bountyGain;
       var rk = economy.rankForBounty(save.player.totalBounty);
@@ -1623,6 +1673,12 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
       }
       var bmult = berryMultiplier(save, today);
       var gainedBerries = Math.round(opts.berries * bmult);
+      if (rewardMult !== 1) gainedBerries = Math.round(gainedBerries * rewardMult);
+      var bb = hakiEffect(save, "backToBack");
+      if (bb && opts.isTask && combo >= 2) {
+        var bbBonus = bb.value * Math.min(combo - 1, 6);
+        gainedBerries += bbBonus; events.backToBack = bbBonus;
+      }
       save.player.berries += gainedBerries;
       events.berries += gainedBerries;
     }
@@ -1660,6 +1716,7 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     activeBuffs: activeBuffs,
     streakCap: streakCap,
     hakiUnlocked: hakiUnlocked,
+    hakiEffect: hakiEffect, hasHaki: hasHaki, previewReward: previewReward,
     addDays: addDays,
     markLogPose: markLogPose
   };
@@ -1746,15 +1803,24 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     return res;
   }
   function applyStreakShield(save) {
-    if (!save.inventory || (save.inventory.streak_shield || 0) <= 0) return;
     var today = state.todayStr();
     var yest = rewards.addDays(today, -1);
     var dayBefore = rewards.addDays(today, -2);
-    if (!save.logPose[yest] && save.logPose[dayBefore]) {
-      save.inventory.streak_shield -= 1;
-      save.logPose[yest] = { tasksDone: 0, journaled: 0, shielded: true };
-      save._shieldUsed = today;
+    var gap = !save.logPose[yest] && save.logPose[dayBefore];
+    if (!gap) return;
+    if (rewards.hasHaki(save, "streakInsure")) {
+      var last = save.player.lastInsureDate;
+      if (!last || daysBetween(last, today) >= 7) {
+        save.player.lastInsureDate = today;
+        save.logPose[yest] = { tasksDone: 0, journaled: 0, insured: true };
+        save._insureUsed = today;
+        return;
+      }
     }
+    if (!save.inventory || (save.inventory.streak_shield || 0) <= 0) return;
+    save.inventory.streak_shield -= 1;
+    save.logPose[yest] = { tasksDone: 0, journaled: 0, shielded: true };
+    save._shieldUsed = today;
   }
 
   function addBounty(save, title, stat, tier, dueDate, recurring) {
@@ -1775,6 +1841,30 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     }
     return next;
   }
+  function setDecree(save, bountyId) {
+    if (!rewards.hasHaki(save, "decree")) return { error: "locked" };
+    save.decree = { bountyId: bountyId, date: state.todayStr() };
+    state.save(save);
+    return { ok: true };
+  }
+  function weeklyCleared(save) {
+    var today = state.todayStr(), n = 0;
+    for (var i = 0; i < 7; i++) { var d = rewards.addDays(today, -i); if (save.logPose[d]) n += (save.logPose[d].tasksDone || 0); }
+    return n;
+  }
+  function checkWeeklyOutput(save, ev) {
+    var eff = rewards.hakiEffect(save, "weeklyOutput");
+    if (!eff) return;
+    var today = state.todayStr(), last = save.player.lastWeeklyPayout;
+    if (last && daysBetween(last, today) < 7) return;
+    if (weeklyCleared(save) >= eff.threshold) {
+      save.player.lastWeeklyPayout = today;
+      save.player.berries += eff.berries;
+      var s = save.stats.ambition; if (s) { s.xp += eff.xp; s.level = economy.levelFromXp(s.xp).level; }
+      if (ev) { ev.berries = (ev.berries || 0) + eff.berries; ev.weeklyOutput = eff; }
+    }
+  }
+
   function completeBounty(save, id) {
     var b = save.bounties.find(function (x) { return x.id === id; });
     if (!b) return null;
@@ -1787,12 +1877,19 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     var t = economy.TIERS[b.tier];
     var _ai = save.activeItems || (save.activeItems = {});
     var _surge = !!_ai.xpSurge, _focus = !!_ai.hakiFocus;
-    var ev = rewards.applyReward(save, { xp: t.xp, stat: b.stat, berries: t.berries, isTask: true, tier: b.tier, bounty: t.bounty, xpSurge: _surge, hakiFocus: _focus });
+    var _mult = 1;
+    if (save.decree && save.decree.bountyId === id && save.decree.date === today && rewards.hasHaki(save, "decree")) {
+      _mult = rewards.hasHaki(save, "decreeBoost") ? 3 : 2;
+      save.decree = null;
+    }
+    var ev = rewards.applyReward(save, { xp: t.xp, stat: b.stat, berries: t.berries, isTask: true, tier: b.tier, bounty: t.bounty, xpSurge: _surge, hakiFocus: _focus, rewardMult: _mult });
+    if (_mult > 1) ev.decreed = _mult;
     if (_surge) _ai.xpSurge = false;
     if (_focus) _ai.hakiFocus = false;
     save.player.bountiesCleared = (save.player.bountiesCleared || 0) + 1;
     var ms = economy.BOUNTY_MILESTONES.find(function (m) { return m.count === save.player.bountiesCleared; });
     if (ms) { save.player.berries += ms.bonus; ev.bountyMilestone = ms; }
+    checkWeeklyOutput(save, ev);
     checkStreakReward(save, ev);
     dispatchProgress(save, { kind: "bounty", tier: b.tier }, ev);
     if (b.recurring) {
@@ -2004,6 +2101,11 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     if (!save.activeItems) save.activeItems = { xpSurge: false, hakiFocus: false, logInsight: false };
     if (save.player.bountyDayDate === undefined) save.player.bountyDayDate = null;
     save.player.rankTitle = economy.rankForBounty(save.player.totalBounty || 0).current.title;
+    if ((save.hakiVersion || 1) < 2) {
+      save.haki = {};
+      economy.STAT_KEYS.forEach(function (k) { save.hakiPoints[k] = Math.max(0, (save.stats[k] ? save.stats[k].level : 1) - 1); });
+      save.hakiVersion = 2;
+    }
     var recruitedIds = {};
     (save.crew || []).forEach(function (c) { if (c.recruited) recruitedIds[c.id] = true; });
     save.crew = economy.CREW.map(function (def) {
@@ -2027,6 +2129,7 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     buyTheme: buyTheme, setActiveTheme: setActiveTheme,
     recruitCrew: recruitCrew,
     currentDispatch: currentDispatch,
+    setDecree: setDecree,
     useItem: useItem, grantItem: grantItem,
     onLoad: onLoad
   };
@@ -2344,6 +2447,13 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
   function renderQuarters() {
     renderTodayBand();
     renderDispatch();
+    var sw = $("#streakWarn");
+    if (sw) {
+      var prevStreak = rewards.voyageStreak(save, rewards.addDays(state.todayStr(), -1));
+      var atRisk = rewards.hasHaki(save, "streakWarn") && !save.logPose[state.todayStr()] && prevStreak > 0;
+      sw.hidden = !atRisk;
+      if (atRisk) sw.innerHTML = '<i class="ti ti-alert-triangle"></i> Your ' + prevStreak + '-day streak breaks tonight — log anything to keep it alive.';
+    }
     renderQuickStatRow();
     var qlog = $("#quickLog"), qtoday = game.todaysLog(save);
     if (document.activeElement !== qlog) qlog.value = qtoday ? qtoday.text : "";
@@ -2501,14 +2611,27 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
       body.innerHTML = '<div class="bounty-title"><i class="ti ' + (STAT_SIGIL[b.stat] || "ti-circle") + ' stat-sigil"></i>' + escapeHtml(b.title) + '</div>' +
         '<div class="bounty-meta"><span class="tier-badge tier-' + b.tier + '">' + economy.TIERS[b.tier].label + '</span>' +
         '<span>' + economy.STATS[b.stat].name + '</span>' + recurHtml + dueHtml + '</div>';
-      var reward = el("div", "bounty-reward",
-        '<span class="br-amount"><span class="br-sign">\u{0E3F}</span>' + fmt(economy.TIERS[b.tier].berries) + '</span>' +
-        '<span class="br-xp">+' + economy.TIERS[b.tier].xp + ' XP</span>');
+      var prev = rewards.hasHaki(save, "preview");
+      var rw = prev ? rewards.previewReward(save, b.stat, b.tier) : { berries: economy.TIERS[b.tier].berries, xp: economy.TIERS[b.tier].xp };
+      var reward = el("div", "bounty-reward" + (prev ? " previewed" : ""),
+        '<span class="br-amount"><span class="br-sign">\u{0E3F}</span>' + fmt(rw.berries) + '</span>' +
+        '<span class="br-xp">+' + rw.xp + ' XP</span>');
       var editBtn = el("button", "edit-btn", '<i class="ti ti-pencil"></i>'); editBtn.title = "Edit";
       editBtn.onclick = function () { editingBounty = b.id; renderBounties(); };
       var del = el("button", "del-btn", '<i class="ti ti-x"></i>'); del.title = "Delete";
       del.onclick = function () { game.deleteBounty(save, b.id); renderBounties(); renderQuarters(); };
-      var acts = el("div", "bounty-acts"); acts.appendChild(editBtn); acts.appendChild(del);
+      var acts = el("div", "bounty-acts");
+      if (b.status !== "done" && rewards.hasHaki(save, "decree")) {
+        var dToday = save.decree && save.decree.date === state.todayStr();
+        var dOn = dToday && save.decree.bountyId === b.id;
+        if (dOn) li.classList.add("decreed");
+        var dbtn = el("button", "decree-btn" + (dOn ? " on" : ""), '<i class="ti ti-crown"></i>');
+        dbtn.title = dOn ? "Decreed — x" + (rewards.hasHaki(save, "decreeBoost") ? 3 : 2) + " rewards" : (dToday ? "Decree used today" : "Decree this bounty");
+        if (dToday && !dOn) dbtn.disabled = true;
+        dbtn.onclick = function () { doDecree(b.id); };
+        acts.appendChild(dbtn);
+      }
+      acts.appendChild(editBtn); acts.appendChild(del);
       li.appendChild(chk); li.appendChild(body); li.appendChild(reward); li.appendChild(acts);
       list.appendChild(li);
     });
@@ -2737,9 +2860,19 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     var rk = economy.rankForBounty(bounty);
     var fill = $("#vaultTitleFill"); if (fill) fill.style.width = (rk.next ? rk.pct : 100) + "%";
     var nx = $("#vaultNext");
-    if (nx) nx.textContent = rk.next
-      ? "Next title: " + rk.next.title + " — ฿" + fmt(rk.next.min - bounty) + " bounty to go"
-      : "Highest title reached — King of the Pirates.";
+    if (nx) {
+      var base = rk.next
+        ? "Next title: " + rk.next.title + " — ฿" + fmt(rk.next.min - bounty) + " bounty to go"
+        : "Highest title reached — King of the Pirates.";
+      if (rk.next && rewards.hasHaki(save, "forecast")) {
+        var wk = 0, td = state.todayStr();
+        for (var i = 0; i < 7; i++) { var ld = save.logPose[rewards.addDays(td, -i)]; if (ld) wk += (ld.tasksDone || 0); }
+        var daily = Math.max(40, Math.round(wk / 7 * 130) + 30);
+        var days = Math.ceil((rk.next.min - bounty) / daily);
+        base += "  ·  ~" + days + " day" + (days === 1 ? "" : "s") + " at your pace";
+      }
+      nx.textContent = base;
+    }
   }
 
   /* ---------------- SPOILS: EPITHET TROPHIES ---------------- */
@@ -2898,6 +3031,13 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     announceItems(r.itemsEarned);
     refreshAll();
   }
+  function doDecree(id) {
+    var r = game.setDecree(save, id);
+    if (r && r.ok) {
+      toast('<i class="ti ti-crown"></i> Bounty decreed — it pays ×' + (rewards.hasHaki(save, "decreeBoost") ? 3 : 2) + ' rewards.', true);
+      renderBounties();
+    }
+  }
 
   function celebrate(ev) {
     if (ev.already) { toast('<i class="ti ti-clock"></i> Already done today.'); return; }
@@ -2934,6 +3074,10 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
       toast('<i class="ti ti-bell-ringing"></i> Dispatch cleared! Earned ' + rd.name, true);
       confetti("#3f7fbf");
     }
+    if (ev.decreed) toast('<i class="ti ti-crown"></i> Decree fulfilled — ×' + ev.decreed + ' rewards!', true);
+    if (ev.comeback) toast('<i class="ti ti-flame"></i> Comeback clear — bonus XP for returning!');
+    if (ev.backToBack) toast('<i class="ti ti-bolt"></i> Back-to-back — +' + ev.backToBack + ' ฿');
+    if (ev.weeklyOutput) { toast('<i class="ti ti-crown"></i> Supreme King payout — +' + fmt(ev.weeklyOutput.berries) + ' ฿!', true); confetti(); }
     announceItems(ev.itemsEarned);
   }
 

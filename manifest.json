@@ -1,7 +1,7 @@
 {
-  "name": "Grand Line — Pirate Productivity",
+  "name": "Grand Line — Become the Pirate King",
   "short_name": "Grand Line",
-  "description": "A One Piece-themed journaling + productivity RPG. Turn your real life into the grind.",
+  "description": "Set sail on the Grand Line — raise your bounty, recruit your crew, and chase the One Piece.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
@@ -10,7 +10,7 @@
   "background_color": "#1b2a4a",
   "theme_color": "#1b2a4a",
   "lang": "en",
-  "categories": ["productivity", "lifestyle"],
+  "categories": ["games", "lifestyle"],
   "icons": [
     {
       "src": "icon.svg",
