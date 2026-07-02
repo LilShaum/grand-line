@@ -771,6 +771,43 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
 .bounty-check .ti { font-size: 1.05rem; }
 .chk-label { font-size: .54rem; font-weight: 800; text-transform: uppercase; letter-spacing: .3px; }
 .bounty.done .bounty-check, .bounty-check.is-done { background: var(--good); border-color: var(--good); color: #fff; }
+
+.health-badge { display: inline-flex; align-items: center; gap: 3px; color: var(--wanted-red); font-weight: 700; }
+.health-badge .ti { color: var(--wanted-red); }
+.health-check { display: flex; align-items: center; gap: 6px; font-size: .75rem; color: var(--ink-soft); margin: 4px 0 0; cursor: pointer; user-select: none; }
+.health-check .ti { color: var(--wanted-red); }
+.health-check input { width: auto; margin: 0; accent-color: var(--wanted-red); }
+.focus-btn { background: transparent; border: 1px solid var(--sea-teal); color: var(--sea-teal); border-radius: 8px; width: 30px; height: 30px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: .95rem; }
+.focus-btn.on { background: var(--sea-teal); color: #fff; }
+.bounty.focused { box-shadow: 0 0 0 2px var(--sea-teal) inset; }
+.wellness-card { border-left: 5px solid var(--wanted-red); }
+.wellness-count { font-size: .82rem; color: var(--ink-soft); margin: 2px 0 8px; }
+.wellness-big { font-size: 1.5rem; font-weight: 800; color: var(--wanted-red); margin-right: 4px; }
+.wellness-row { display: flex; justify-content: space-between; align-items: center; font-size: .8rem; padding: 4px 0; border-top: 1px dashed var(--paper-line); color: var(--ink); }
+.wellness-streak { color: var(--wanted-red); font-weight: 700; display: inline-flex; align-items: center; gap: 3px; }
+.wellness-streak .ti { color: var(--bounty-gold2); }
+.lore-card { border-left: 5px solid var(--sea-teal); }
+.lore-text { font-size: .86rem; font-style: italic; color: var(--ink); margin: 4px 0 0; line-height: 1.4; }
+.shiplog-card { border-left: 5px solid var(--bounty-gold2); }
+.shiplog-grid { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 6px; }
+.shiplog-stat { flex: 1 1 60px; min-width: 60px; text-align: center; background: var(--parchment2); border-radius: 8px; padding: 8px 4px; }
+.sl-num { display: block; font-size: 1.25rem; font-weight: 800; color: var(--bounty-gold2); }
+.sl-lbl { display: block; font-size: .6rem; text-transform: uppercase; letter-spacing: .4px; color: var(--ink-soft); margin-top: 2px; }
+.voyage-card { border-left: 5px solid var(--ocean-navy); }
+.voyage-grid { display: grid; grid-template-rows: repeat(7, 1fr); grid-auto-flow: column; grid-auto-columns: 1fr; gap: 3px; margin-top: 8px; }
+.vm-cell { width: 100%; aspect-ratio: 1 / 1; border-radius: 2px; background: var(--parchment3); display: inline-block; }
+.vm-l0 { background: var(--parchment3); opacity: .5; }
+.vm-l1 { background: var(--sea-teal); opacity: .35; }
+.vm-l2 { background: var(--sea-teal); opacity: .6; }
+.vm-l3 { background: var(--sea-teal); opacity: .85; }
+.vm-l4 { background: var(--wanted-red); }
+.voyage-legend { display: flex; align-items: center; gap: 4px; margin-top: 8px; font-size: .62rem; color: var(--ink-soft); }
+.voyage-legend .vm-cell { width: 12px; height: 12px; aspect-ratio: auto; }
+.price-was { text-decoration: line-through; color: var(--ink-soft); opacity: .7; }
+.price-now { color: var(--good); font-weight: 700; }
+#audioBtn.on { color: var(--sea-teal); }
+.crew-icon { width: 48px; height: 48px; }
+.crew-svg { width: 34px; height: 34px; }
 </style>
 </head>
 <body>
@@ -863,6 +900,7 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     <!-- BOUNTIES (tasks) -->
     <section class="screen" data-screen="bounties" hidden role="tabpanel" id="panel-bounties" aria-labelledby="tab-bounties">
       <h2 class="screen-title"><i class="ti ti-flag"></i> Bounty Board</h2>
+      <p class="screen-intro">Goal-oriented missions — the things you're working toward. Post a bounty, clear it, claim the reward.</p>
 
       <div class="card bounty-streak-banner" id="bountyStreakBanner"></div>
 
@@ -873,6 +911,7 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
           <select id="bountyTier" aria-label="Difficulty tier"></select>
         </div>
         <p class="cat-desc" id="bountyStatDesc"></p>
+        <label class="health-check"><input type="checkbox" id="bountyHealth" /> <i class="ti ti-heart"></i> Health mission (Cook &amp; Doctor perks apply)</label>
         <div class="add-row">
           <input type="date" id="bountyDue" aria-label="Due date (optional)" />
           <select id="bountyRecurring" aria-label="Recurrence">
@@ -907,7 +946,9 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     <!-- DUTIES (habits) -->
     <section class="screen" data-screen="duties" hidden role="tabpanel" id="panel-duties" aria-labelledby="tab-duties">
       <h2 class="screen-title"><i class="ti ti-checklist"></i> Ship Duties</h2>
-      <p class="screen-intro">Recurring routines. Check one in each day to feed its stat and build a streak.</p>
+      <p class="screen-intro">Daily habits &amp; routines — lightweight and streak-focused. Working out, drinking water, journaling. Check in each day to keep the streak alive.</p>
+
+      <div id="wellnessCard"></div>
 
       <ul class="duty-list" id="dutyList"></ul>
 
@@ -919,6 +960,7 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
           <select id="dutyTier" aria-label="Reward tier"></select>
           <button type="submit" class="primary-btn">Add</button>
         </div>
+        <label class="health-check"><input type="checkbox" id="dutyHealth" /> <i class="ti ti-heart"></i> Health routine (feeds your Wellness card)</label>
         <p class="cat-desc" id="dutyStatDesc"></p>
       </form>
     </section>
@@ -926,6 +968,10 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     <!-- LOG (journal) -->
     <section class="screen" data-screen="log" hidden role="tabpanel" id="panel-log" aria-labelledby="tab-log">
       <h2 class="screen-title"><i class="ti ti-book"></i> Captain's Log</h2>
+
+      <div id="loreCard"></div>
+      <div id="shipLogCard"></div>
+      <div id="voyageMapCard"></div>
 
       <div class="card insight-banner" id="insightBanner" hidden></div>
 
@@ -1095,6 +1141,7 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
         <button class="ghost-btn" id="unlinkBackupBtn" hidden><i class="ti ti-unlink"></i> Unlink backup file</button>
       </div>
       <button class="ghost-btn" id="installBtn" hidden><i class="ti ti-device-mobile"></i> Install on this device</button>
+      <button class="ghost-btn" id="audioBtn" hidden><i class="ti ti-music"></i> Sea ambient: off</button>
       <button class="ghost-btn" id="remindBtn"><i class="ti ti-bell"></i> Daily reminder: off</button>
       <button class="ghost-btn danger" id="resetBtn"><i class="ti ti-trash"></i> Scuttle the ship (reset all data)</button>
       <button class="ghost-btn" id="closeHelm">Close</button>
@@ -1233,8 +1280,8 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
   };
 
   var DEFAULT_HABITS = [
-    { title: "Drink water",      stat: "resolve",  tier: "petty" },
-    { title: "Move your body",   stat: "strength", tier: "rookie" },
+    { title: "Drink water",      stat: "resolve",  tier: "petty",  health: true },
+    { title: "Move your body",   stat: "strength", tier: "rookie", health: true },
     { title: "Read 10 minutes",  stat: "wisdom",   tier: "petty" }
   ];
 
@@ -1248,15 +1295,15 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
   ];
 
   var CREW = [
-    { id: "swordsman",     name: "Swordsman",     role: "Crewmate", icon: "swords",    cost: 1500,   bonus: "+10% XP from Body bounties",   effect: { type: "statXp", stat: "strength", mult: 0.10 } },
-    { id: "navigator",     name: "Navigator",     role: "Crewmate", icon: "compass",   cost: 4000,   bonus: "+10% XP from Mind bounties",   effect: { type: "statXp", stat: "wisdom",   mult: 0.10 } },
-    { id: "sniper",        name: "Sniper",        role: "Crewmate", icon: "slingshot", cost: 9000,   bonus: "+10% XP from Work bounties",   effect: { type: "statXp", stat: "ambition", mult: 0.10 } },
-    { id: "cook",          name: "Cook",          role: "Crewmate", icon: "flame",     cost: 18000,  bonus: "+10% Berries earned",          effect: { type: "berry", mult: 0.10 } },
-    { id: "doctor",        name: "Doctor",        role: "Crewmate", icon: "cross",     cost: 32000,  bonus: "+15% XP from journaling",      effect: { type: "journalXp", value: 0.15 } },
-    { id: "shipwright",    name: "Shipwright",    role: "Crewmate", icon: "wrench",    cost: 55000,  bonus: "+10% XP from Chores bounties", effect: { type: "statXp", stat: "resolve",  mult: 0.10 } },
-    { id: "archaeologist", name: "Archaeologist", role: "Crewmate", icon: "book",      cost: 90000,  bonus: "+15% XP from Mind bounties",   effect: { type: "statXp", stat: "wisdom",   mult: 0.15 } },
-    { id: "musician",      name: "Musician",      role: "Crewmate", icon: "note",      cost: 140000, bonus: "+15% Berries earned",          effect: { type: "berry", mult: 0.15 } },
-    { id: "helmsman",      name: "Helmsman",      role: "Crewmate", icon: "wheel",     cost: 200000, bonus: "Streak XP cap +15%",           effect: { type: "streakCap", value: 0.15 } }
+    { id: "swordsman",     name: "Swordsman",     role: "Crewmate", icon: "swords",    cost: 800,    bonus: "+10% XP from Body bounties",   effect: { type: "statXp", stat: "strength", mult: 0.10 } },
+    { id: "navigator",     name: "Navigator",     role: "Crewmate", icon: "compass",   cost: 3000,   bonus: "+10% XP from Mind bounties",   effect: { type: "statXp", stat: "wisdom",   mult: 0.10 } },
+    { id: "sniper",        name: "Sniper",        role: "Crewmate", icon: "slingshot", cost: 8000,   bonus: "+10% XP from Work bounties",   effect: { type: "statXp", stat: "ambition", mult: 0.10 } },
+    { id: "cook",          name: "Cook",          role: "Crewmate", icon: "flame",     cost: 20000,  bonus: "+10% Berries earned",          effect: { type: "berry", mult: 0.10 } },
+    { id: "doctor",        name: "Doctor",        role: "Crewmate", icon: "cross",     cost: 50000,  bonus: "+15% XP from journaling",      effect: { type: "journalXp", value: 0.15 } },
+    { id: "shipwright",    name: "Shipwright",    role: "Crewmate", icon: "wrench",    cost: 100000, bonus: "+10% XP from Chores bounties", effect: { type: "statXp", stat: "resolve",  mult: 0.10 } },
+    { id: "archaeologist", name: "Archaeologist", role: "Crewmate", icon: "book",      cost: 150000, bonus: "+15% XP from Mind bounties",   effect: { type: "statXp", stat: "wisdom",   mult: 0.15 } },
+    { id: "musician",      name: "Musician",      role: "Crewmate", icon: "note",      cost: 200000, bonus: "+15% Berries earned",          effect: { type: "berry", mult: 0.15 } },
+    { id: "helmsman",      name: "Helmsman",      role: "Crewmate", icon: "wheel",     cost: 250000, bonus: "Streak XP cap +15%",           effect: { type: "streakCap", value: 0.15 } }
   ];
 
   var PROMPTS = [
@@ -1278,6 +1325,30 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     var start = new Date(d.getFullYear(), 0, 0);
     var doy = Math.floor((d - start) / 86400000);
     return PROMPTS[doy % PROMPTS.length];
+  }
+
+  var LORE = [
+    "The Grand Line is bordered on both sides by the Calm Belts, waters teeming with giant Sea Kings.",
+    "A Log Pose navigates the Grand Line by locking onto an island's magnetic field.",
+    "Devil Fruit users gain a power but lose the ability to swim — the sea drains their strength.",
+    "There are three forms of Haki: Armament, Observation, and Conqueror's.",
+    "Conqueror's Haki is said to appear in only one in several million people.",
+    "The Red Line is a vast continent that wraps around the entire world.",
+    "Poneglyphs are indestructible stones carved in an ancient language the World Government forbids.",
+    "The Four Emperors are the pirates who reign over the New World.",
+    "The Straw Hats' ship, the Thousand Sunny, was built from the treasured Adam Wood.",
+    "A bounty is set by the World Government to reflect how great a threat a pirate poses.",
+    "The Reverie is a council held every four years where kings from member nations gather.",
+    "Fish-Man Island lies 10,000 meters beneath the sea, at the halfway point of the Grand Line.",
+    "Gol D. Roger's final words at his execution sparked the Great Age of Pirates.",
+    "The Marines enforce the will of the World Government across all the seas.",
+    "A Devil Fruit's power returns to the world in a new fruit when its user dies."
+  ];
+  function loreForDay(dateStr) {
+    var d = dateStr ? new Date(dateStr + "T00:00:00") : new Date();
+    var start = new Date(d.getFullYear(), 0, 0);
+    var doy = Math.floor((d - start) / 86400000);
+    return LORE[doy % LORE.length];
   }
 
   var HAKI_TREE = {
@@ -1346,6 +1417,7 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     STATS: STATS, STAT_KEYS: STAT_KEYS,
     HAKI_TREE: HAKI_TREE, HAKI_NODES: HAKI_NODES,
     PROMPTS: PROMPTS, promptForDay: promptForDay,
+    LORE: LORE, loreForDay: loreForDay,
     morningPrompt: morningPrompt, eveningPrompt: eveningPrompt,
     DISPATCH_EVENTS: DISPATCH_EVENTS, dispatchForDay: dispatchForDay,
     THEMES: THEMES,
@@ -1390,7 +1462,7 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     var hakiPoints = {};
     economy.STAT_KEYS.forEach(function (k) { hakiPoints[k] = 0; });
     var habits = economy.DEFAULT_HABITS.map(function (h) {
-      return { id: uid(), title: h.title, stat: h.stat, tier: h.tier, streak: 0, lastCheckDate: null };
+      return { id: uid(), title: h.title, stat: h.stat, tier: h.tier, health: !!h.health, streak: 0, lastCheckDate: null };
     });
     var shop = economy.DEFAULT_SHOP.map(function (s) {
       return { id: uid(), name: s.name, cost: s.cost, type: s.type, owned: false };
@@ -1423,6 +1495,9 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
         hakiVersion: 2,
         firstRun: true
       },
+      focusBountyId: null,       // Sniper: the pinned target bounty
+      wellness: {},              // Doctor: "YYYY-MM-DD" -> health check-ins that day
+      audioOn: false,            // Musician: ambient audio toggle
       stats: stats,
       hakiPoints: hakiPoints,
       haki: {},
@@ -1431,7 +1506,7 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
       decree: null,
       bounties: [
         seedBounty("Make the bed", "resolve", "petty"),
-        seedBounty("30-minute workout", "strength", "rookie"),
+        (function () { var b = seedBounty("30-minute workout", "strength", "rookie"); b.health = true; return b; })(),
         seedBounty("Read a chapter", "wisdom", "rookie"),
         seedBounty("Finish a work task", "ambition", "notorious")
       ],
@@ -1454,7 +1529,7 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
   function seedBounty(title, stat, tier) {
     return {
       id: uid(), title: title, stat: stat, tier: tier,
-      status: "open", dueDate: null, recurring: null,
+      status: "open", dueDate: null, recurring: null, health: false,
       createdAt: todayStr(), completedAt: null
     };
   }
@@ -1521,6 +1596,11 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     return null;
   }
   function hasHaki(save, type) { return !!hakiEffect(save, type); }
+
+  // --- is a specific crew member recruited? (gates crew features) ---
+  function hasCrew(save, id) {
+    return (save.crew || []).some(function (c) { return c.id === id && c.recruited; });
+  }
   function streakCap(save) {
     var cap = economy.BUFFS.streakCap;
     (save.crew || []).forEach(function (c) {
@@ -1716,7 +1796,7 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     activeBuffs: activeBuffs,
     streakCap: streakCap,
     hakiUnlocked: hakiUnlocked,
-    hakiEffect: hakiEffect, hasHaki: hasHaki, previewReward: previewReward,
+    hakiEffect: hakiEffect, hasHaki: hasHaki, hasCrew: hasCrew, previewReward: previewReward,
     addDays: addDays,
     markLogPose: markLogPose
   };
@@ -1823,13 +1903,52 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     save._shieldUsed = today;
   }
 
-  function addBounty(save, title, stat, tier, dueDate, recurring) {
+  function addBounty(save, title, stat, tier, dueDate, recurring, health) {
     var b = state.seedBounty(title, stat, tier);
     if (dueDate) b.dueDate = dueDate;
     if (recurring) { b.recurring = recurring; b.lastCompleted = null; }
+    b.health = !!health;
     save.bounties.unshift(b);
     state.save(save);
     return b;
+  }
+
+  function setFocus(save, bountyId) {
+    if (!rewards.hasCrew(save, "sniper")) return { error: "locked" };
+    save.focusBountyId = (save.focusBountyId === bountyId) ? null : bountyId;
+    state.save(save);
+    return { ok: true, focused: save.focusBountyId };
+  }
+
+  function bumpWellness(save, today) {
+    if (!save.wellness) save.wellness = {};
+    save.wellness[today] = (save.wellness[today] || 0) + 1;
+  }
+  function wellnessWeek(save) {
+    var today = state.todayStr(), n = 0;
+    for (var i = 0; i < 7; i++) { n += (save.wellness && save.wellness[rewards.addDays(today, -i)]) || 0; }
+    return n;
+  }
+
+  function shipLog(save) {
+    var today = state.todayStr(), activeDays = 0, bounties = 0, journals = 0;
+    for (var i = 0; i < 7; i++) {
+      var lp = save.logPose[rewards.addDays(today, -i)];
+      if (lp) { activeDays++; bounties += (lp.tasksDone || 0); journals += (lp.journaled || 0); }
+    }
+    var days = Object.keys(save.logPose || {}).sort();
+    var longest = 0, run = 0, prev = null;
+    for (var j = 0; j < days.length; j++) {
+      if (prev && rewards.addDays(prev, 1) === days[j]) run++; else run = 1;
+      if (run > longest) longest = run;
+      prev = days[j];
+    }
+    return { activeDays: activeDays, bounties: bounties, journals: journals, currentStreak: rewards.voyageStreak(save, today), longestStreak: longest };
+  }
+
+  function themePrice(save, baseCost) {
+    if (baseCost > 0 && rewards.hasCrew(save, "shipwright")) return Math.round(baseCost * 0.9);
+    return baseCost;
   }
   function nextDue(recurring, from) {
     var next = rewards.addDays(from, 1);
@@ -1877,18 +1996,33 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     var t = economy.TIERS[b.tier];
     var _ai = save.activeItems || (save.activeItems = {});
     var _surge = !!_ai.xpSurge, _focus = !!_ai.hakiFocus;
-    var _mult = 1;
+    var _mult = 1, _decreed = 0;
     if (save.decree && save.decree.bountyId === id && save.decree.date === today && rewards.hasHaki(save, "decree")) {
-      _mult = rewards.hasHaki(save, "decreeBoost") ? 3 : 2;
+      _decreed = rewards.hasHaki(save, "decreeBoost") ? 3 : 2;
+      _mult = _decreed;
       save.decree = null;
     }
+    var _focusHit = (save.focusBountyId === id && rewards.hasCrew(save, "sniper"));
+    if (_focusHit) _mult *= 1.25;
     var ev = rewards.applyReward(save, { xp: t.xp, stat: b.stat, berries: t.berries, isTask: true, tier: b.tier, bounty: t.bounty, xpSurge: _surge, hakiFocus: _focus, rewardMult: _mult });
-    if (_mult > 1) ev.decreed = _mult;
+    if (_decreed) ev.decreed = _decreed;
+    if (_focusHit) { ev.focusShot = true; save.focusBountyId = null; }
     if (_surge) _ai.xpSurge = false;
     if (_focus) _ai.hakiFocus = false;
     save.player.bountiesCleared = (save.player.bountiesCleared || 0) + 1;
     var ms = economy.BOUNTY_MILESTONES.find(function (m) { return m.count === save.player.bountiesCleared; });
     if (ms) { save.player.berries += ms.bonus; ev.bountyMilestone = ms; }
+    if (b.health) {
+      bumpWellness(save, today);
+      if (rewards.hasCrew(save, "cook")) {
+        var cookBonus = Math.round(t.berries * 0.5);
+        save.player.berries += cookBonus; ev.berries = (ev.berries || 0) + cookBonus; ev.cookBonus = cookBonus;
+      }
+      if (rewards.hasCrew(save, "doctor")) {
+        var ds = save.stats.strength;
+        if (ds) { ds.xp += 5; ds.level = economy.levelFromXp(ds.xp).level; ev.doctorXp = 5; ev.xp = (ev.xp || 0) + 5; }
+      }
+    }
     checkWeeklyOutput(save, ev);
     checkStreakReward(save, ev);
     dispatchProgress(save, { kind: "bounty", tier: b.tier }, ev);
@@ -1945,13 +2079,14 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     if (sg) ai.xpSurge = false;
     if (fc) ai.hakiFocus = false;
     ev.habitStreak = h.streak;
+    if (h.health) bumpWellness(save, today);
     checkStreakReward(save, ev);
     dispatchProgress(save, { kind: "duty" }, ev);
     state.save(save);
     return ev;
   }
-  function addHabit(save, title, stat, tier) {
-    var h = { id: state.uid(), title: title, stat: stat, tier: tier, streak: 0, lastCheckDate: null };
+  function addHabit(save, title, stat, tier, health) {
+    var h = { id: state.uid(), title: title, stat: stat, tier: tier, health: !!health, streak: 0, lastCheckDate: null };
     save.habits.push(h);
     state.save(save);
     return h;
@@ -2059,11 +2194,12 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     var t = economy.THEMES.find(function (x) { return x.id === id; });
     if (!t) return { error: "missing" };
     if (save.player.ownedThemes.indexOf(id) !== -1) return { error: "owned" };
-    if (save.player.berries < t.cost) return { error: "broke", short: t.cost - save.player.berries };
-    save.player.berries -= t.cost;
+    var cost = themePrice(save, t.cost);
+    if (save.player.berries < cost) return { error: "broke", short: cost - save.player.berries };
+    save.player.berries -= cost;
     save.player.ownedThemes.push(id);
-    var r = { ok: true, theme: t };
-    trackSpend(save, t.cost, r);
+    var r = { ok: true, theme: t, paid: cost };
+    trackSpend(save, cost, r);
     state.save(save);
     return r;
   }
@@ -2100,6 +2236,14 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     if (!save.inventory) save.inventory = { xp_surge: 0, berry_haul: 0, streak_shield: 0, haki_focus: 0, log_insight: 0 };
     if (!save.activeItems) save.activeItems = { xpSurge: false, hakiFocus: false, logInsight: false };
     if (save.player.bountyDayDate === undefined) save.player.bountyDayDate = null;
+    if (save.focusBountyId === undefined) save.focusBountyId = null;
+    if (!save.wellness) save.wellness = {};
+    if (save.audioOn === undefined) save.audioOn = false;
+    (save.bounties || []).forEach(function (b) { if (b.health === undefined) b.health = false; });
+    (save.habits || []).forEach(function (h) { if (h.health === undefined) h.health = false; });
+    if (save.focusBountyId && !(save.bounties || []).some(function (b) { return b.id === save.focusBountyId && b.status !== "done"; })) {
+      save.focusBountyId = null;
+    }
     save.player.rankTitle = economy.rankForBounty(save.player.totalBounty || 0).current.title;
     if ((save.hakiVersion || 1) < 2) {
       save.haki = {};
@@ -2129,6 +2273,8 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     buyTheme: buyTheme, setActiveTheme: setActiveTheme,
     recruitCrew: recruitCrew,
     currentDispatch: currentDispatch,
+    setFocus: setFocus, wellnessWeek: wellnessWeek,
+    shipLog: shipLog, themePrice: themePrice,
     setDecree: setDecree,
     useItem: useItem, grantItem: grantItem,
     onLoad: onLoad
@@ -2160,19 +2306,30 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
   var deferredPrompt = null;
   var RANK_FACE = { "East Blue Pirate": "⚓", "Notorious Pirate": "🏴‍☠️", "Warlord of the Sea": "⚔️", "Yonko": "🔱", "King of the Pirates": "👑" };
   function crewIcon(key) {
-    var s = '<svg class="crew-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">';
+    var head = '<svg class="crew-svg" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">';
     var p = {
-      swords:   '<path d="M4 4l8 8M6 4H4v2"/><path d="M20 4l-8 8M18 4h2v2"/><path d="M9 15l-5 5M4 18v2h2"/>',
-      compass:  '<circle cx="12" cy="12" r="9"/><path d="M16 8l-2.5 5.5L8 16l2.5-5.5z" fill="currentColor" stroke="none"/>',
-      slingshot:'<path d="M8 3v6M16 3v6M8 9c0 4 8 4 8 0"/><path d="M12 13v8M9 21h6"/>',
-      flame:    '<path d="M12 3c1 4 5 5 5 9a5 5 0 0 1-10 0c0-2 1-3 2-4 0 2 1 3 2 3 0-3-1-5-1-11z" fill="currentColor" stroke="none"/>',
-      cross:    '<circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8" stroke="var(--parchment)"/>',
-      wrench:   '<path d="M15 4a4 4 0 0 0-5 5l-6 6 3 3 6-6a4 4 0 0 0 5-5l-2.5 2.5L13 7l1.5-3z" fill="currentColor" stroke="none"/>',
-      book:     '<path d="M4 5h7v15H4zM20 5h-7v15h7z"/><path d="M11 5v15"/>',
-      note:     '<path d="M9 18V6l9-2v12"/><circle cx="6.5" cy="18" r="2.5" fill="currentColor" stroke="none"/><circle cx="15.5" cy="16" r="2.5" fill="currentColor" stroke="none"/>',
-      wheel:    '<circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="9"/><path d="M12 3v4M12 17v4M3 12h4M17 12h4"/>'
+      swords: head +
+        '<g transform="rotate(-40 24 24)" opacity="0.45"><line x1="24" y1="3" x2="24" y2="18" stroke-width="1.8"/><rect x="19.5" y="18" width="9" height="2.5" rx="0.8" fill="currentColor" stroke="none"/><line x1="24" y1="20.5" x2="24" y2="44" stroke-width="1.5"/></g>' +
+        '<g transform="rotate(40 24 24)" opacity="0.45"><line x1="24" y1="3" x2="24" y2="18" stroke-width="1.8"/><rect x="19.5" y="18" width="9" height="2.5" rx="0.8" fill="currentColor" stroke="none"/><line x1="24" y1="20.5" x2="24" y2="44" stroke-width="1.5"/></g>' +
+        '<line x1="24" y1="3" x2="24" y2="18" stroke-width="2.5"/><rect x="19" y="18" width="10" height="3" rx="1" fill="currentColor" stroke="none"/><line x1="24" y1="21" x2="24" y2="44" stroke-width="2.2"/></svg>',
+      compass: '<svg class="crew-svg" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6">' +
+        '<rect x="10" y="36" width="28" height="8" rx="4"/><rect x="21" y="27" width="6" height="10" rx="1.5"/><circle cx="24" cy="19" r="11"/><circle cx="24" cy="19" r="5.5" stroke-width="1" opacity="0.4"/><line x1="24" y1="19" x2="24" y2="11" stroke-width="2.2"/><circle cx="24" cy="10" r="2.2" fill="currentColor" stroke="none"/></svg>',
+      slingshot: head +
+        '<line x1="24" y1="30" x2="24" y2="46" stroke-width="3"/><path d="M24 30 C20 26 15 22 12 10" stroke-width="2.4"/><path d="M24 30 C28 26 33 22 36 10" stroke-width="2.4"/><circle cx="12" cy="10" r="2.8" fill="currentColor" stroke="none"/><circle cx="36" cy="10" r="2.8" fill="currentColor" stroke="none"/><path d="M12 10 C17 20 22 26 24 32" stroke-width="1.4" opacity="0.5"/><path d="M36 10 C31 20 26 26 24 32" stroke-width="1.4" opacity="0.5"/><ellipse cx="24" cy="33" rx="3" ry="2" fill="currentColor" stroke="none"/></svg>',
+      flame: '<svg class="crew-svg" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6">' +
+        '<rect x="20" y="6" width="12" height="30" rx="2.5"/><rect x="20" y="34" width="18" height="8" rx="4"/><path d="M20 22 C14 20 12 13 16 9" stroke-width="1.8"/><path d="M20 30 C12 28 10 20 14 15" stroke-width="1.5" opacity="0.6"/><path d="M20 14 C15 12 14 7 18 5" stroke-width="1.5" opacity="0.7"/></svg>',
+      cross: '<svg class="crew-svg" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6">' +
+        '<rect x="18" y="12" width="12" height="26" rx="2"/><rect x="10" y="20" width="28" height="10" rx="2"/><path d="M18 18 C14 15 10 13 8 7" stroke-width="2"/><path d="M13 12 C12 8 13 4 16 3" stroke-width="1.5"/><path d="M30 18 C34 15 38 13 40 7" stroke-width="2"/><path d="M35 12 C36 8 35 4 32 3" stroke-width="1.5"/></svg>',
+      wrench: '<svg class="crew-svg" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6">' +
+        '<rect x="18" y="3" width="12" height="5" rx="1.5"/><path d="M18 8 L17 14 L14 18 L14 38 C14 41.5 18 44 24 44 C30 44 34 41.5 34 38 L34 18 L31 14 L30 8 Z"/><line x1="14" y1="26" x2="34" y2="26" stroke-width="1" opacity="0.4"/><line x1="14" y1="33" x2="34" y2="33" stroke-width="1" opacity="0.4"/><path d="M24 20 L25.4 24 L30 24 L26.5 26.5 L27.8 31 L24 28.4 L20.2 31 L21.5 26.5 L18 24 L22.6 24 Z" fill="currentColor" stroke="none"/></svg>',
+      book: head +
+        '<path d="M20 46 L20 34 Q20 30 24 30 Q28 30 28 34 L28 46" stroke-width="1.6"/><line x1="19" y1="30" x2="13" y2="16" stroke-width="1.5"/><line x1="21" y1="29" x2="19" y2="13" stroke-width="1.5"/><line x1="24" y1="28" x2="24" y2="10" stroke-width="1.5"/><line x1="27" y1="29" x2="29" y2="13" stroke-width="1.5"/><line x1="29" y1="30" x2="35" y2="16" stroke-width="1.5"/><circle cx="24" cy="9" r="2.5" stroke-width="1.3"/><circle cx="24" cy="4.5" r="1.5" fill="currentColor" stroke="none"/><circle cx="27.8" cy="6.5" r="1.5" fill="currentColor" stroke="none"/><circle cx="27.8" cy="11.5" r="1.5" fill="currentColor" stroke="none"/><circle cx="20.2" cy="11.5" r="1.5" fill="currentColor" stroke="none"/><circle cx="20.2" cy="6.5" r="1.5" fill="currentColor" stroke="none"/></svg>',
+      note: '<svg class="crew-svg" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5">' +
+        '<ellipse cx="24" cy="14" rx="17" ry="12"/><ellipse cx="24" cy="34" rx="10" ry="11"/><ellipse cx="20" cy="31" rx="2.5" ry="3" fill="currentColor" stroke="none"/><ellipse cx="28" cy="31" rx="2.5" ry="3" fill="currentColor" stroke="none"/><path d="M22.5 37 L24 34.5 L25.5 37" stroke-width="1.2"/><line x1="20" y1="40.5" x2="28" y2="40.5" stroke-width="1.2"/><line x1="22" y1="40.5" x2="22" y2="43.5" stroke-width="1"/><line x1="24" y1="40.5" x2="24" y2="43.5" stroke-width="1"/><line x1="26" y1="40.5" x2="26" y2="43.5" stroke-width="1"/></svg>',
+      wheel: head +
+        '<circle cx="24" cy="24" r="9" stroke-width="2"/><line x1="24" y1="4" x2="24" y2="13" stroke-width="2.5"/><line x1="24" y1="35" x2="24" y2="44" stroke-width="2.5"/><line x1="4" y1="24" x2="13" y2="24" stroke-width="2.5"/><line x1="35" y1="24" x2="44" y2="24" stroke-width="2.5"/><line x1="9.4" y1="9.4" x2="15.1" y2="15.1" stroke-width="2"/><line x1="38.6" y1="9.4" x2="32.9" y2="15.1" stroke-width="2"/><line x1="9.4" y1="38.6" x2="15.1" y2="32.9" stroke-width="2"/><line x1="38.6" y1="38.6" x2="32.9" y2="32.9" stroke-width="2"/></svg>'
     };
-    return s + (p[key] || '<circle cx="12" cy="12" r="8"/>') + '</svg>';
+    return p[key] || (head + '<circle cx="24" cy="24" r="16" stroke-width="1.6"/></svg>');
   }
   var TIER_ORDER = { petty: 0, rookie: 1, notorious: 2, warlord: 3 };
   var STAT_FLAVOR = { strength: "Crushed it.", wisdom: "Outwitted them.", ambition: "Conquered.", resolve: "Endured." };
@@ -2317,13 +2474,14 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
         : [t.vars["--ocean-navy"], t.vars["--parchment"], t.vars["--bounty-gold"], t.vars["--wanted-red"]];
       palette.forEach(function (c) { var sq = el("div", "theme-sw"); sq.style.background = c; sw.appendChild(sq); });
       var info = el("div", "theme-info");
-      info.innerHTML = '<div class="theme-name">' + t.name + '</div><div class="theme-desc">' + t.desc + (owned || t.cost === 0 ? '' : '  ·  ฿' + fmt(t.cost)) + '</div>';
+      var price = game.themePrice(save, t.cost); var discounted = price < t.cost; var priceHtml = (owned || t.cost === 0) ? '' : (discounted ? '  ·  <span class="price-was">฿' + fmt(t.cost) + '</span> <span class="price-now">฿' + fmt(price) + '</span>' : '  ·  ฿' + fmt(t.cost));
+      info.innerHTML = '<div class="theme-name">' + t.name + '</div><div class="theme-desc">' + t.desc + priceHtml + '</div>';
       var btn = el("button", "theme-btn" + (active ? " active" : ""));
       if (active) { btn.textContent = "Active"; btn.disabled = true; }
       else if (owned) { btn.textContent = "Apply"; btn.onclick = function () { game.setActiveTheme(save, t.id); applyTheme(); renderHold(); renderHeader(); }; }
       else {
-        var afford = save.player.berries >= t.cost;
-        btn.textContent = afford ? "Unlock" : "฿" + fmt(t.cost - save.player.berries);
+        var afford = save.player.berries >= price;
+        btn.textContent = afford ? "Unlock" : "฿" + fmt(price - save.player.berries);
         btn.disabled = !afford;
         btn.onclick = function () { var r = game.buyTheme(save, t.id); if (r.ok) { game.setActiveTheme(save, t.id); applyTheme(); toast('<i class="ti ti-palette"></i> Unlocked the ' + r.theme.name + ' theme!', true); confetti(); announceItems(r.itemsEarned); renderHold(); renderHeader(); } };
       }
@@ -2587,6 +2745,7 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     });
     items = sortBounties(items);
     items.sort(function (a, b) { return (a.status === "done") - (b.status === "done"); });
+    if (save.focusBountyId) items.sort(function (a, b) { return (b.id === save.focusBountyId ? 1 : 0) - (a.id === save.focusBountyId ? 1 : 0); });
     if (!items.length) {
       list.appendChild(el("li", "empty", bountyStatus === "done" ? "No completed bounties yet." : "No bounties here. Post one above."));
       return;
@@ -2608,9 +2767,10 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
         dueHtml = '<span class="' + (overdue ? "due-over" : "due") + '"><i class="ti ti-calendar"></i> ' + (overdue ? "Overdue " : "Due ") + b.dueDate + '</span>';
       }
       var recurHtml = b.recurring ? '<span class="recur-badge"><i class="ti ti-repeat"></i> ' + b.recurring + '</span>' : "";
+      var healthHtml = b.health ? '<span class="health-badge"><i class="ti ti-heart"></i> Health</span>' : "";
       body.innerHTML = '<div class="bounty-title"><i class="ti ' + (STAT_SIGIL[b.stat] || "ti-circle") + ' stat-sigil"></i>' + escapeHtml(b.title) + '</div>' +
         '<div class="bounty-meta"><span class="tier-badge tier-' + b.tier + '">' + economy.TIERS[b.tier].label + '</span>' +
-        '<span>' + economy.STATS[b.stat].name + '</span>' + recurHtml + dueHtml + '</div>';
+        '<span>' + economy.STATS[b.stat].name + '</span>' + recurHtml + healthHtml + dueHtml + '</div>';
       var prev = rewards.hasHaki(save, "preview");
       var rw = prev ? rewards.previewReward(save, b.stat, b.tier) : { berries: economy.TIERS[b.tier].berries, xp: economy.TIERS[b.tier].xp };
       var reward = el("div", "bounty-reward" + (prev ? " previewed" : ""),
@@ -2621,6 +2781,14 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
       var del = el("button", "del-btn", '<i class="ti ti-x"></i>'); del.title = "Delete";
       del.onclick = function () { game.deleteBounty(save, b.id); renderBounties(); renderQuarters(); };
       var acts = el("div", "bounty-acts");
+      if (b.status !== "done" && rewards.hasCrew(save, "sniper")) {
+        var isFocus = save.focusBountyId === b.id;
+        if (isFocus) li.classList.add("focused");
+        var fbtn = el("button", "focus-btn" + (isFocus ? " on" : ""), '<i class="ti ti-crosshair"></i>');
+        fbtn.title = isFocus ? "Focus Shot target — +25% reward on clear" : "Mark as Focus Shot target";
+        fbtn.onclick = function () { doFocus(b.id); };
+        acts.appendChild(fbtn);
+      }
       if (b.status !== "done" && rewards.hasHaki(save, "decree")) {
         var dToday = save.decree && save.decree.date === state.todayStr();
         var dOn = dToday && save.decree.bountyId === b.id;
@@ -2673,6 +2841,7 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     populateDutySelects();
     syncStatDescs();
     var today = state.todayStr();
+    renderWellnessCard();
     var list = $("#dutyList"); list.innerHTML = "";
     if (!save.habits.length) { list.appendChild(el("li", "empty", "No ship duties yet. Add a daily routine below.")); }
     save.habits.forEach(function (h) {
@@ -2684,8 +2853,9 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
       chk.title = doneToday ? "Done today" : "Check in";
       chk.onclick = function () { doCheckHabit(h.id); };
       var body = el("div", "duty-body");
+      var dutyHealth = h.health ? '<span class="health-badge"><i class="ti ti-heart"></i> Health</span>' : '';
       body.innerHTML = '<div class="duty-title"><i class="ti ' + (STAT_SIGIL[h.stat] || "ti-circle") + ' stat-sigil"></i>' + escapeHtml(h.title) + '</div>' +
-        '<div class="duty-meta"><span>' + economy.STATS[h.stat].name + '</span>' +
+        '<div class="duty-meta"><span>' + economy.STATS[h.stat].name + '</span>' + dutyHealth +
         (h.streak > 0 ? '<span class="duty-streak"><i class="ti ti-flame"></i> ' + h.streak + 'd</span>' : '') + '</div>';
       var reward = el("div", "bounty-reward",
         '<span class="br-amount"><span class="br-sign">\u{0E3F}</span>' + fmt(economy.TIERS[h.tier].berries) + '</span>' +
@@ -2699,6 +2869,9 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
 
   function renderLog() {
     var today = state.todayStr();
+    renderLore();
+    renderShipLog();
+    renderVoyageMap();
     function tEntry(type) { return save.journal.find(function (e) { return e.type === type && e.date === today; }); }
     var mi = tEntry("morning_intent"), miEl = $("#morningIntent");
     if (document.activeElement !== miEl) miEl.value = mi ? mi.text : "";
@@ -3038,6 +3211,72 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
       renderBounties();
     }
   }
+  function doFocus(id) {
+    var r = game.setFocus(save, id);
+    if (r && r.ok) {
+      if (r.focused) toast('<i class="ti ti-crosshair"></i> Focus Shot locked on — this bounty pays +25% when you clear it.');
+      else toast('<i class="ti ti-crosshair"></i> Focus Shot released.');
+      renderBounties();
+    }
+  }
+  function renderWellnessCard() {
+    var host = $("#wellnessCard"); if (!host) return;
+    if (!rewards.hasCrew(save, "doctor")) { host.innerHTML = ""; return; }
+    var week = game.wellnessWeek(save);
+    var healthDuties = (save.habits || []).filter(function (h) { return h.health; });
+    var rows = healthDuties.map(function (h) {
+      return '<div class="wellness-row"><span>' + escapeHtml(h.title) + '</span>' +
+        '<span class="wellness-streak"><i class="ti ti-flame"></i> ' + (h.streak || 0) + 'd</span></div>';
+    }).join("");
+    host.innerHTML = '<div class="card wellness-card">' +
+      '<div class="card-head"><i class="ti ti-heartbeat"></i> Wellness <span class="muted">Doctor aboard</span></div>' +
+      '<div class="wellness-count"><span class="wellness-big">' + week + '</span> health check-in' + (week === 1 ? '' : 's') + ' this week</div>' +
+      (rows || '<p class="muted">Tag a duty or bounty as a Health routine to track it here.</p>') +
+      '</div>';
+  }
+
+  function renderLore() {
+    var host = $("#loreCard"); if (!host) return;
+    if (!rewards.hasCrew(save, "archaeologist")) { host.innerHTML = ""; return; }
+    host.innerHTML = '<div class="card lore-card"><div class="card-head"><i class="ti ti-book-2"></i> Poneglyph of the Day</div>' +
+      '<p class="lore-text">' + escapeHtml(economy.loreForDay(state.todayStr())) + '</p></div>';
+  }
+
+  function renderShipLog() {
+    var host = $("#shipLogCard"); if (!host) return;
+    if (!rewards.hasCrew(save, "shipwright")) { host.innerHTML = ""; return; }
+    var s = game.shipLog(save);
+    host.innerHTML = '<div class="card shiplog-card"><div class="card-head"><i class="ti ti-tools"></i> Ship\'s Logbook <span class="muted">this week</span></div>' +
+      '<div class="shiplog-grid">' +
+        '<div class="shiplog-stat"><span class="sl-num">' + s.activeDays + '</span><span class="sl-lbl">active days</span></div>' +
+        '<div class="shiplog-stat"><span class="sl-num">' + s.bounties + '</span><span class="sl-lbl">bounties cleared</span></div>' +
+        '<div class="shiplog-stat"><span class="sl-num">' + s.journals + '</span><span class="sl-lbl">log entries</span></div>' +
+        '<div class="shiplog-stat"><span class="sl-num">' + s.currentStreak + 'd</span><span class="sl-lbl">current streak</span></div>' +
+        '<div class="shiplog-stat"><span class="sl-num">' + s.longestStreak + 'd</span><span class="sl-lbl">longest ever</span></div>' +
+      '</div></div>';
+  }
+
+  function renderVoyageMap() {
+    var host = $("#voyageMapCard"); if (!host) return;
+    if (!rewards.hasCrew(save, "navigator")) { host.innerHTML = ""; return; }
+    var today = state.todayStr();
+    var WEEKS = 12, cells = "";
+    var series = [];
+    for (var i = WEEKS * 7 - 1; i >= 0; i--) {
+      var d = rewards.addDays(today, -i);
+      var lp = save.logPose[d];
+      var n = lp ? ((lp.tasksDone || 0) + (lp.journaled || 0)) : 0;
+      series.push({ date: d, n: n });
+    }
+    series.forEach(function (c) {
+      var lvl = c.n === 0 ? 0 : (c.n >= 5 ? 4 : (c.n >= 3 ? 3 : (c.n >= 2 ? 2 : 1)));
+      cells += '<span class="vm-cell vm-l' + lvl + '" title="' + c.date + ' · ' + c.n + ' action' + (c.n === 1 ? '' : 's') + '"></span>';
+    });
+    host.innerHTML = '<div class="card voyage-card"><div class="card-head"><i class="ti ti-map-2"></i> Voyage Map <span class="muted">last 12 weeks</span></div>' +
+      '<div class="voyage-grid">' + cells + '</div>' +
+      '<div class="voyage-legend"><span>Calm</span><span class="vm-cell vm-l0"></span><span class="vm-cell vm-l1"></span><span class="vm-cell vm-l2"></span><span class="vm-cell vm-l3"></span><span class="vm-cell vm-l4"></span><span>Storm</span></div>' +
+      '</div>';
+  }
 
   function celebrate(ev) {
     if (ev.already) { toast('<i class="ti ti-clock"></i> Already done today.'); return; }
@@ -3046,6 +3285,9 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     if (ev.xp) bits.push("+" + fmt(ev.xp) + " XP");
     if (ev.bountyGain) bits.push("+" + fmt(ev.bountyGain) + " bounty");
     if (bits.length) toast('<i class="ti ti-coin"></i> ' + bits.join("  \u{00B7}  "));
+    if (ev.focusShot) toast('<i class="ti ti-crosshair"></i> Focus Shot hit! +25% reward on the target.');
+    if (ev.cookBonus) toast('<i class="ti ti-flame"></i> Cook\'s galley: +' + fmt(ev.cookBonus) + ' ฿ for a health mission.');
+    if (ev.doctorXp) toast('<i class="ti ti-heartbeat"></i> Doctor\'s orders: +' + ev.doctorXp + ' Strength XP.');
     if (ev.setSail) toast('<i class="ti ti-sailboat"></i> Set Sail bonus! +' + (ev.setSailAmount || 10) + ' \u{0E3F}');
     if (ev.recurredTo) toast('<i class="ti ti-repeat"></i> Repeats \u{2014} next due ' + ev.recurredTo);
     if (ev.habitStreak) toast('<i class="ti ti-flame"></i> ' + ev.habitStreak + '-day Ship Duty streak');
@@ -3173,14 +3415,81 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
 
   function refreshAll() { renderHeader(); renderScreen(); }
 
+  var seaAudio = (function () {
+    var ctx = null, master = null, nodes = [], playing = false;
+    function ensure() {
+      if (ctx) return;
+      var AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return;
+      ctx = new AC();
+      master = ctx.createGain(); master.gain.value = 0; master.connect(ctx.destination);
+    }
+    function noiseBuffer() {
+      var len = 2 * ctx.sampleRate, buf = ctx.createBuffer(1, len, ctx.sampleRate), d = buf.getChannelData(0);
+      var last = 0;
+      for (var i = 0; i < len; i++) { var w = Math.random() * 2 - 1; last = (last + 0.02 * w) / 1.02; d[i] = last * 3.5; }
+      return buf;
+    }
+    function start() {
+      ensure(); if (!ctx || playing) return;
+      if (ctx.state === "suspended") ctx.resume();
+      var src = ctx.createBufferSource(); src.buffer = noiseBuffer(); src.loop = true;
+      var lp = ctx.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 500;
+      var swell = ctx.createOscillator(); swell.frequency.value = 0.07;
+      var swellGain = ctx.createGain(); swellGain.gain.value = 260;
+      swell.connect(swellGain); swellGain.connect(lp.frequency);
+      var surfGain = ctx.createGain(); surfGain.gain.value = 0.5;
+      src.connect(lp); lp.connect(surfGain); surfGain.connect(master);
+      var drone = ctx.createOscillator(); drone.type = "sine"; drone.frequency.value = 68;
+      var droneGain = ctx.createGain(); droneGain.gain.value = 0.04;
+      drone.connect(droneGain); droneGain.connect(master);
+      src.start(); swell.start(); drone.start();
+      nodes = [src, swell, drone];
+      master.gain.cancelScheduledValues(ctx.currentTime);
+      master.gain.setValueAtTime(master.gain.value, ctx.currentTime);
+      master.gain.linearRampToValueAtTime(0.22, ctx.currentTime + 1.2);
+      playing = true;
+    }
+    function stop() {
+      if (!ctx || !playing) return;
+      master.gain.cancelScheduledValues(ctx.currentTime);
+      master.gain.setValueAtTime(master.gain.value, ctx.currentTime);
+      master.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.8);
+      var toKill = nodes; nodes = [];
+      setTimeout(function () { toKill.forEach(function (n) { try { n.stop(); } catch (e) {} }); }, 900);
+      playing = false;
+    }
+    return { start: start, stop: stop, isPlaying: function () { return playing; } };
+  })();
+
+  function refreshAudioBtn() {
+    var b = $("#audioBtn"); if (!b) return;
+    var has = rewards.hasCrew(save, "musician");
+    b.hidden = !has;
+    b.innerHTML = '<i class="ti ti-music"></i> Sea ambient: ' + (save.audioOn ? "on" : "off");
+    b.classList.toggle("on", !!save.audioOn);
+  }
+
   function wire() {
-    $$("[data-goto]").forEach(function (b) { b.onclick = function () { show(b.dataset.goto); }; });
+    $("[data-goto]").forEach(function (b) { b.onclick = function () { show(b.dataset.goto); }; });
+    var _hb = $("#helmBtn"); if (_hb) _hb.addEventListener("click", refreshAudioBtn);
+    var audioBtn = $("#audioBtn");
+    if (audioBtn) audioBtn.onclick = function () {
+      save.audioOn = !save.audioOn; state.save(save);
+      if (save.audioOn) seaAudio.start(); else seaAudio.stop();
+      refreshAudioBtn();
+    };
+    if (save.audioOn && rewards.hasCrew(save, "musician")) {
+      var _resume = function () { seaAudio.start(); document.removeEventListener("pointerdown", _resume); };
+      document.addEventListener("pointerdown", _resume);
+    }
 
     $("#addBountyForm").onsubmit = function (e) {
       e.preventDefault();
       var title = $("#bountyTitle").value.trim(); if (!title) return;
-      game.addBounty(save, title, $("#bountyStat").value, $("#bountyTier").value, $("#bountyDue").value || null, $("#bountyRecurring").value || null);
-      $("#bountyTitle").value = ""; $("#bountyDue").value = ""; $("#bountyRecurring").value = ""; clearDraft("bountyTitle");
+      var bHealth = $("#bountyHealth") && $("#bountyHealth").checked;
+      game.addBounty(save, title, $("#bountyStat").value, $("#bountyTier").value, $("#bountyDue").value || null, $("#bountyRecurring").value || null, bHealth);
+      $("#bountyTitle").value = ""; $("#bountyDue").value = ""; $("#bountyRecurring").value = ""; if ($("#bountyHealth")) $("#bountyHealth").checked = false; clearDraft("bountyTitle");
       renderBounties();
     };
     if ($("#bountyStat")) $("#bountyStat").onchange = syncStatDescs;
@@ -3228,8 +3537,9 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     $("#addDutyForm").onsubmit = function (e) {
       e.preventDefault();
       var title = $("#dutyTitle").value.trim(); if (!title) return;
-      game.addHabit(save, title, $("#dutyStat").value, $("#dutyTier").value);
-      $("#dutyTitle").value = "";
+      var dHealth = $("#dutyHealth") && $("#dutyHealth").checked;
+      game.addHabit(save, title, $("#dutyStat").value, $("#dutyTier").value, dHealth);
+      $("#dutyTitle").value = ""; if ($("#dutyHealth")) $("#dutyHealth").checked = false;
       renderDuties();
     };
 
