@@ -674,6 +674,19 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
 .crew-svg { width: 23px; height: 23px; display: block; }
 .crew-recruit-btn { background: var(--bounty-gold); color: var(--ink); border: none; border-radius: 8px; padding: 7px 12px; font-weight: 700; font-family: inherit; font-size: .74rem; cursor: pointer; white-space: nowrap; }
 .crew-recruit-btn:disabled { background: var(--parchment3); color: var(--ink-soft); cursor: not-allowed; }
+.crew-intro { font-size: .74rem; color: var(--ink-soft); line-height: 1.4; padding: 2px 2px 9px; list-style: none; border-bottom: 1px dashed var(--paper-line); margin-bottom: 5px; }
+.crew-card.locked { opacity: .9; }
+.crew-card.locked .crew-icon { filter: grayscale(.45); opacity: .82; }
+.crew-tag { font-size: .56rem; font-weight: 700; text-transform: uppercase; letter-spacing: .4px; padding: 1px 6px; border-radius: 4px; background: var(--parchment3); color: var(--ink-soft); display: inline-flex; align-items: center; gap: 3px; vertical-align: middle; }
+.crew-tag .ti { font-size: .7rem; }
+.crew-tag.on { background: var(--sea-teal); color: #fff; }
+.crew-bonus { font-size: .73rem; color: var(--ink); line-height: 1.38; margin-top: 3px; }
+.crew-where { font-size: .64rem; color: var(--sea-teal); font-weight: 700; margin-top: 4px; display: flex; align-items: center; gap: 4px; }
+.crew-where .ti { font-size: .82rem; }
+.crew-status.unlocked { font-size: .72rem; font-weight: 700; color: var(--bounty-gold2); display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
+.toast-where { display: block; margin-top: 3px; font-size: .84em; opacity: .95; }
+.nav-pulse { animation: navPulse 1s ease-in-out 0s 5; border-radius: 8px; }
+@keyframes navPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(47,143,134,0); } 50% { box-shadow: 0 0 0 4px rgba(47,143,134,.55); } }
 .float-pop { position: fixed; left: 50%; top: 40%; transform: translateX(-50%); font-family: "Pirata One", serif; font-size: 2.1rem; color: var(--stat, var(--bounty-gold)); text-shadow: 0 2px 8px rgba(0,0,0,.35); pointer-events: none; z-index: 9999; animation: floatPop .75s ease-out forwards; }
 @keyframes floatPop { 0% { opacity: 0; transform: translate(-50%, 10px) scale(.8); } 25% { opacity: 1; transform: translate(-50%, 0) scale(1.12); } 100% { opacity: 0; transform: translate(-50%, -40px) scale(1); } }
 .zone-head { font-family: "Instrument Serif", serif; color: var(--parchment); font-size: 1.1rem; margin: 20px 2px 10px; display: flex; align-items: center; gap: 8px; opacity: .92; }
@@ -1295,15 +1308,15 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
   ];
 
   var CREW = [
-    { id: "swordsman",     name: "Swordsman",     role: "Crewmate", icon: "swords",    cost: 800,    bonus: "+10% XP from Body bounties",   effect: { type: "statXp", stat: "strength", mult: 0.10 } },
-    { id: "navigator",     name: "Navigator",     role: "Crewmate", icon: "compass",   cost: 3000,   bonus: "+10% XP from Mind bounties",   effect: { type: "statXp", stat: "wisdom",   mult: 0.10 } },
-    { id: "sniper",        name: "Sniper",        role: "Crewmate", icon: "slingshot", cost: 8000,   bonus: "+10% XP from Work bounties",   effect: { type: "statXp", stat: "ambition", mult: 0.10 } },
-    { id: "cook",          name: "Cook",          role: "Crewmate", icon: "flame",     cost: 20000,  bonus: "+10% Berries earned",          effect: { type: "berry", mult: 0.10 } },
-    { id: "doctor",        name: "Doctor",        role: "Crewmate", icon: "cross",     cost: 50000,  bonus: "+15% XP from journaling",      effect: { type: "journalXp", value: 0.15 } },
-    { id: "shipwright",    name: "Shipwright",    role: "Crewmate", icon: "wrench",    cost: 100000, bonus: "+10% XP from Chores bounties", effect: { type: "statXp", stat: "resolve",  mult: 0.10 } },
-    { id: "archaeologist", name: "Archaeologist", role: "Crewmate", icon: "book",      cost: 150000, bonus: "+15% XP from Mind bounties",   effect: { type: "statXp", stat: "wisdom",   mult: 0.15 } },
-    { id: "musician",      name: "Musician",      role: "Crewmate", icon: "note",      cost: 200000, bonus: "+15% Berries earned",          effect: { type: "berry", mult: 0.15 } },
-    { id: "helmsman",      name: "Helmsman",      role: "Crewmate", icon: "wheel",     cost: 250000, bonus: "Streak XP cap +15%",           effect: { type: "streakCap", value: 0.15 } }
+    { id: "swordsman",     name: "Swordsman",     role: "Crewmate", icon: "swords",    cost: 800,    bonus: "Sharpens your blade — +10% XP from Body (Strength) bounties.",        where: "Passive — always active",         effect: { type: "statXp", stat: "strength", mult: 0.10 } },
+    { id: "navigator",     name: "Navigator",     role: "Crewmate", icon: "compass",   cost: 3000,   bonus: "Unlocks the Voyage Map — a 12-week heatmap of your activity.",        where: "Captain's Log",                   effect: { type: "statXp", stat: "wisdom",   mult: 0.10 } },
+    { id: "sniper",        name: "Sniper",        role: "Crewmate", icon: "slingshot", cost: 8000,   bonus: "Unlocks Focus Shot — pin one bounty as your target for +25% reward.", where: "Bounty Board",                    effect: { type: "statXp", stat: "ambition", mult: 0.10 } },
+    { id: "cook",          name: "Cook",          role: "Crewmate", icon: "flame",     cost: 20000,  bonus: "Runs the galley — health-tagged missions pay +50% Berries.",         where: "Bounty Board",                    effect: { type: "berry", mult: 0.10 } },
+    { id: "doctor",        name: "Doctor",        role: "Crewmate", icon: "cross",     cost: 50000,  bonus: "Unlocks the Wellness card — track health habits; they grant Strength XP.", where: "Ship Duties",                effect: { type: "journalXp", value: 0.15 } },
+    { id: "shipwright",    name: "Shipwright",    role: "Crewmate", icon: "wrench",    cost: 100000, bonus: "Unlocks the Ship's Logbook (weekly recap) + 10% off all themes.",    where: "Captain's Log & the Hold",        effect: { type: "statXp", stat: "resolve",  mult: 0.10 } },
+    { id: "archaeologist", name: "Archaeologist", role: "Crewmate", icon: "book",      cost: 150000, bonus: "Unlocks Poneglyph of the Day — a canon One Piece fact each day.",     where: "Captain's Log",                   effect: { type: "statXp", stat: "wisdom",   mult: 0.15 } },
+    { id: "musician",      name: "Musician",      role: "Crewmate", icon: "note",      cost: 200000, bonus: "Unlocks sea ambient audio — gentle background sound while you work.", where: "The Helm (settings)",             effect: { type: "berry", mult: 0.15 } },
+    { id: "helmsman",      name: "Helmsman",      role: "Crewmate", icon: "wheel",     cost: 250000, bonus: "Steadies the ship — raises your streak XP cap by +15%.",             where: "Passive — always active",         effect: { type: "streakCap", value: 0.15 } }
   ];
 
   var PROMPTS = [
@@ -3092,19 +3105,28 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
       });
     }
     var crew = $("#crewList"); crew.innerHTML = "";
+    var intro = el("li", "crew-intro", 'Each crewmate unlocks a feature. Locked ones show what you\'ll get — recruit them with Berries to switch it on.');
+    crew.appendChild(intro);
     economy.CREW.forEach(function (def) {
       var c = save.crew.find(function (x) { return x.id === def.id; }) || {};
-      var li = el("li", "crew-card" + (c.recruited ? " recruited" : ""));
+      var recruited = !!c.recruited;
+      var li = el("li", "crew-card" + (recruited ? " recruited" : " locked"));
       var icon = '<span class="crew-icon">' + crewIcon(def.icon) + '</span>';
-      var info = '<div class="crew-info"><div class="crew-name">' + def.name + '</div>' +
-        '<div class="crew-bonus">' + def.bonus + '</div></div>';
+      var tag = recruited
+        ? '<span class="crew-tag on"><i class="ti ti-check"></i> Aboard</span>'
+        : '<span class="crew-tag"><i class="ti ti-lock"></i> Locked</span>';
+      var whereLine = def.where
+        ? '<div class="crew-where"><i class="ti ti-map-pin"></i> ' + (recruited ? "Find it in: " : "Appears in: ") + escapeHtml(def.where) + '</div>'
+        : '';
+      var info = '<div class="crew-info"><div class="crew-name">' + def.name + ' ' + tag + '</div>' +
+        '<div class="crew-bonus">' + escapeHtml(def.bonus) + '</div>' + whereLine + '</div>';
       var ctl;
-      if (c.recruited) {
-        ctl = '<span class="crew-status unlocked"><i class="ti ti-check"></i> Aboard</span>';
+      if (recruited) {
+        ctl = '<span class="crew-status unlocked"><i class="ti ti-anchor"></i> Recruited</span>';
       } else {
         var afford = save.player.berries >= def.cost;
         ctl = '<button class="crew-recruit-btn" data-crew="' + def.id + '"' + (afford ? "" : " disabled") + '>' +
-          (afford ? "Recruit · ฿" + fmt(def.cost) : "฿" + fmt(def.cost)) + '</button>';
+          (afford ? "Recruit · ฿" + fmt(def.cost) : "Recruit to unlock · ฿" + fmt(def.cost)) + '</button>';
       }
       li.innerHTML = icon + info + ctl;
       crew.appendChild(li);
@@ -3195,12 +3217,22 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
     else if (r.ok) { toast('<i class="ti ti-diamond"></i> Claimed: ' + escapeHtml(r.item.name) + '. Enjoy it, captain!', true); announceItems(r.itemsEarned); }
     refreshAll();
   }
+  var CREW_NAV = { "Captain's Log": "log", "Captain's Log & the Hold": "log", "Bounty Board": "bounties", "Ship Duties": "duties", "The Helm (settings)": "helm" };
+  function pulseNav(goto) {
+    var b = document.querySelector('[data-goto="' + goto + '"]') || (goto === "helm" ? $("#helmBtn") : null);
+    if (!b) return;
+    b.classList.add("nav-pulse");
+    setTimeout(function () { b.classList.remove("nav-pulse"); }, 6000);
+  }
   function doRecruit(id) {
     var r = game.recruitCrew(save, id);
     if (r.error === "broke") { toast('<i class="ti ti-lock"></i> Need ฿' + fmt(r.short) + ' more to recruit.'); return; }
     if (r.error) return;
-    toast('<i class="ti ti-anchor"></i> ' + r.crew.name + ' joined your crew! ' + r.crew.bonus, true);
+    var passive = !r.crew.where || r.crew.where.indexOf("Passive") === 0;
+    var loc = passive ? '' : ' <span class="toast-where">Find it in <strong>' + r.crew.where + '</strong>.</span>';
+    toast('<i class="ti ti-anchor"></i> <strong>' + r.crew.name + ' joined the crew!</strong> ' + r.crew.bonus + loc, true);
     confetti("#c8a24a");
+    if (!passive) { var g = CREW_NAV[r.crew.where]; if (g) pulseNav(g); }
     announceItems(r.itemsEarned);
     refreshAll();
   }
