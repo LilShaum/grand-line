@@ -7,7 +7,10 @@ var CORE = ["./", "./index.html", "./manifest.json", "./icon.svg"];
 self.addEventListener("install", function (e) {
   e.waitUntil(
     caches.open(CACHE).then(function (c) {
-      return Promise.all(CORE.map(function (url) { return c.add(url).catch(function () {}); }));
+      // resilient precache: a single missing file must not break install
+      return Promise.all(CORE.map(function (url) {
+        return c.add(url).catch(function () {});
+      }));
     }).then(function () { return self.skipWaiting(); })
   );
 });
@@ -20,10 +23,15 @@ self.addEventListener("activate", function (e) {
 
 self.addEventListener("fetch", function (e) {
   if (e.request.method !== "GET") return;
+
+  // Navigations: network-first so the latest index.html is always served when online.
   if (e.request.mode === "navigate") {
     e.respondWith(
       fetch(e.request).then(function (res) {
-        if (res && res.status === 200) { var copy = res.clone(); caches.open(CACHE).then(function (c) { c.put("./index.html", copy); }); }
+        if (res && res.status === 200) {
+          var copy = res.clone();
+          caches.open(CACHE).then(function (c) { c.put("./index.html", copy); });
+        }
         return res;
       }).catch(function () {
         return caches.match("./index.html").then(function (hit) { return hit || caches.match("./"); });
@@ -31,11 +39,16 @@ self.addEventListener("fetch", function (e) {
     );
     return;
   }
+
+  // Everything else (CSS-in-bundle is inline; this is fonts/icons CDN): cache-first + runtime cache.
   e.respondWith(
     caches.match(e.request).then(function (hit) {
       if (hit) return hit;
       return fetch(e.request).then(function (res) {
-        if (res && res.status === 200) { var copy = res.clone(); caches.open(CACHE).then(function (c) { c.put(e.request, copy); }); }
+        if (res && res.status === 200) {
+          var copy = res.clone();
+          caches.open(CACHE).then(function (c) { c.put(e.request, copy); });
+        }
         return res;
       }).catch(function () { return undefined; });
     })
