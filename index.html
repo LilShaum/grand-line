@@ -5848,10 +5848,10 @@ html { scrollbar-color: var(--bounty-gold2) transparent; }
 
   var ITEMS = {
     xp_surge:      { name: "XP Surge",      icon: "ti-flame",       blurb: "Doubles XP on your next bounty or journal entry. Dropped when you recruit the Shipwright.", use: "active",  earn: "Marine Dispatches \u00B7 recruiting the Shipwright" },
-    berry_haul:    { name: "Berry Haul",    icon: "ti-coins",       blurb: "Instantly hauls in 500 Berries -- cash money. Dropped when you recruit the Navigator.", use: "instant", berries: 500, earn: "Every \u0E3F5,000 spent making port \u00B7 Marine Dispatches \u00B7 recruiting the Navigator" },
-    streak_shield: { name: "Streak Shield", icon: "ti-shield-half", blurb: "Guards your streak from one missed day -- auto-activates. Dropped when you recruit the Gomu Gomu no Mi.", use: "passive", earn: "Marine Dispatches \u00B7 eating the Gomu Gomu no Mi" },
+    berry_haul:    { name: "Berry Haul",    icon: "ti-coins",       blurb: "Instantly hauls in 500 Berries. Dropped when you recruit the Navigator.", use: "instant", berries: 500, earn: "Every \u0E3F5,000 spent making port \u00B7 Marine Dispatches \u00B7 recruiting the Navigator" },
+    streak_shield: { name: "Streak Shield", icon: "ti-shield-half", blurb: "Guards your streak from one missed day - auto-activates. Dropped when you recruit the Gomu Gomu no Mi.", use: "passive", earn: "Marine Dispatches \u00B7 eating the Gomu Gomu no Mi" },
     haki_focus:    { name: "Haki Focus",    icon: "ti-bolt",        blurb: "Your next action earns +1 bonus Haki Point per level gained. Dropped when you recruit the First Mate or reach Yonko.", use: "active",  earn: "Marine Dispatches \u00B7 recruiting the Swordsman" },
-    log_insight:   { name: "Log Insight",   icon: "ti-bulb",        blurb: "Unlocks a bonus reflection prompt on your next Captain's Log entry. Dropped when you recruit the Cook.", use: "active",  earn: "Marine Dispatches \u00B7 recruiting the Cook" }
+    log_insight:   { name: "Log Insight",   icon: "ti-bulb",        blurb: "Adds a reflection prompt to your next log entry for bonus Berries. Dropped when you recruit the Cook.", use: "active",  earn: "Marine Dispatches \u00B7 recruiting the Cook" }
   };
   var ITEM_KEYS = ["xp_surge", "berry_haul", "streak_shield", "haki_focus", "log_insight"];
   var CREW_ITEM = { swordsman: "haki_focus", navigator: "berry_haul", cook: "log_insight", shipwright: "xp_surge", gomu: "streak_shield", yonko: "haki_focus" };
