@@ -4595,18 +4595,26 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
 .memory-form .primary-btn { padding: 10px 14px; }
 
 .journal-feed li {
-  padding: 10px 0; border-bottom: 1px dashed var(--paper-line);
+  padding: 10px 0 10px 14px; border-bottom: 1px dashed var(--paper-line); position: relative;
 }
 .journal-feed li:last-child { border-bottom: none; }
-.jf-head { display: flex; gap: 8px; align-items: center; font-size: .68rem; color: var(--ink-soft); }
-.jf-type {
-  font-weight: 700; text-transform: uppercase; letter-spacing: .5px; font-size: .6rem;
-  padding: 1px 6px; border-radius: 4px; background: var(--parchment2); color: var(--ink);
+.journal-feed li::before {
+  content: ''; position: absolute; left: 0; top: 12px; bottom: 12px;
+  width: 3px; border-radius: 2px; background: var(--jf-bar, var(--paper-line));
 }
-.jf-type.captains_log { background: var(--ocean-navy); color: #fff; }
-.jf-type.recap { background: var(--bounty-gold); }
-.jf-type.mood { background: var(--den-pink); }
-.jf-text { font-family: "Special Elite", monospace; color: var(--ink); margin-top: 4px; font-size: .9rem; line-height: 1.5; }
+.journal-feed li[data-jtype="morning_intent"]    { --jf-bar: var(--bounty-gold); }
+.journal-feed li[data-jtype="evening_reflection"] { --jf-bar: var(--ocean-navy); }
+.journal-feed li[data-jtype="free_write"]         { --jf-bar: var(--sea-teal); }
+.journal-feed li[data-jtype="mood"]               { --jf-bar: var(--den-pink); }
+.journal-feed li[data-jtype="victory"]            { --jf-bar: #f59e0b; }
+.journal-feed li[data-jtype="recap"]              { --jf-bar: var(--bounty-gold2); }
+.journal-feed li[data-jtype="captains_log"]       { --jf-bar: var(--wanted-red); }
+.journal-feed li[data-jtype="memory"]             { --jf-bar: #a855f7; }
+.jf-head { display: flex; gap: 6px; align-items: center; font-size: .68rem; color: var(--ink-soft); margin-bottom: 3px; }
+.jf-icon { opacity: .7; font-size: .82rem; }
+.jf-type { font-weight: 700; text-transform: uppercase; letter-spacing: .05em; font-size: .6rem; color: var(--ink-soft); }
+.jf-date { margin-left: auto; font-size: .65rem; opacity: .6; }
+.jf-text { font-family: "Special Elite", monospace; color: var(--ink); font-size: .9rem; line-height: 1.5; }
 
 /* ===================== LOG POSE (calendar) ===================== */
 .pose-head { display: flex; align-items: center; justify-content: center; gap: 14px; font-family: "Instrument Serif", serif; font-size: 1.2rem; color: var(--ocean-navy); }
@@ -6895,7 +6903,8 @@ html { scrollbar-color: var(--bounty-gold2) transparent; }
   var TIER_ORDER = { petty: 0, rookie: 1, notorious: 2, warlord: 3 };
   var STAT_FLAVOR = { strength: "Crushed it.", wisdom: "Outwitted them.", ambition: "Conquered.", resolve: "Endured." };
   var STAT_SIGIL = { strength: "ti-sword", wisdom: "ti-eye", ambition: "ti-crown", resolve: "ti-anchor" };
-  var LOG_LABEL = { captains_log: "Captain's Log", morning_intent: "Intent", evening_reflection: "Reflection", free_write: "Free Log", memory: "Memory", mood: "Weather", victory: "Victory", recap: "Recap" };
+  var LOG_LABEL = { captains_log: "Captain's Log", morning_intent: "Intent", evening_reflection: "Reflection", free_write: "Free Log", memory: "Memory", mood: "Weather", victory: "Victory", recap: "Recap" }
+  var JF_ICON = {captains_log:'ti-book',morning_intent:'ti-sun',evening_reflection:'ti-moon',free_write:'ti-feather',memory:'ti-star',mood:'ti-cloud',victory:'ti-trophy',recap:'ti-chart-bar'};;
 
   var $ = function (sel, root) { return (root || document).querySelector(sel); };
   var $$ = function (sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); };
@@ -7485,7 +7494,8 @@ html { scrollbar-color: var(--bounty-gold2) transparent; }
       var li = el("li");
       var label = LOG_LABEL[e.type] || e.type;
       var text = e.type === "mood" ? ("Weather: " + e.mood) : escapeHtml(e.text);
-      li.innerHTML = '<div class="jf-head"><span class="jf-type ' + e.type + '">' + label + '</span><span>' + e.date + '</span></div>' +
+      li.setAttribute('data-jtype', e.type);
+      li.innerHTML = '<div class="jf-head"><i class="ti ' + (JF_ICON[e.type]||'ti-pencil') + ' jf-icon"></i><span class="jf-type">' + label + '</span><span class="jf-date">' + e.date + '</span></div>' +
         (text ? '<div class="jf-text">' + text + '</div>' : "");
       feed.appendChild(li);
     });
