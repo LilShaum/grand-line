@@ -5077,8 +5077,6 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
 .wellness-count { font-size: .82rem; color: var(--ink-soft); margin: 2px 0 8px; }
 .wellness-big { font-size: 1.5rem; font-weight: 800; color: var(--wanted-red); margin-right: 4px; }
 .wellness-row { display: flex; justify-content: space-between; align-items: center; font-size: .8rem; padding: 4px 0; border-top: 1px dashed var(--paper-line); color: var(--ink); }
-.wellness-streak { color: var(--wanted-red); font-weight: 700; display: inline-flex; align-items: center; gap: 3px; }
-.wellness-streak .ti { color: var(--bounty-gold2); }
 .lore-card { border-left: 5px solid var(--sea-teal); }
 .lore-text { font-size: .86rem; font-style: italic; color: var(--ink); margin: 4px 0 0; line-height: 1.4; }
 .shiplog-card { border-left: 5px solid var(--bounty-gold2); }
@@ -7066,7 +7064,7 @@ html { scrollbar-color: var(--bounty-gold2) transparent; }
     var inv = save.inventory || {};
     var intro = el("li", "crew-intro", "Provisions are earned, not bought \u2014 Marine Dispatches, new crewmates and spending \u0E3F in port all stock the stores.");
     wrap.appendChild(intro);
-    economy.var _disp=typeof currentDispatch==="function"?currentDispatch(save):null;
+    var _disp=typeof currentDispatch==="function"?currentDispatch(save):null;
     ITEM_KEYS.forEach(function (key) {
       var def = economy.ITEMS[key];
       var count = inv[key] || 0;
@@ -7872,7 +7870,7 @@ html { scrollbar-color: var(--bounty-gold2) transparent; }
     var healthDuties = (save.habits || []).filter(function (h) { return h.health; });
     var rows = healthDuties.map(function (h) {
       return '<div class="wellness-row"><span>' + escapeHtml(h.title) + '</span>' +
-        '<span class="wellness-streak"><i class="ti ti-flame"></i> ' + (h.streak || 0) + 'd</span></div>';
+        '<span class="health-badge"><i class="ti ti-flame"></i> ' + (h.streak || 0) + 'd</span></div>';
     }).join("");
     host.innerHTML = '<div class="card wellness-card">' +
       '<div class="card-head"><i class="ti ti-heartbeat"></i> Wellness <span class="muted">Doctor aboard</span></div>' +
