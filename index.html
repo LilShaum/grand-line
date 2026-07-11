@@ -7513,6 +7513,7 @@ html { scrollbar-color: var(--bounty-gold2) transparent; }
     var strip = $("#moodStrip"); strip.innerHTML = "";
     var today = state.todayStr(), moods = {};
     save.journal.forEach(function (e) { if (e.type === "mood") moods[e.date] = e.mood; });
+    var anyIn14=false;for(var ci=13;ci>=0;ci--){if(moods[rewards.addDays(today,-ci)]){anyIn14=true;break;}}if(!anyIn14){var ep=el('p');ep.className='muted';ep.style.cssText='text-align:center;padding:14px 4px;font-size:0.85em';ep.textContent='No weather logged yet — log Sunny, Cloudy, or Storm above to start tracking the sea.';strip.appendChild(ep);return;}
     for (var i = 13; i >= 0; i--) {
       var ds = rewards.addDays(today, -i), mood = moods[ds];
       var cell = el("div", "mood-cell" + (mood ? " " + mood : "") + (ds === today ? " today" : ""));
