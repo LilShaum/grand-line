@@ -4958,7 +4958,7 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
 .crew-status.unlocked { font-size: .72rem; font-weight: 700; color: var(--bounty-gold2); background: transparent; padding: 0; display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
 .toast-where { display: block; margin-top: 3px; font-size: .84em; opacity: .95; }
 .nav-pulse { animation: navPulse 1s ease-in-out 0s 5; border-radius: 8px; }
-[data-goto="haki"].haki-has-points{position:relative!important}[data-goto="haki"].haki-has-points::after{content:"";position:absolute;top:3px;right:3px;width:8px;height:8px;background:#a855f7;border-radius:50%;box-shadow:0 0 6px #a855f7;pointer-events:none} @keyframes navPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(47,143,134,0); } 50% { box-shadow: 0 0 0 4px rgba(47,143,134,.55); } }
+[data-goto="haki"].item-empty .item-count{font-size:0.78em;color:var(--ocean-navy,#1d5f82);font-weight:600;letter-spacing:0.03em} .haki-has-points{position:relative!important}[data-goto="haki"].haki-has-points::after{content:"";position:absolute;top:3px;right:3px;width:8px;height:8px;background:#a855f7;border-radius:50%;box-shadow:0 0 6px #a855f7;pointer-events:none} @keyframes navPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(47,143,134,0); } 50% { box-shadow: 0 0 0 4px rgba(47,143,134,.55); } }
 .float-pop { position: fixed; left: 50%; top: 40%; transform: translateX(-50%); font-family: "Pirata One", serif; font-size: 2.1rem; color: var(--stat, var(--bounty-gold)); text-shadow: 0 2px 8px rgba(0,0,0,.35); pointer-events: none; z-index: 9999; animation: floatPop .75s ease-out forwards; }
 @keyframes floatPop { 0% { opacity: 0; transform: translate(-50%, 10px) scale(.8); } 25% { opacity: 1; transform: translate(-50%, 0) scale(1.12); } 100% { opacity: 0; transform: translate(-50%, -40px) scale(1); } }
 .zone-head { font-family: "Instrument Serif", serif; color: var(--parchment); font-size: 1.1rem; margin: 20px 2px 10px; display: flex; align-items: center; gap: 8px; opacity: .92; }
@@ -7057,7 +7057,8 @@ html { scrollbar-color: var(--bounty-gold2) transparent; }
     var inv = save.inventory || {};
     var intro = el("li", "crew-intro", "Provisions are earned, not bought \u2014 Marine Dispatches, new crewmates and spending \u0E3F in port all stock the stores.");
     wrap.appendChild(intro);
-    economy.ITEM_KEYS.forEach(function (key) {
+    economy.var _disp=typeof currentDispatch==="function"?currentDispatch(save):null;
+    ITEM_KEYS.forEach(function (key) {
       var def = economy.ITEMS[key];
       var count = inv[key] || 0;
       var li = el("li", "item-card" + (count > 0 ? "" : " item-empty"));
@@ -7065,7 +7066,7 @@ html { scrollbar-color: var(--bounty-gold2) transparent; }
       info.innerHTML = '<div class="item-name"><i class="ti ' + def.icon + '"></i> ' + def.name + ' <span class="item-count">×' + count + '</span></div>' +
         '<div class="item-blurb">' + def.blurb + '</div>' +
         (def.earn ? '<div class="crew-where"><i class="ti ti-map-pin"></i> Earn: ' + def.earn + '</div>' : '');
-      var ctl;
+      if(!count&&_disp&&!_disp.state.done&&_disp.def.reward===key){var _cs=info.querySelector(".item-count");if(_cs)_cs.textContent=(_disp.state.progress||0)+"/"+_disp.def.need;}      var ctl;
       if (def.use === "passive") { ctl = el("span", "item-auto", "Auto"); ctl.title = "Used automatically"; }
       else {
         ctl = el("button", "item-use-btn", def.use === "instant" ? "Use" : "Activate");
