@@ -5097,6 +5097,12 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
 .price-was { text-decoration: line-through; color: var(--ink-soft); opacity: .7; }
 .price-now { color: var(--good); font-weight: 700; }
 #audioBtn.on { color: var(--sea-teal); }
+#sfxBtn.on { color: var(--sea-teal); }
+.audio-block { margin: 8px 0; padding: 8px 0; border-top: 1px dashed var(--paper-line); border-bottom: 1px dashed var(--paper-line); }
+.audio-block-label { margin: 2px 0 8px; font-size: .72rem; color: var(--ink-soft); text-transform: uppercase; letter-spacing: .5px; }
+.volume-row { display: flex; flex-direction: column; gap: 4px; font-size: .82rem; color: var(--ink); margin-bottom: 8px; }
+.volume-row-head { display: flex; justify-content: space-between; align-items: center; }
+.volume-row input[type="range"] { width: 100%; accent-color: var(--sea-teal); }
 .crew-icon { width: 48px; height: 48px; }
 .crew-svg { width: 34px; height: 34px; }
 
@@ -5583,7 +5589,17 @@ html { scrollbar-color: var(--bounty-gold2) transparent; }
         <button class="ghost-btn" id="unlinkBackupBtn" hidden><i class="ti ti-unlink"></i> Unlink backup file</button>
       </div>
       <button class="ghost-btn" id="installBtn" hidden><i class="ti ti-device-mobile"></i> Install on this device</button>
-      <button class="ghost-btn" id="audioBtn" hidden><i class="ti ti-music"></i> Sea ambient: off</button>
+
+      <div class="audio-block">
+        <p class="audio-block-label">Sound &amp; Music</p>
+        <button class="ghost-btn" id="audioBtn" hidden><i class="ti ti-music"></i> Sea ambient: off</button>
+        <label class="volume-row" for="audioVolumeSlider" id="audioVolumeRow" hidden>
+          <span class="volume-row-head">Ambient volume <span id="audioVolumeLabel">40%</span></span>
+          <input type="range" id="audioVolumeSlider" min="0" max="100" value="40" />
+        </label>
+        <button class="ghost-btn" id="sfxBtn"><i class="ti ti-bell-ringing"></i> Sound effects: on</button>
+      </div>
+
       <button class="ghost-btn" id="remindBtn"><i class="ti ti-bell"></i> Daily reminder: off</button>
       <button class="ghost-btn danger" id="resetBtn"><i class="ti ti-trash"></i> Scuttle the ship (reset all data)</button>
       <button class="ghost-btn" id="closeHelm">Close</button>
@@ -5742,9 +5758,9 @@ html { scrollbar-color: var(--bounty-gold2) transparent; }
     { id: "sniper",        name: "Sniper",        role: "Crewmate", icon: "slingshot", cost: 4000,   bonus: "Unlocks Focus Shot — pin one bounty as your target for +25% reward.", where: "Bounty Board",                    effect: { type: "statXp", stat: "ambition", mult: 0.10 } },
     { id: "cook",          name: "Cook",          role: "Crewmate", icon: "flame",     cost: 7000,  bonus: "Runs the galley — health-tagged missions pay +50% Berries.",         where: "Bounty Board",                    effect: { type: "berry", mult: 0.10 } },
     { id: "doctor",        name: "Doctor",        role: "Crewmate", icon: "cross",     cost: 10000,  bonus: "Unlocks the Wellness card — track health habits; they grant Strength XP.", where: "Ship Duties",                effect: { type: "journalXp", value: 0.15 } },
-    { id: "shipwright",    name: "Shipwright",    role: "Crewmate", icon: "wrench",    cost: 14000, bonus: "Unlocks the Ship's Logbook (weekly recap) + 10% off all themes.",    where: "Captain's Log & the Hold",        effect: { type: "statXp", stat: "resolve",  mult: 0.10 } },
     { id: "archaeologist", name: "Archaeologist", role: "Crewmate", icon: "book",      cost: 18000, bonus: "Unlocks Poneglyph of the Day — a canon One Piece fact each day.",     where: "Captain's Log",                   effect: { type: "statXp", stat: "wisdom",   mult: 0.15 } },
-    { id: "musician",      name: "Musician",      role: "Crewmate", icon: "note",      cost: 22000, bonus: "Unlocks sea ambient audio — gentle background sound while you work.", where: "The Helm (settings)",             effect: { type: "berry", mult: 0.15 } },
+    { id: "shipwright",    name: "Shipwright",    role: "Crewmate", icon: "wrench",    cost: 14000, bonus: "Unlocks the Ship's Logbook (weekly recap) + 10% off all themes.",    where: "Captain's Log & the Hold",        effect: { type: "statXp", stat: "resolve",  mult: 0.10 } },
+    { id: "musician",      name: "Musician",      role: "Crewmate", icon: "note",      cost: 14000, bonus: "Unlocks sea ambient audio — gentle background sound while you work.", where: "The Helm (settings)",             effect: { type: "berry", mult: 0.15 } },
     { id: "helmsman",      name: "Helmsman",      role: "Crewmate", icon: "wheel",     cost: 27000, bonus: "Steadies the ship — raises your streak XP cap by +15%.",             where: "Passive — always active",         effect: { type: "streakCap", value: 0.15 } }
   ];
 
@@ -6749,6 +6765,8 @@ html { scrollbar-color: var(--bounty-gold2) transparent; }
     if (save.focusBountyId === undefined) save.focusBountyId = null;
     if (!save.wellness) save.wellness = {};
     if (save.audioOn === undefined) save.audioOn = false;
+    if (save.audioVolume == null) save.audioVolume = 40;
+    if (save.sfxEnabled === undefined) save.sfxEnabled = true;
     (save.bounties || []).forEach(function (b) { if (b.health === undefined) b.health = false; });
     (save.habits || []).forEach(function (h) { if (h.health === undefined) h.health = false; });
     if (save.focusBountyId && !(save.bounties || []).some(function (b) { return b.id === save.focusBountyId && b.status !== "done"; })) {
@@ -7800,7 +7818,8 @@ html { scrollbar-color: var(--bounty-gold2) transparent; }
     if (!ev) { refreshAll(); return; }
     if (ev.already) { toast('<i class="ti ti-clock"></i> Already cleared today.'); refreshAll(); return; }
     stampCard(id, b ? b.stat : "resolve");
-    if (ev.berries) floatPop("+" + fmt(ev.berries) + " ฿", b ? b.stat : null);
+    seaAudio.playSound("complete");
+    if (ev.berries) { floatPop("+" + fmt(ev.berries) + " ฿", b ? b.stat : null); seaAudio.playSound("berry"); }
     if (b) clearedFlavor(b.stat, "bounty cleared");
     celebrate(ev);
     if (b) offerVictory(b.title);
@@ -7813,6 +7832,7 @@ html { scrollbar-color: var(--bounty-gold2) transparent; }
     if (!ev) { refreshAll(); return; }
     if (ev.already) { toast('<i class="ti ti-clock"></i> Already done today.'); refreshAll(); return; }
     stampCard(id, h ? h.stat : "resolve");
+    seaAudio.playSound("complete");
     if (h) clearedFlavor(h.stat, "duty logged");
     celebrate(ev);
     setTimeout(refreshAll, 620);
@@ -7843,6 +7863,7 @@ html { scrollbar-color: var(--bounty-gold2) transparent; }
     var passive = !r.crew.where || r.crew.where.indexOf("Passive") === 0;
     var loc = passive ? '' : ' <span class="toast-where">Find it in <strong>' + r.crew.where + '</strong>.</span>';
     toast('<i class="ti ti-anchor"></i> <strong>' + r.crew.name + ' joined the crew!</strong> ' + r.crew.bonus + loc, true);
+    seaAudio.playSound("recruit");
     confetti("#c8a24a");
     if (!passive) { var g = CREW_NAV[r.crew.where]; if (g) pulseNav(g); }
     announceItems(r.itemsEarned);
@@ -7934,12 +7955,13 @@ html { scrollbar-color: var(--bounty-gold2) transparent; }
     if (ev.doctorXp) toast('<i class="ti ti-heartbeat"></i> Doctor\'s orders: +' + ev.doctorXp + ' Strength XP.');
     if (ev.setSail) toast('<i class="ti ti-sailboat"></i> Set Sail bonus! +' + (ev.setSailAmount || 10) + ' ฿');
     if (ev.recurredTo) toast('<i class="ti ti-repeat"></i> Repeats — next due ' + ev.recurredTo);
-    if (ev.habitStreak) toast('<i class="ti ti-flame"></i> ' + ev.habitStreak + '-day Ship Duty streak');
+    if (ev.habitStreak) { toast('<i class="ti ti-flame"></i> ' + ev.habitStreak + '-day Ship Duty streak'); seaAudio.playSound("streak"); }
     if (ev.hakiPointsGained) toast('<i class="ti ti-bolt"></i> +' + ev.hakiPointsGained + ' Haki Point' + (ev.hakiPointsGained > 1 ? 's' : '') + ' awakened \u2014 spend them in the Haki trees', true);
     if (ev.buffGranted === "morale") toast('<i class="ti ti-mood-smile"></i> Morale up: +10% Berries tomorrow');
     if (ev.buffGranted === "tailwind") toast('<i class="ti ti-wind"></i> Tailwind: +15% XP for 3 days');
     (ev.leveledUp || []).forEach(function (l) {
       toast('<i class="ti ti-arrow-up-circle"></i> ' + economy.STATS[l.stat].name + ' reached Level ' + l.level + '!', true);
+      seaAudio.playSound("levelup");
       confetti();
     });
     if (ev.rankUp) { toast('<i class="ti ti-crown"></i> New title: ' + ev.rankUp.title + '! — ' + ev.rankUp.vibe, true); confetti(); }
@@ -8083,7 +8105,12 @@ html { scrollbar-color: var(--bounty-gold2) transparent; }
       for (var i = 0; i < len; i++) { var w = Math.random() * 2 - 1; last = (last + 0.02 * w) / 1.02; d[i] = last * 3.5; }
       return buf;
     }
+    function savedVolume() {
+      var v = (typeof save !== "undefined" && save && save.audioVolume != null) ? save.audioVolume : 40;
+      return Math.max(0, Math.min(1, v / 100));
+    }
     function start() {
+      if (!rewards.hasCrew(save, "musician")) return;
       ensure(); if (!ctx || playing) return;
       if (ctx.state === "suspended") ctx.resume();
       var src = ctx.createBufferSource(); src.buffer = noiseBuffer(); src.loop = true;
@@ -8100,7 +8127,7 @@ html { scrollbar-color: var(--bounty-gold2) transparent; }
       nodes = [src, swell, drone];
       master.gain.cancelScheduledValues(ctx.currentTime);
       master.gain.setValueAtTime(master.gain.value, ctx.currentTime);
-      master.gain.linearRampToValueAtTime(0.22, ctx.currentTime + 1.2);
+      master.gain.linearRampToValueAtTime(savedVolume(), ctx.currentTime + 1.2);
       playing = true;
     }
     function stop() {
@@ -8112,7 +8139,61 @@ html { scrollbar-color: var(--bounty-gold2) transparent; }
       setTimeout(function () { toKill.forEach(function (n) { try { n.stop(); } catch (e) {} }); }, 900);
       playing = false;
     }
-    return { start: start, stop: stop, isPlaying: function () { return playing; } };
+    function setVolume(v) {
+      if (ctx && ctx.state === "running") {
+        master.gain.setTargetAtTime(Math.max(0, Math.min(1, v / 100)), ctx.currentTime, 0.1);
+      }
+    }
+    function sfxEnabled() {
+      return !(typeof save !== "undefined" && save && save.sfxEnabled === false);
+    }
+    function sfxGain(dest) {
+      var g = ctx.createGain(); g.gain.value = 0; g.connect(dest || ctx.destination);
+      return g;
+    }
+    function playSound(type) {
+      if (!sfxEnabled()) return;
+      ensure(); if (!ctx) return;
+      if (ctx.state === "suspended") ctx.resume();
+      var t = ctx.currentTime;
+      if (type === "complete") {
+        [440, 440].forEach(function (f, i) {
+          var o = ctx.createOscillator(); o.type = "sine"; o.frequency.setValueAtTime(f, t);
+          o.frequency.linearRampToValueAtTime(880, t + 0.15);
+          var g = sfxGain(); g.gain.setValueAtTime(0.3, t); g.gain.linearRampToValueAtTime(0, t + 0.3);
+          o.connect(g); o.detune.value = i * 4; o.start(t); o.stop(t + 0.3);
+        });
+      } else if (type === "levelup") {
+        [523.25, 659.25, 783.99].forEach(function (f, i) {
+          var start = t + i * 0.1;
+          var o = ctx.createOscillator(); o.type = "square"; o.frequency.value = f;
+          var g = sfxGain(); g.gain.setValueAtTime(0.2, start); g.gain.linearRampToValueAtTime(0, start + 0.1);
+          o.connect(g); o.start(start); o.stop(start + 0.1);
+        });
+      } else if (type === "recruit") {
+        [261, 329, 392].forEach(function (f) {
+          var o = ctx.createOscillator(); o.type = "sine"; o.frequency.value = f;
+          var g = sfxGain(); g.gain.setValueAtTime(0, t);
+          g.gain.linearRampToValueAtTime(0.25, t + 0.02);
+          g.gain.linearRampToValueAtTime(0, t + 0.5);
+          o.connect(g); o.start(t); o.stop(t + 0.5);
+        });
+      } else if (type === "berry") {
+        var o = ctx.createOscillator(); o.type = "sine";
+        o.frequency.setValueAtTime(1200, t); o.frequency.linearRampToValueAtTime(800, t + 0.2);
+        var g = sfxGain(); g.gain.setValueAtTime(0.4, t); g.gain.linearRampToValueAtTime(0, t + 0.2);
+        o.connect(g); o.start(t); o.stop(t + 0.2);
+      } else if (type === "streak") {
+        var o2 = ctx.createOscillator(); o2.type = "sine"; o2.frequency.value = 523;
+        var lfo = ctx.createOscillator(); lfo.frequency.value = 6;
+        var lfoGain = ctx.createGain(); lfoGain.gain.value = 5;
+        lfo.connect(lfoGain); lfoGain.connect(o2.frequency);
+        var g2 = sfxGain(); g2.gain.setValueAtTime(0.3, t); g2.gain.linearRampToValueAtTime(0, t + 0.6);
+        o2.connect(g2); o2.start(t); o2.stop(t + 0.6);
+        lfo.start(t); lfo.stop(t + 0.6);
+      }
+    }
+    return { start: start, stop: stop, isPlaying: function () { return playing; }, setVolume: setVolume, playSound: playSound };
   })();
 
   function refreshAudioBtn() {
@@ -8121,11 +8202,22 @@ html { scrollbar-color: var(--bounty-gold2) transparent; }
     b.hidden = !has;
     b.innerHTML = '<i class="ti ti-music"></i> Sea ambient: ' + (save.audioOn ? "on" : "off");
     b.classList.toggle("on", !!save.audioOn);
+    var row = $("#audioVolumeRow"); if (row) row.hidden = !has;
+    var slider = $("#audioVolumeSlider"), label = $("#audioVolumeLabel");
+    var vol = save.audioVolume == null ? 40 : save.audioVolume;
+    if (slider) slider.value = vol;
+    if (label) label.textContent = vol + "%";
+  }
+
+  function refreshSfxBtn() {
+    var b = $("#sfxBtn"); if (!b) return;
+    b.innerHTML = '<i class="ti ti-bell-ringing"></i> Sound effects: ' + (save.sfxEnabled ? "on" : "off");
+    b.classList.toggle("on", !!save.sfxEnabled);
   }
 
   function wire() {
     $$("[data-goto]").forEach(function (b) { b.onclick = function () { show(b.dataset.goto); }; });
-    var _hb = $("#helmBtn"); if (_hb) _hb.addEventListener("click", refreshAudioBtn);
+    var _hb = $("#helmBtn"); if (_hb) _hb.addEventListener("click", function () { refreshAudioBtn(); refreshSfxBtn(); });
     var audioBtn = $("#audioBtn");
     if (audioBtn) audioBtn.onclick = function () {
       save.audioOn = !save.audioOn; state.save(save);
@@ -8136,6 +8228,21 @@ html { scrollbar-color: var(--bounty-gold2) transparent; }
       var _resume = function () { seaAudio.start(); document.removeEventListener("pointerdown", _resume); };
       document.addEventListener("pointerdown", _resume);
     }
+    var volSlider = $("#audioVolumeSlider"), volLabel = $("#audioVolumeLabel");
+    if (volSlider) {
+      volSlider.oninput = function () {
+        var v = parseInt(this.value, 10);
+        save.audioVolume = v; state.save(save);
+        if (volLabel) volLabel.textContent = v + "%";
+        seaAudio.setVolume(v);
+      };
+    }
+    refreshSfxBtn();
+    var sfxBtn = $("#sfxBtn");
+    if (sfxBtn) sfxBtn.onclick = function () {
+      save.sfxEnabled = !save.sfxEnabled; state.save(save);
+      refreshSfxBtn();
+    };
 
     $("#addBountyForm").onsubmit = function (e) {
       e.preventDefault();
