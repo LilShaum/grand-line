@@ -4958,7 +4958,7 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
 .crew-status.unlocked { font-size: .72rem; font-weight: 700; color: var(--bounty-gold2); background: transparent; padding: 0; display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
 .toast-where { display: block; margin-top: 3px; font-size: .84em; opacity: .95; }
 .nav-pulse { animation: navPulse 1s ease-in-out 0s 5; border-radius: 8px; }
-@keyframes navPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(47,143,134,0); } 50% { box-shadow: 0 0 0 4px rgba(47,143,134,.55); } }
+[data-goto="haki"].haki-has-points{position:relative!important}[data-goto="haki"].haki-has-points::after{content:"";position:absolute;top:3px;right:3px;width:8px;height:8px;background:#a855f7;border-radius:50%;box-shadow:0 0 6px #a855f7;pointer-events:none} @keyframes navPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(47,143,134,0); } 50% { box-shadow: 0 0 0 4px rgba(47,143,134,.55); } }
 .float-pop { position: fixed; left: 50%; top: 40%; transform: translateX(-50%); font-family: "Pirata One", serif; font-size: 2.1rem; color: var(--stat, var(--bounty-gold)); text-shadow: 0 2px 8px rgba(0,0,0,.35); pointer-events: none; z-index: 9999; animation: floatPop .75s ease-out forwards; }
 @keyframes floatPop { 0% { opacity: 0; transform: translate(-50%, 10px) scale(.8); } 25% { opacity: 1; transform: translate(-50%, 0) scale(1.12); } 100% { opacity: 0; transform: translate(-50%, -40px) scale(1); } }
 .zone-head { font-family: "Instrument Serif", serif; color: var(--parchment); font-size: 1.1rem; margin: 20px 2px 10px; display: flex; align-items: center; gap: 8px; opacity: .92; }
@@ -6197,7 +6197,7 @@ html { scrollbar-color: var(--bounty-gold2) transparent; }
       var gainedLevels = after - before;
       if (gainedLevels > 0) {
         var granted = grantHakiPoints(save, gainedLevels);
-        if (granted > 0) events.hakiPointsGained = granted;
+        if (granted > 0) events.hakiPointsGained = granted; pulseNav('haki');
       }
       if (opts.hakiFocus) {
         var hb = grantHakiPoints(save, Math.max(1, gainedLevels));
@@ -8056,7 +8056,7 @@ html { scrollbar-color: var(--bounty-gold2) transparent; }
     restoreDrafts();
   }
 
-  function refreshAll() { renderHeader(); renderScreen(); }
+  function refreshAll() { renderHeader(); renderScreen(); (function(){var hn=document.querySelector('[data-goto="haki"]');if(hn&&typeof save!=="undefined"&&save)hn.classList.toggle("haki-has-points",!!(save.hakiPool));})(); }
 
   var seaAudio = (function () {
     var ctx = null, master = null, nodes = [], playing = false;
