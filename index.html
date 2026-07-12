@@ -4649,17 +4649,6 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
 .buy-btn { background: var(--bounty-gold2); color: #fff; border: none; border-radius: 8px; padding: 8px 12px; font-weight: 700; cursor: pointer; font-family: inherit; touch-action: manipulation; }
 .buy-btn:disabled { background: var(--disabled-bg); cursor: not-allowed; }
 
-.crew-list li { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px dashed var(--paper-line); }
-.crew-list li:last-child { border-bottom: none; }
-.crew-medal { font-size: 1.3rem; width: 30px; text-align: center; }
-.crew-info { flex: 1; }
-.crew-name { font-weight: 600; color: var(--ink); font-size: .9rem; }
-.crew-bonus { font-size: .7rem; color: var(--ink-soft); }
-.crew-locked { opacity: .5; }
-.crew-status { font-size: .64rem; font-weight: 700; padding: 2px 8px; border-radius: 999px; }
-.crew-status.locked { background: var(--parchment2); color: var(--ink-soft); }
-.crew-status.unlocked { background: var(--good); color: #fff; }
-
 /* ===================== TABBAR ===================== */
 .tabbar {
   position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
@@ -4948,23 +4937,198 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
 .vault-progress { height: 6px; background: rgba(255,255,255,.12); border-radius: 4px; overflow: hidden; }
 .vault-progress-fill { height: 100%; width: 0%; background: var(--bounty-gold); border-radius: 4px; transition: width .5s ease; }
 .vault-next { font-size: .68rem; color: rgba(244,236,216,.7); }
-.crew-card { gap: 11px; }
-.crew-icon { width: 50px; height: 50px; flex: none; display: flex; align-items: center; justify-content: center; background: transparent; border: none; color: var(--ink); }
-.crew-card.recruited .crew-svg { filter: drop-shadow(0 2px 3px rgba(0,0,0,.28)) drop-shadow(0 0 5px var(--gold-faint)); }
-.crew-svg { width: 46px; height: 46px; display: block; filter: drop-shadow(0 2px 3px rgba(0,0,0,.28)); }
-.crew-recruit-btn { background: var(--bounty-gold); color: var(--ink); border: none; border-radius: 8px; padding: 7px 12px; font-weight: 700; font-family: inherit; font-size: .74rem; cursor: pointer; white-space: nowrap; }
-.crew-recruit-btn:disabled { background: var(--parchment3); color: var(--ink-soft); cursor: not-allowed; }
 .crew-intro { font-size: .74rem; color: var(--ink-soft); line-height: 1.4; padding: 2px 2px 9px; list-style: none; border-bottom: 1px dashed var(--paper-line); margin-bottom: 5px; }
-.crew-card.locked { opacity: .9; }
-.crew-card.locked .crew-icon { filter: grayscale(.5); opacity: .88; }
-.crew-tag { font-size: .56rem; font-weight: 700; text-transform: uppercase; letter-spacing: .4px; padding: 1px 6px; border-radius: 4px; background: var(--parchment3); color: var(--ink-soft); display: inline-flex; align-items: center; gap: 3px; vertical-align: middle; }
-.crew-tag .ti { font-size: .7rem; }
-.crew-tag.on { background: var(--sea-teal); color: #fff; }
-.crew-bonus { font-size: .73rem; color: var(--ink); line-height: 1.38; margin-top: 3px; }
 .crew-where { font-size: .64rem; color: var(--sea-teal); font-weight: 700; margin-top: 4px; display: flex; align-items: center; gap: 4px; }
 .crew-where .ti { font-size: .82rem; }
-.crew-status.unlocked { font-size: .72rem; font-weight: 700; color: var(--bounty-gold2); background: transparent; padding: 0; display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
 .toast-where { display: block; margin-top: 3px; font-size: .84em; opacity: .95; }
+
+/* ── Crew grid: One Piece wanted-poster cards ── */
+.crew-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  padding: 8px 0;
+}
+
+.crew-card {
+  background: linear-gradient(
+    160deg,
+    #F7E8C0 0%,
+    #EDD9A0 40%,
+    #F2E2B2 100%
+  );
+  border: 2px solid #8B6914;
+  box-shadow:
+    inset 0 0 0 3px #F7E8C0,
+    inset 0 0 0 5px #7A5C10,
+    0 4px 16px rgba(0,0,0,0.3),
+    0 1px 4px rgba(0,0,0,0.15);
+  border-radius: 3px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 14px 10px 12px;
+  gap: 6px;
+  position: relative;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.crew-card:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    inset 0 0 0 3px #F7E8C0,
+    inset 0 0 0 5px #7A5C10,
+    0 8px 24px rgba(0,0,0,0.3),
+    0 2px 6px rgba(0,0,0,0.15);
+}
+
+.crew-wanted-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1;
+  margin-bottom: 2px;
+}
+
+.crew-wanted-text {
+  font-family: 'Pirata One', serif;
+  font-size: 1.6rem;
+  color: #B81C0C;
+  letter-spacing: 0.08em;
+  text-shadow: 1px 1px 0 rgba(0,0,0,0.2);
+  line-height: 1;
+}
+
+.crew-wanted-sub {
+  font-family: 'Geist', sans-serif;
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.25em;
+  color: #B81C0C;
+  text-transform: uppercase;
+  margin-top: 1px;
+}
+
+.crew-icon-area {
+  width: 80px;
+  height: 80px;
+  border: 1.5px solid #7A5C10;
+  background: rgba(0,0,0,0.06);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 2px;
+  margin: 4px 0;
+}
+
+.crew-icon-area .ti {
+  font-size: 2.4rem;
+  color: #2a1f0e;
+  opacity: 0.75;
+}
+
+.crew-name {
+  font-family: 'Pirata One', serif;
+  font-size: 1rem;
+  color: #1a1207;
+  text-align: center;
+  line-height: 1.1;
+}
+
+.crew-bounty-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #B81C0C;
+  color: #FFF8E6;
+  padding: 3px 10px 4px;
+  border-radius: 2px;
+  margin: 2px 0;
+  width: 100%;
+}
+
+.crew-bounty-label {
+  font-family: 'Geist', sans-serif;
+  font-size: 0.45rem;
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  opacity: 0.85;
+  line-height: 1;
+}
+
+.crew-bounty-amount {
+  font-family: 'Instrument Serif', serif;
+  font-size: 1.1rem;
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+.crew-bonus {
+  font-family: 'Geist', sans-serif;
+  font-size: 0.62rem;
+  color: #3a2c10;
+  text-align: center;
+  line-height: 1.35;
+  opacity: 0.9;
+  padding: 0 2px;
+}
+
+.crew-recruit-btn {
+  margin-top: 4px;
+  width: 100%;
+  padding: 6px 0;
+  font-family: 'Geist', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: #2a1f0e;
+  color: #F7E8C0;
+  border: none;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: background 0.1s ease;
+}
+
+.crew-recruit-btn:hover:not(:disabled) {
+  background: #B81C0C;
+}
+
+.crew-recruit-btn:disabled,
+.crew-card.recruited .crew-recruit-btn {
+  background: #7A5C10;
+  opacity: 0.6;
+  cursor: default;
+}
+
+.crew-card.recruited::after {
+  content: 'RECRUITED';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-15deg);
+  font-family: 'Pirata One', serif;
+  font-size: 1rem;
+  color: rgba(0, 120, 40, 0.35);
+  border: 2px solid rgba(0, 120, 40, 0.35);
+  padding: 4px 8px;
+  border-radius: 3px;
+  pointer-events: none;
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+}
+
+.crew-card .crew-where {
+  display: block;
+  font-family: 'Geist', sans-serif;
+  font-size: 0.55rem;
+  font-weight: 400;
+  font-style: italic;
+  color: #5a4520;
+  text-align: center;
+  margin-top: 0;
+}
 .nav-pulse { animation: navPulse 1s ease-in-out 0s 5; border-radius: 8px; }
 [data-goto="haki"].item-empty .item-count{font-size:0.78em;color:var(--ocean-navy,#1d5f82);font-weight:600;letter-spacing:0.03em} .haki-has-points{position:relative!important}[data-goto="haki"].haki-has-points::after{content:"";position:absolute;top:3px;right:3px;width:8px;height:8px;background:#a855f7;border-radius:50%;box-shadow:0 0 6px #a855f7;pointer-events:none} @keyframes navPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(47,143,134,0); } 50% { box-shadow: 0 0 0 4px rgba(47,143,134,.55); } }
 .float-pop { position: fixed; left: 50%; top: 40%; transform: translateX(-50%); font-family: "Pirata One", serif; font-size: 2.1rem; color: var(--stat, var(--bounty-gold)); text-shadow: 0 2px 8px rgba(0,0,0,.35); pointer-events: none; z-index: 9999; animation: floatPop .75s ease-out forwards; }
@@ -5103,8 +5267,6 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
 .volume-row { display: flex; flex-direction: column; gap: 4px; font-size: .82rem; color: var(--ink); margin-bottom: 8px; }
 .volume-row-head { display: flex; justify-content: space-between; align-items: center; }
 .volume-row input[type="range"] { width: 100%; accent-color: var(--sea-teal); }
-.crew-icon { width: 48px; height: 48px; }
-.crew-svg { width: 34px; height: 34px; }
 
 
 /* =============================================================
@@ -5528,7 +5690,8 @@ html { scrollbar-color: var(--bounty-gold2) transparent; }
 
       <div class="card">
         <div class="card-head"><i class="ti ti-anchor"></i> Recruit Crew <span class="muted">spend ฿ to bring nakama aboard</span></div>
-        <ul class="crew-list" id="crewList"></ul>
+        <p class="crew-intro">Each crewmate unlocks a feature. Locked ones show what you'll get — recruit them with Berries to switch it on.</p>
+        <div class="crew-list" id="crewList"></div>
       </div>
 
       <div class="zone-head"><i class="ti ti-briefcase"></i> Ship's stores</div>
@@ -6843,79 +7006,6 @@ html { scrollbar-color: var(--bounty-gold2) transparent; }
   var pendingConfirm = null;
   var deferredPrompt = null;
   var RANK_FACE = { "East Blue Pirate": "⚓", "Notorious Pirate": "🏴‍☠️", "Warlord of the Sea": "⚔️", "Yonko": "🔱", "King of the Pirates": "👑" };
-  function crewPalette() {
-    var cs = getComputedStyle(document.documentElement);
-    function v(n) { return (cs.getPropertyValue(n) || "").trim(); }
-    function rgb(c) { var m = /^#(..)(..)(..)/.exec(c); return m ? [parseInt(m[1], 16), parseInt(m[2], 16), parseInt(m[3], 16)] : [0, 0, 0]; }
-    function lum(c) { var x = rgb(c); return .2126 * x[0] + .7152 * x[1] + .0722 * x[2]; }
-    function shade(c, f) {
-      var x = rgb(c);
-      function h(n) { n = Math.round(Math.min(255, n * f)); return (n < 16 ? "0" : "") + n.toString(16); }
-      return "#" + h(x[0]) + h(x[1]) + h(x[2]);
-    }
-    var P = {
-      navy: v("--ocean-navy"), navy2: v("--ocean-navy2"),
-      gold: v("--bounty-gold"), gold2: v("--bounty-gold2"),
-      red: v("--wanted-red"), teal: v("--sea-teal"), pink: v("--den-pink"),
-      parch: v("--parchment"), ink: v("--ink")
-    };
-    P.bone = Math.abs(lum(P.parch) - lum(P.navy2)) >= Math.abs(lum(P.ink) - lum(P.navy2)) ? P.parch : P.ink;
-    P.bone2 = shade(P.bone, lum(P.bone) > 128 ? .8 : 1.25);
-    P.sock = lum(P.bone) > lum(P.navy2) ? P.navy2 : P.parch;
-    return P;
-  }
-  function crewIcon(key) {
-    var P = crewPalette();
-    var K = "glm-" + key;
-    var GOLD = 'url(#' + K + '-gold)', STEEL = 'url(#' + K + '-steel)';
-    var defs = '<defs>' +
-      '<radialGradient id="' + K + '-bg" cx="35%" cy="28%" r="80%"><stop offset="0%" stop-color="' + P.navy + '"/><stop offset="100%" stop-color="' + P.navy2 + '"/></radialGradient>' +
-      '<linearGradient id="' + K + '-gold" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="' + P.gold + '"/><stop offset="100%" stop-color="' + P.gold2 + '"/></linearGradient>' +
-      '<linearGradient id="' + K + '-steel" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="' + P.bone + '"/><stop offset="100%" stop-color="' + P.bone2 + '"/></linearGradient>' +
-      '</defs>';
-    var base = '<circle cx="24" cy="24" r="22" fill="url(#' + K + '-bg)" stroke="' + P.gold2 + '" stroke-width="1.6"/>' +
-      '<circle cx="24" cy="24" r="19.4" fill="none" stroke="' + P.gold + '" stroke-width="1" stroke-dasharray="2.6 2.3" opacity=".38"/>';
-    var shine = '<ellipse cx="16.5" cy="11.5" rx="9.5" ry="5" fill="#fff" opacity=".10" transform="rotate(-26 16.5 11.5)"/>' +
-      '<path d="M8 33 A17.5 17.5 0 0 0 40 33" fill="none" stroke="#000" opacity=".14" stroke-width="3.5"/>';
-    var art = {
-      swords: '<g transform="rotate(-36 24 24)" opacity=".75"><rect x="22.9" y="8.5" width="2.6" height="12.5" rx="1" fill="' + STEEL + '"/><rect x="20.6" y="21" width="7.2" height="2" rx=".7" fill="' + P.gold2 + '"/><rect x="23" y="23" width="2.4" height="8.5" rx="1" fill="' + P.red + '"/></g>' +
-        '<g transform="rotate(36 24 24)" opacity=".75"><rect x="22.9" y="8.5" width="2.6" height="12.5" rx="1" fill="' + STEEL + '"/><rect x="20.6" y="21" width="7.2" height="2" rx=".7" fill="' + P.gold2 + '"/><rect x="23" y="23" width="2.4" height="8.5" rx="1" fill="' + P.red + '"/></g>' +
-        '<path d="M24 5.5 L26.2 9 L26.2 21.5 L21.8 21.5 L21.8 9 Z" fill="' + STEEL + '"/><line x1="24" y1="7" x2="24" y2="21" stroke="#fff" stroke-width=".7" opacity=".55"/>' +
-        '<rect x="19.2" y="21.5" width="9.6" height="2.7" rx="1" fill="' + GOLD + '"/><rect x="22" y="24.2" width="4" height="11" rx="1.4" fill="' + P.red + '"/>' +
-        '<line x1="22.3" y1="26.5" x2="25.7" y2="28.2" stroke="' + P.gold2 + '" stroke-width=".9"/><line x1="25.7" y1="29.5" x2="22.3" y2="31.2" stroke="' + P.gold2 + '" stroke-width=".9"/><circle cx="24" cy="36.6" r="1.8" fill="' + GOLD + '"/>',
-      compass: '<circle cx="24" cy="24" r="13.6" fill="' + P.bone + '" stroke="' + P.gold2 + '" stroke-width="1"/><circle cx="24" cy="24" r="11.2" fill="none" stroke="' + P.gold2 + '" stroke-width=".5" opacity=".5"/>' +
-        '<g opacity=".9"><path d="M24 13 L25.6 22.4 L24 24 Z" fill="' + P.gold2 + '"/><path d="M24 13 L22.4 22.4 L24 24 Z" fill="' + P.gold + '"/><path d="M24 35 L25.6 25.6 L24 24 Z" fill="' + P.gold + '"/><path d="M24 35 L22.4 25.6 L24 24 Z" fill="' + P.gold2 + '"/><path d="M13 24 L22.4 25.6 L24 24 Z" fill="' + P.gold + '"/><path d="M13 24 L22.4 22.4 L24 24 Z" fill="' + P.gold2 + '"/><path d="M35 24 L25.6 22.4 L24 24 Z" fill="' + P.gold + '"/><path d="M35 24 L25.6 25.6 L24 24 Z" fill="' + P.gold2 + '"/></g>' +
-        '<path d="M29.5 18.5 L25.2 22.8 L24 24 L25.2 25.2 Z" fill="' + P.red + '" transform="rotate(8 24 24)"/><circle cx="24" cy="24" r="2.1" fill="' + GOLD + '" stroke="' + P.gold2 + '" stroke-width=".6"/>',
-      slingshot: '<path d="M24 43 L24 28 M24 28 C20 24.5 16.5 20 14.5 12 M24 28 C28 24.5 31.5 20 33.5 12" fill="none" stroke="' + P.gold2 + '" stroke-width="6" stroke-linecap="round"/>' +
-        '<path d="M24 43 L24 28 M24 28 C20 24.5 16.5 20 14.5 12 M24 28 C28 24.5 31.5 20 33.5 12" fill="none" stroke="' + GOLD + '" stroke-width="3.6" stroke-linecap="round"/>' +
-        '<path d="M14.5 12 C19 19 22 23 24 30 M33.5 12 C29 19 26 23 24 30" fill="none" stroke="' + P.red + '" stroke-width="1.6" stroke-linecap="round"/>' +
-        '<ellipse cx="24" cy="30.5" rx="3.2" ry="2.4" fill="' + P.bone + '" stroke="' + P.gold2 + '" stroke-width=".7"/><circle cx="14.5" cy="11" r="2.4" fill="' + P.red + '" stroke="' + P.gold2 + '" stroke-width=".7"/><circle cx="33.5" cy="11" r="2.4" fill="' + P.red + '" stroke="' + P.gold2 + '" stroke-width=".7"/>',
-      flame: '<path d="M24 7.5 C25 13 30.5 15.5 32.5 21 C34.5 26.5 33 32.5 28.5 36 C30 32 29 28.5 26.5 26.5 C27.5 31 24.5 33 24 36.5 C23 32.5 19.5 31.5 20.5 26.5 C18 28.5 17.5 32.5 19.5 36 C15 32.5 13.5 26.5 15.5 21 C17.5 15.5 23 13 24 7.5 Z" fill="' + P.red + '" stroke="' + P.gold2 + '" stroke-width="1" paint-order="stroke"/>' +
-        '<path d="M24 16 C25.5 20 28.5 22 29 26.5 C29.5 31 27 34.5 24 36.5 C21 34.5 18.5 31 19 26.5 C19.5 22 22.5 20 24 16 Z" fill="' + GOLD + '"/>' +
-        '<path d="M24 25 C25.3 27.5 26 29 25.6 31.4 C25.2 33.5 24 34.8 24 34.8 C24 34.8 22.8 33.5 22.4 31.4 C22 29 22.7 27.5 24 25 Z" fill="' + P.bone + '"/>',
-      cross: '<circle cx="24" cy="27" r="12.4" fill="' + P.bone + '" stroke="' + P.gold2 + '" stroke-width="1"/>' +
-        '<path d="M16 15 C12.5 13.5 10.5 10.5 10 6.5 C13.5 7.5 16.5 9.5 18.5 13" fill="none" stroke="' + GOLD + '" stroke-width="2.6" stroke-linecap="round"/>' +
-        '<path d="M32 15 C35.5 13.5 37.5 10.5 38 6.5 C34.5 7.5 31.5 9.5 29.5 13" fill="none" stroke="' + GOLD + '" stroke-width="2.6" stroke-linecap="round"/>' +
-        '<rect x="21" y="18.5" width="6" height="17" rx="1.6" fill="' + P.red + '"/><rect x="15.5" y="24" width="17" height="6" rx="1.6" fill="' + P.red + '"/><rect x="21.8" y="19.3" width="1.6" height="15.4" rx=".8" fill="#fff" opacity=".28"/>',
-      wrench: '<rect x="19.5" y="6" width="9" height="4" rx="1.4" fill="' + GOLD + '"/>' +
-        '<path d="M20 10 L19.4 14 L16.5 18 L16.5 36.5 C16.5 39.8 19.8 42 24 42 C28.2 42 31.5 39.8 31.5 36.5 L31.5 18 L28.6 14 L28 10 Z" fill="' + P.teal + '"/>' +
-        '<path d="M18 12.5 L18 36 C18 38 19 39.5 20.5 40.3" fill="none" stroke="#fff" opacity=".3" stroke-width="1.4" stroke-linecap="round"/>' +
-        '<rect x="16.5" y="21.5" width="15" height="9.5" fill="' + P.bone + '"/>' +
-        '<path d="M24 22.5 L25.3 26 L29 26 L26.2 28.2 L27.2 31.8 L24 29.6 L20.8 31.8 L21.8 28.2 L19 26 L22.7 26 Z" fill="' + P.red + '"/>',
-      book: '<path d="M15 12 Q24 9.5 33 12 L33 36 Q24 38.5 15 36 Z" fill="' + P.teal + '"/><path d="M31 12.6 L33 12 L33 36 L31 36.6 Z" fill="#000" opacity=".22"/><path d="M15 12 Q24 9.5 33 12 L33 14.5 Q24 12 15 14.5 Z" fill="#fff" opacity=".14"/>' +
-        '<g fill="' + P.bone + '" opacity=".92"><rect x="18.5" y="16.5" width="4.4" height="2" rx=".5"/><rect x="25" y="16.5" width="4.4" height="2" rx=".5"/><rect x="18.5" y="20.5" width="10.9" height="2" rx=".5"/><rect x="18.5" y="24.5" width="4.4" height="2" rx=".5"/><rect x="25" y="24.5" width="4.4" height="2" rx=".5"/><rect x="18.5" y="28.5" width="10.9" height="2" rx=".5"/><rect x="18.5" y="32" width="6.5" height="2" rx=".5"/></g>' +
-        '<g><circle cx="33.5" cy="10.5" r="1.7" fill="' + P.pink + '"/><circle cx="36.5" cy="12" r="1.7" fill="' + P.pink + '"/><circle cx="34" cy="14.5" r="1.7" fill="' + P.pink + '"/><circle cx="31" cy="13" r="1.7" fill="' + P.pink + '"/><circle cx="34" cy="12.4" r="1.3" fill="' + GOLD + '"/></g>',
-      note: '<path d="M11 20 C11 12.5 16.5 7.5 24 7.5 C31.5 7.5 37 12.5 37 20 C37 23.5 35.5 26 33.5 27.5 L14.5 27.5 C12.5 26 11 23.5 11 20 Z" fill="' + P.ink + '" stroke="' + P.gold + '" stroke-width=".9"/>' +
-        '<path d="M17 26 C15.8 30.5 16.5 34.5 19 37.5 C21 39.8 23.5 40.8 24 40.8 C24.5 40.8 27 39.8 29 37.5 C31.5 34.5 32.2 30.5 31 26 Z" fill="' + P.bone + '"/>' +
-        '<ellipse cx="20.4" cy="29.7" rx="2.5" ry="3" fill="' + P.sock + '"/><ellipse cx="27.6" cy="29.7" rx="2.5" ry="3" fill="' + P.sock + '"/><path d="M22.7 35.2 L24 33 L25.3 35.2 Z" fill="' + P.sock + '"/>' +
-        '<line x1="20.5" y1="38" x2="27.5" y2="38" stroke="' + P.sock + '" stroke-width="1"/><line x1="22.4" y1="37" x2="22.4" y2="39" stroke="' + P.sock + '" stroke-width=".9"/><line x1="25.6" y1="37" x2="25.6" y2="39" stroke="' + P.sock + '" stroke-width=".9"/>' +
-        '<g transform="translate(31 30) rotate(12)"><ellipse cx="1.8" cy="8.4" rx="2.6" ry="1.9" fill="' + GOLD + '"/><rect x="3.6" y="0" width="1.5" height="8.4" fill="' + GOLD + '"/><path d="M5.1 0 C7 1 8 2.5 7.6 4.6 C6.8 3.4 6 3 5.1 2.9 Z" fill="' + GOLD + '"/></g>',
-      wheel: '<g stroke="' + GOLD + '" stroke-width="3.4" stroke-linecap="round"><line x1="24" y1="8" x2="24" y2="15"/><line x1="24" y1="33" x2="24" y2="40"/><line x1="8" y1="24" x2="15" y2="24"/><line x1="33" y1="24" x2="40" y2="24"/><line x1="12.7" y1="12.7" x2="17.6" y2="17.6"/><line x1="35.3" y1="12.7" x2="30.4" y2="17.6"/><line x1="12.7" y1="35.3" x2="17.6" y2="30.4"/><line x1="35.3" y1="35.3" x2="30.4" y2="30.4"/></g>' +
-        '<circle cx="24" cy="24" r="9" fill="' + GOLD + '" stroke="' + P.gold2 + '" stroke-width="1"/><circle cx="24" cy="24" r="4.4" fill="' + P.red + '"/><path d="M19 20 A6.5 6.5 0 0 1 27 18.6" fill="none" stroke="#fff" opacity=".35" stroke-width="1.3" stroke-linecap="round"/>'
-    };
-    var emblem = art[key] || ('<circle cx="24" cy="24" r="10" fill="' + GOLD + '"/>');
-    return '<svg class="crew-svg" viewBox="0 0 48 48">' + defs + base + emblem + shine + '</svg>';
-  }
   var TIER_ORDER = { petty: 0, rookie: 1, notorious: 2, warlord: 3 };
   var STAT_FLAVOR = { strength: "Crushed it.", wisdom: "Outwitted them.", ambition: "Conquered.", resolve: "Endured." };
   var STAT_SIGIL = { strength: "ti-sword", wisdom: "ti-eye", ambition: "ti-crown", resolve: "ti-anchor" };
@@ -7686,34 +7776,29 @@ html { scrollbar-color: var(--bounty-gold2) transparent; }
       });
     }
     var crew = $("#crewList"); crew.innerHTML = "";
-    var intro = el("li", "crew-intro", 'Each crewmate unlocks a feature. Locked ones show what you\'ll get — recruit them with Berries to switch it on.');
-    crew.appendChild(intro);
     economy.CREW.forEach(function (def) {
       var c = save.crew.find(function (x) { return x.id === def.id; }) || {};
       var recruited = !!c.recruited;
-      var li = el("li", "crew-card" + (recruited ? " recruited" : " locked"));
-      var icon = '<span class="crew-icon">' + crewIcon(def.icon) + '</span>';
-      var tag = recruited
-        ? '<span class="crew-tag on"><i class="ti ti-check"></i> Aboard</span>'
-        : '<span class="crew-tag"><i class="ti ti-lock"></i> Locked</span>';
+      var afford = save.player.berries >= def.cost;
+      var card = el("div", "crew-card" + (recruited ? " recruited" : ""));
+      var btn = recruited
+        ? '<button class="crew-recruit-btn" disabled>Recruited</button>'
+        : '<button class="crew-recruit-btn" data-crew="' + def.id + '"' + (afford ? "" : " disabled") + '>Recruit</button>';
       var whereLine = def.where
-        ? '<div class="crew-where"><i class="ti ti-map-pin"></i> ' + (recruited ? "Find it in: " : "Appears in: ") + escapeHtml(def.where) + '</div>'
+        ? '<div class="crew-where">' + (recruited ? "Find it in: " : "Appears in: ") + escapeHtml(def.where) + '</div>'
         : '';
-      var info = '<div class="crew-info"><div class="crew-name">' + def.name + ' ' + tag + '</div>' +
-        '<div class="crew-bonus">' + escapeHtml(def.bonus) + '</div>' + whereLine + '</div>';
-      var ctl;
-      if (recruited) {
-        ctl = '<span class="crew-status unlocked"><i class="ti ti-anchor"></i> Recruited</span>';
-      } else {
-        var afford = save.player.berries >= def.cost;
-        ctl = '<button class="crew-recruit-btn" data-crew="' + def.id + '"' + (afford ? "" : " disabled") + '>' +
-          (afford ? "Recruit · ฿" + fmt(def.cost) : "Recruit to unlock · ฿" + fmt(def.cost)) + '</button>';
-      }
-      li.innerHTML = icon + info + ctl;
-      crew.appendChild(li);
+      card.innerHTML =
+        '<div class="crew-wanted-header"><span class="crew-wanted-text">WANTED</span><span class="crew-wanted-sub">NAKAMA</span></div>' +
+        '<div class="crew-icon-area"><i class="ti ti-' + CREW_ICON[def.id] + '"></i></div>' +
+        '<div class="crew-name">' + escapeHtml(def.name) + '</div>' +
+        '<div class="crew-bounty-box"><span class="crew-bounty-label">Bounty</span><span class="crew-bounty-amount">฿ ' + fmt(def.cost) + '</span></div>' +
+        '<div class="crew-bonus">' + escapeHtml(def.bonus) + '</div>' +
+        whereLine +
+        btn;
+      crew.appendChild(card);
     });
     $$("#crewList .crew-recruit-btn").forEach(function (b) {
-      b.onclick = function () { doRecruit(b.dataset.crew); };
+      if (!b.disabled) b.onclick = function () { doRecruit(b.dataset.crew); };
     });
     renderThemes();
     renderInventory();
@@ -7850,6 +7935,10 @@ html { scrollbar-color: var(--bounty-gold2) transparent; }
     refreshAll();
   }
   var CREW_NAV = { "Captain's Log": "log", "Captain's Log & the Hold": "log", "Bounty Board": "bounties", "Ship Duties": "duties", "The Helm (settings)": "helm" };
+  var CREW_ICON = {
+    swordsman: "sword", navigator: "compass", sniper: "crosshair", cook: "tools-kitchen-2",
+    doctor: "first-aid-kit", archaeologist: "book", shipwright: "hammer", musician: "music", helmsman: "wheel"
+  };
   function pulseNav(goto) {
     var b = document.querySelector('[data-goto="' + goto + '"]') || (goto === "helm" ? $("#helmBtn") : null);
     if (!b) return;
