@@ -8101,10 +8101,14 @@ html { scrollbar-color: var(--bounty-gold2) transparent; }
     function start() {
       if (!rewards.hasCrew(save, "musician")) return;
       if (!ambientEl) {
-        // Ogg-only: no working CC0/free mp3 source found (freesound preview link and
-        // Wikimedia's auto-transcode path both 404). Safari/iOS doesn't decode Ogg
-        // Vorbis, so ambient audio won't play there until an mp3 source is added.
-        ambientEl = new Audio("audio/ocean.ogg");
+        // Prefer mp3 (Safari/iOS can't decode Ogg Vorbis); fall back to the ogg
+        // source, which is the only one confirmed to exist, if the mp3 errors out.
+        ambientEl = new Audio("audio/ocean.mp3");
+        ambientEl.addEventListener("error", function onMp3Error() {
+          ambientEl.removeEventListener("error", onMp3Error);
+          ambientEl.src = "audio/ocean.ogg";
+          ambientEl.play().catch(function () {});
+        });
         ambientEl.loop = true;
         ambientEl.volume = Math.max(0, Math.min(1, (save.audioVolume == null ? 40 : save.audioVolume) / 100));
       }
