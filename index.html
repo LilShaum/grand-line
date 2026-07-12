@@ -7083,7 +7083,7 @@ html { scrollbar-color: var(--bounty-gold2) transparent; }
     var intro = el("li", "crew-intro", "Provisions are earned, not bought \u2014 Marine Dispatches, new crewmates and spending \u0E3F in port all stock the stores.");
     wrap.appendChild(intro);
     var _disp=typeof currentDispatch==="function"?currentDispatch(save):null;
-    ITEM_KEYS.forEach(function (key) {
+    economy.ITEM_KEYS.forEach(function (key) {
       var def = economy.ITEMS[key];
       var count = inv[key] || 0;
       var li = el("li", "item-card" + (count > 0 ? "" : " item-empty"));
