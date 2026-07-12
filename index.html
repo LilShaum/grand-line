@@ -8091,58 +8091,36 @@ html { scrollbar-color: var(--bounty-gold2) transparent; }
   function refreshAll() { renderHeader(); renderScreen(); (function(){var hn=document.querySelector('[data-goto="haki"]');if(hn&&typeof save!=="undefined"&&save)hn.classList.toggle("haki-has-points",!!(save.hakiPool));})(); }
 
   var seaAudio = (function () {
-    var ctx = null, master = null, nodes = [], playing = false;
+    var ctx = null, ambientEl = null;
     function ensure() {
       if (ctx) return;
       var AC = window.AudioContext || window.webkitAudioContext;
       if (!AC) return;
       ctx = new AC();
-      master = ctx.createGain(); master.gain.value = 0; master.connect(ctx.destination);
-    }
-    function noiseBuffer() {
-      var len = 2 * ctx.sampleRate, buf = ctx.createBuffer(1, len, ctx.sampleRate), d = buf.getChannelData(0);
-      var last = 0;
-      for (var i = 0; i < len; i++) { var w = Math.random() * 2 - 1; last = (last + 0.02 * w) / 1.02; d[i] = last * 3.5; }
-      return buf;
-    }
-    function savedVolume() {
-      var v = (typeof save !== "undefined" && save && save.audioVolume != null) ? save.audioVolume : 40;
-      return Math.max(0, Math.min(1, v / 100));
     }
     function start() {
       if (!rewards.hasCrew(save, "musician")) return;
-      ensure(); if (!ctx || playing) return;
-      if (ctx.state === "suspended") ctx.resume();
-      var src = ctx.createBufferSource(); src.buffer = noiseBuffer(); src.loop = true;
-      var lp = ctx.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 500;
-      var swell = ctx.createOscillator(); swell.frequency.value = 0.07;
-      var swellGain = ctx.createGain(); swellGain.gain.value = 260;
-      swell.connect(swellGain); swellGain.connect(lp.frequency);
-      var surfGain = ctx.createGain(); surfGain.gain.value = 0.5;
-      src.connect(lp); lp.connect(surfGain); surfGain.connect(master);
-      var drone = ctx.createOscillator(); drone.type = "sine"; drone.frequency.value = 68;
-      var droneGain = ctx.createGain(); droneGain.gain.value = 0.04;
-      drone.connect(droneGain); droneGain.connect(master);
-      src.start(); swell.start(); drone.start();
-      nodes = [src, swell, drone];
-      master.gain.cancelScheduledValues(ctx.currentTime);
-      master.gain.setValueAtTime(master.gain.value, ctx.currentTime);
-      master.gain.linearRampToValueAtTime(savedVolume(), ctx.currentTime + 1.2);
-      playing = true;
+      if (!ambientEl) {
+        // Ogg-only: no working CC0/free mp3 source found (freesound preview link and
+        // Wikimedia's auto-transcode path both 404). Safari/iOS doesn't decode Ogg
+        // Vorbis, so ambient audio won't play there until an mp3 source is added.
+        ambientEl = new Audio("audio/ocean.ogg");
+        ambientEl.loop = true;
+        ambientEl.volume = Math.max(0, Math.min(1, (save.audioVolume == null ? 40 : save.audioVolume) / 100));
+      }
+      ambientEl.play().catch(function () {});
+      save.audioOn = true;
+      state.save(save);
+      refreshAudioBtn();
     }
     function stop() {
-      if (!ctx || !playing) return;
-      master.gain.cancelScheduledValues(ctx.currentTime);
-      master.gain.setValueAtTime(master.gain.value, ctx.currentTime);
-      master.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.8);
-      var toKill = nodes; nodes = [];
-      setTimeout(function () { toKill.forEach(function (n) { try { n.stop(); } catch (e) {} }); }, 900);
-      playing = false;
+      if (ambientEl) { ambientEl.pause(); ambientEl.currentTime = 0; }
+      save.audioOn = false;
+      state.save(save);
+      refreshAudioBtn();
     }
     function setVolume(v) {
-      if (ctx && ctx.state === "running") {
-        master.gain.setTargetAtTime(Math.max(0, Math.min(1, v / 100)), ctx.currentTime, 0.1);
-      }
+      if (ambientEl) ambientEl.volume = Math.max(0, Math.min(1, v / 100));
     }
     function sfxEnabled() {
       return !(typeof save !== "undefined" && save && save.sfxEnabled === false);
@@ -8152,6 +8130,7 @@ html { scrollbar-color: var(--bounty-gold2) transparent; }
       return g;
     }
     function playSound(type) {
+      console.log("[SFX]", type, "sfxEnabled:", save.sfxEnabled);
       if (!sfxEnabled()) return;
       ensure(); if (!ctx) return;
       if (ctx.state === "suspended") ctx.resume();
@@ -8193,7 +8172,7 @@ html { scrollbar-color: var(--bounty-gold2) transparent; }
         lfo.start(t); lfo.stop(t + 0.6);
       }
     }
-    return { start: start, stop: stop, isPlaying: function () { return playing; }, setVolume: setVolume, playSound: playSound };
+    return { start: start, stop: stop, isPlaying: function () { return !!(ambientEl && !ambientEl.paused); }, setVolume: setVolume, playSound: playSound };
   })();
 
   function refreshAudioBtn() {
@@ -8220,9 +8199,7 @@ html { scrollbar-color: var(--bounty-gold2) transparent; }
     var _hb = $("#helmBtn"); if (_hb) _hb.addEventListener("click", function () { refreshAudioBtn(); refreshSfxBtn(); });
     var audioBtn = $("#audioBtn");
     if (audioBtn) audioBtn.onclick = function () {
-      save.audioOn = !save.audioOn; state.save(save);
-      if (save.audioOn) seaAudio.start(); else seaAudio.stop();
-      refreshAudioBtn();
+      if (save.audioOn) seaAudio.stop(); else seaAudio.start();
     };
     if (save.audioOn && rewards.hasCrew(save, "musician")) {
       var _resume = function () { seaAudio.start(); document.removeEventListener("pointerdown", _resume); };
