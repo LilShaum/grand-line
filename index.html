@@ -5607,7 +5607,7 @@ html { scrollbar-color: var(--bounty-gold2) transparent; }
 
       <details class="dev-panel">
         <summary>Dev tools — testing only</summary>
-        <button class="ghost-btn" id="devBerries"><i class="ti ti-coin"></i> +1000 Berries</button>
+        <button class="ghost-btn" id="devBerries"><i class="ti ti-coin"></i> +100k Berries</button>
         <button class="ghost-btn" id="devXp"><i class="ti ti-arrow-up-circle"></i> +500 XP (all stats)</button>
         <button class="ghost-btn" id="devHaki"><i class="ti ti-bolt"></i> +10 Haki Points (pool)</button>
         <button class="ghost-btn danger" id="devReset"><i class="ti ti-alert-triangle"></i> Reset Save (wipe everything)</button>
@@ -6219,7 +6219,7 @@ html { scrollbar-color: var(--bounty-gold2) transparent; }
       var gainedLevels = after - before;
       if (gainedLevels > 0) {
         var granted = grantHakiPoints(save, gainedLevels);
-        if (granted > 0) events.hakiPointsGained = granted; pulseNav('haki');
+        if (granted > 0) events.hakiPointsGained = granted;
       }
       if (opts.hakiFocus) {
         var hb = grantHakiPoints(save, Math.max(1, gainedLevels));
@@ -7956,7 +7956,7 @@ html { scrollbar-color: var(--bounty-gold2) transparent; }
     if (ev.setSail) toast('<i class="ti ti-sailboat"></i> Set Sail bonus! +' + (ev.setSailAmount || 10) + ' ฿');
     if (ev.recurredTo) toast('<i class="ti ti-repeat"></i> Repeats — next due ' + ev.recurredTo);
     if (ev.habitStreak) { toast('<i class="ti ti-flame"></i> ' + ev.habitStreak + '-day Ship Duty streak'); seaAudio.playSound("streak"); }
-    if (ev.hakiPointsGained) toast('<i class="ti ti-bolt"></i> +' + ev.hakiPointsGained + ' Haki Point' + (ev.hakiPointsGained > 1 ? 's' : '') + ' awakened \u2014 spend them in the Haki trees', true);
+    if (ev.hakiPointsGained) { toast('<i class="ti ti-bolt"></i> +' + ev.hakiPointsGained + ' Haki Point' + (ev.hakiPointsGained > 1 ? 's' : '') + ' awakened \u2014 spend them in the Haki trees', true); pulseNav('haki'); }
     if (ev.buffGranted === "morale") toast('<i class="ti ti-mood-smile"></i> Morale up: +10% Berries tomorrow');
     if (ev.buffGranted === "tailwind") toast('<i class="ti ti-wind"></i> Tailwind: +15% XP for 3 days');
     (ev.leveledUp || []).forEach(function (l) {
@@ -8367,11 +8367,14 @@ html { scrollbar-color: var(--bounty-gold2) transparent; }
     };
 
     if ($("#devBerries")) $("#devBerries").onclick = function () {
-      save.player.berries += 1000; state.save(save);
-      toast('<i class="ti ti-coin"></i> +1000 ฿ (dev)'); refreshAll();
+      save.player.berries += 100000; state.save(save);
+      toast('<i class="ti ti-coin"></i> +100k ฿ (dev)'); refreshAll();
     };
     if ($("#devXp")) $("#devXp").onclick = function () {
-      economy.STAT_KEYS.forEach(function (k) { rewards.applyReward(save, { xp: 500, stat: k, berries: 0, isTask: false }); });
+      economy.STAT_KEYS.forEach(function (k) {
+        var ev = rewards.applyReward(save, { xp: 500, stat: k, berries: 0, isTask: false });
+        celebrate(ev);
+      });
       state.save(save);
       toast('<i class="ti ti-arrow-up-circle"></i> +500 XP to all stats (dev)'); refreshAll();
     };
