@@ -1,7 +1,7 @@
 /* Grand Line — service worker.
    Network-first for navigations (so new deploys reach users immediately),
    cache-first with runtime caching for everything else (offline play). */
-var CACHE = "grandline-v4";
+var CACHE = "grandline-v5";
 var CORE = [
   "./",
   "./index.html",
@@ -20,7 +20,14 @@ var CORE = [
   "./vendor/tabler-icons/fonts/tabler-icons.ttf",
   // ambient ocean audio (local, but must be precached for first offline use)
   "./audio/ocean.mp3",
-  "./audio/ocean.ogg"
+  "./audio/ocean.ogg",
+  // split app modules + stylesheet (previously inlined in index.html)
+  "./style.css",
+  "./js/economy.js",
+  "./js/state.js",
+  "./js/rewards.js",
+  "./js/game.js",
+  "./js/ui.js"
 ];
 
 self.addEventListener("install", function (e) {
