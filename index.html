@@ -2893,6 +2893,7 @@ html { scrollbar-color: var(--bounty-gold2) transparent; }
     }
     state.onSave(onSaveWrite);
     return { link: link, unlink: unlink, restore: restore, init: init, reconnect: reconnect, renderStatus: renderStatus, supported: supported,
+      isLinked: function () { return !!handle && ready; },
       _setHandle: function (h) { handle = h; ready = true; }, _writeNow: writeNow };
   })();
   if (window.GL) window.GL.backup = backup;
@@ -4061,6 +4062,16 @@ html { scrollbar-color: var(--bounty-gold2) transparent; }
     b.classList.toggle("on", !!save.sfxEnabled);
   }
 
+  function doExportBackup() {
+    var blob = new Blob([JSON.stringify(save, null, 2)], { type: "application/json" });
+    var url = URL.createObjectURL(blob);
+    var a = el("a"); a.href = url; a.download = "grand-line-backup-" + state.todayStr() + ".json";
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+    toast('<i class="ti ti-download"></i> Backup saved.');
+    try { localStorage.setItem("gl.backupNudgeDone", "1"); } catch (e) {}
+  }
+
   function wire() {
     $$("[data-goto]").forEach(function (b) { b.onclick = function () { show(b.dataset.goto); }; });
     var _hb = $("#helmBtn"); if (_hb) _hb.addEventListener("click", function () { refreshAudioBtn(); refreshSfxBtn(); });
@@ -4196,14 +4207,7 @@ html { scrollbar-color: var(--bounty-gold2) transparent; }
     $("#helmBtn").onclick = function () { helmLastFocused = document.activeElement; $("#helmModal").hidden = false; setTimeout(function () { $("#closeHelm").focus(); }, 0); };
     $("#closeHelm").onclick = function () { $("#helmModal").hidden = true; if (helmLastFocused) helmLastFocused.focus(); };
 
-    $("#exportBtn").onclick = function () {
-      var blob = new Blob([JSON.stringify(save, null, 2)], { type: "application/json" });
-      var url = URL.createObjectURL(blob);
-      var a = el("a"); a.href = url; a.download = "grand-line-backup-" + state.todayStr() + ".json";
-      document.body.appendChild(a); a.click(); a.remove();
-      setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
-      toast('<i class="ti ti-download"></i> Backup saved.');
-    };
+    $("#exportBtn").onclick = doExportBackup;
     $("#importBtn").onclick = function () { $("#importFile").click(); };
     $("#importFile").onchange = function (e) {
       var file = e.target.files[0]; if (!file) return;
@@ -4295,6 +4299,28 @@ html { scrollbar-color: var(--bounty-gold2) transparent; }
       else if (e.key === "6") show("hold");
       else if (e.key === "7") show("haki");
     });
+
+    maybeNudgeBackup();
+  }
+
+  function maybeNudgeBackup() {
+    try {
+      if (localStorage.getItem("gl.backupNudgeDone")) return;
+      if (rewards.voyageStreak(save, state.todayStr()) < 3) return;
+      var today = state.todayStr();
+      if (localStorage.getItem("gl.backupNudgeLastShown") === today) return;
+      localStorage.setItem("gl.backupNudgeLastShown", today);
+    } catch (e) { return; }
+    // Delayed so backup.init()'s async IndexedDB lookup (kicked off later in
+    // bootstrap) has resolved by the time isLinked() is checked here.
+    setTimeout(function () {
+      if (backup.isLinked()) return; // auto-backup to disk already covers this
+      toastAction(
+        '<i class="ti ti-shield-lock"></i> Your voyage is saved only in this browser. Back it up?',
+        "Back up",
+        doExportBackup
+      );
+    }, 1500);
   }
 
   function escapeHtml(s) {
