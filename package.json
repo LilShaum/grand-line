@@ -1,0 +1,8 @@
+{
+  "name": "grand-line",
+  "private": true,
+  "description": "One Piece themed self-tracking PWA. No build step for the app itself; this file exists only to run the test suite.",
+  "scripts": {
+    "test": "node --test test/"
+  }
+}
