@@ -477,6 +477,18 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
 }
 .modal h3 { font-family: "Instrument Serif", serif; color: var(--ocean-navy); margin: 0 0 6px; font-weight: 400; }
 
+/* ---- First-run onboarding ---- */
+.onboard-modal { max-width: 420px; text-align: left; }
+.onboard-face { font-size: 2.2rem; text-align: center; line-height: 1; margin-bottom: 4px; }
+.onboard-modal h3 { text-align: center; font-size: 1.5rem; }
+.onboard-lede { text-align: center; margin: 0 0 14px; }
+.onboard-list { list-style: none; margin: 0 0 14px; padding: 0; display: flex; flex-direction: column; gap: 11px; }
+.onboard-list li { display: flex; align-items: flex-start; gap: 11px; font-size: .86rem; line-height: 1.4; color: var(--ink); }
+.onboard-list li .ti { color: var(--bounty-gold2); font-size: 1.2rem; flex: 0 0 auto; margin-top: 1px; }
+.onboard-list li strong { color: var(--ocean-navy); }
+.onboard-modal .tiny { text-align: center; margin: 0 0 14px; }
+.onboard-start { width: 100%; justify-content: center; }
+
 /* ===================== DUTIES (habits) ===================== */
 .screen-intro { color: var(--chrome-text); opacity: .85; font-size: .85rem; margin: -6px 2px 14px; }
 .duty {

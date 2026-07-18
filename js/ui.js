@@ -1155,6 +1155,16 @@
   }
 
   var lastFocused = null;
+  var onboardLastFocused = null;
+  function showOnboarding() {
+    onboardLastFocused = document.activeElement;
+    $("#onboardModal").hidden = false;
+    setTimeout(function () { var s = $("#onboardStart"); if (s) s.focus(); }, 0);
+  }
+  function closeOnboarding() {
+    $("#onboardModal").hidden = true;
+    if (onboardLastFocused && onboardLastFocused.focus) onboardLastFocused.focus();
+  }
   function showConfirm(title, msg, yesLabel, onYes) {
     $("#confirmTitle").innerHTML = '<i class="ti ti-alert-triangle" aria-hidden="true"></i> ' + title;
     $("#confirmMsg").textContent = msg;
@@ -1450,6 +1460,9 @@
     $("#helmBtn").onclick = function () { helmLastFocused = document.activeElement; $("#helmModal").hidden = false; setTimeout(function () { $("#closeHelm").focus(); }, 0); };
     $("#closeHelm").onclick = function () { $("#helmModal").hidden = true; if (helmLastFocused) helmLastFocused.focus(); };
 
+    if ($("#onboardStart")) $("#onboardStart").onclick = closeOnboarding;
+    if ($("#howToPlayBtn")) $("#howToPlayBtn").onclick = function () { $("#helmModal").hidden = true; showOnboarding(); };
+
     $("#exportBtn").onclick = doExportBackup;
     $("#importBtn").onclick = function () { $("#importFile").click(); };
     $("#importFile").onchange = function (e) {
@@ -1597,7 +1610,14 @@
       if (_prev > 0) { try { new Notification("Grand Line", { body: "🔥 Your " + _prev + "-day course breaks tonight. Log anything to keep it alive." }); } catch (e) {} }
     }
   }
-  if (save.player.createdAt === state.todayStr() && !save.journal.length && save.bounties.length) {
+  var seenOnboard = false;
+  try { seenOnboard = !!localStorage.getItem("gl.onboarded"); } catch (e) {}
+  if (!seenOnboard) {
+    try { localStorage.setItem("gl.onboarded", "1"); } catch (e) {}
+    showOnboarding();
+  } else if (save.player.createdAt === state.todayStr() && !save.journal.length && save.bounties.length) {
+    // Reinforcement nudge on early days — skipped on the very first run so it
+    // doesn't stack on top of the onboarding modal.
     setTimeout(function () { toast('<i class="ti ti-skull"></i> Welcome aboard. Complete a bounty to raise your first bounty.', true); }, 600);
   }
 })();

@@ -340,6 +340,7 @@
     <div class="modal">
       <h3 id="helmTitle"><i class="ti ti-settings" aria-hidden="true"></i> The Helm</h3>
       <p class="muted">Manage your voyage.</p>
+      <button class="ghost-btn" id="howToPlayBtn"><i class="ti ti-help-circle"></i> How to play (replay the intro)</button>
       <button class="ghost-btn" id="exportBtn"><i class="ti ti-download"></i> Back up my voyage (export)</button>
       <button class="ghost-btn" id="importBtn"><i class="ti ti-upload"></i> Restore from a backup (import)</button>
       <input type="file" id="importFile" accept="application/json" hidden aria-label="Import backup file" />
@@ -367,6 +368,24 @@
       <button class="ghost-btn danger" id="resetBtn"><i class="ti ti-trash"></i> Scuttle the ship (reset all data)</button>
       <button class="ghost-btn" id="closeHelm">Close</button>
       <p class="tiny muted">Grand Line • all data stored locally on this device • free forever ☠</p>
+    </div>
+  </div>
+
+  <!-- First-run onboarding -->
+  <div class="modal-backdrop" id="onboardModal" hidden role="dialog" aria-modal="true" aria-labelledby="onboardTitle">
+    <div class="modal onboard-modal">
+      <div class="onboard-face">☠</div>
+      <h3 id="onboardTitle">Welcome aboard, Captain</h3>
+      <p class="muted onboard-lede">Grand Line turns your real-life goals into a pirate voyage. Here's the whole loop in five lines:</p>
+      <ul class="onboard-list">
+        <li><i class="ti ti-flag" aria-hidden="true"></i><div><strong>Bounties</strong> are your goals &amp; one-off missions. Clear one to claim its reward.</div></li>
+        <li><i class="ti ti-checklist" aria-hidden="true"></i><div><strong>Duties</strong> are daily habits. Check in each day to keep your streak alive.</div></li>
+        <li><i class="ti ti-coin" aria-hidden="true"></i><div><strong>Berries (฿)</strong> are your spending money — cash them in the Hold for real-world rewards, themes &amp; crew.</div></li>
+        <li><i class="ti ti-bolt" aria-hidden="true"></i><div><strong>XP &amp; Haki</strong> — clearing missions levels your four stats, awakening Haki Points to spend on skill trees.</div></li>
+        <li><i class="ti ti-skull" aria-hidden="true"></i><div><strong>Bounty score (☠)</strong> is your reputation. Raise it to climb from rookie to Pirate King.</div></li>
+      </ul>
+      <p class="tiny muted">Tip: you can reopen this anytime from the Helm <i class="ti ti-settings" aria-hidden="true"></i></p>
+      <button class="primary-btn onboard-start" id="onboardStart"><i class="ti ti-sailboat" aria-hidden="true"></i> Set sail</button>
     </div>
   </div>
 
