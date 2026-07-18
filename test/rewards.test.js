@@ -67,6 +67,35 @@ test("applyReward: crossing a level boundary reports every level gained and gran
   assert.equal(save.hakiPool, 2);
 });
 
+test("applyReward: level-ups past the Haki lifetime cap convert to Berries instead of being wasted", () => {
+  const save = state.freshSave();
+  save.player.setSailDate = "2026-05-01";     // neutralize one-time daily bonuses
+  save.player.bountyDayDate = "2026-05-01";
+  save.player.hakiEarned = economy.HAKI_LIFETIME_CAP; // already fully awakened
+  save.hakiPool = 0;
+  const berriesBefore = save.player.berries;
+
+  const xpForLevel3 = economy.cumulativeXpForLevel(3); // gains 2 levels
+  const ev = rewards.applyReward(save, { xp: xpForLevel3, stat: "wisdom", isTask: false, today: "2026-05-01" });
+
+  assert.equal(ev.hakiPointsGained, undefined, "no Haki points once capped");
+  assert.equal(save.player.hakiEarned, economy.HAKI_LIFETIME_CAP, "cap is not exceeded");
+  assert.equal(ev.hakiOverflowBerries, 2 * economy.BUFFS.hakiOverflowBerries, "both overflow levels convert to Berries");
+  assert.equal(save.player.berries - berriesBefore, ev.hakiOverflowBerries);
+});
+
+test("applyReward: a partial overflow splits between the last Haki point and Berries", () => {
+  const save = state.freshSave();
+  save.player.setSailDate = "2026-05-01";
+  save.player.bountyDayDate = "2026-05-01";
+  save.player.hakiEarned = economy.HAKI_LIFETIME_CAP - 1; // room for exactly one more point
+  save.hakiPool = 0;
+
+  const ev = rewards.applyReward(save, { xp: economy.cumulativeXpForLevel(3), stat: "wisdom", isTask: false, today: "2026-05-01" });
+  assert.equal(ev.hakiPointsGained, 1, "one level fills the cap");
+  assert.equal(ev.hakiOverflowBerries, economy.BUFFS.hakiOverflowBerries, "the other converts to Berries");
+});
+
 test("applyReward: a fresh save has no streak/crew/haki bonuses, so xp/berries pass through unmultiplied", () => {
   const save = state.freshSave();
   const today = "2026-05-01";

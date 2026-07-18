@@ -158,6 +158,16 @@
       if (gainedLevels > 0) {
         var granted = grantHakiPoints(save, gainedLevels);
         if (granted > 0) events.hakiPointsGained = granted;
+        // Once the Haki lifetime cap is reached, level-ups would otherwise
+        // awaken nothing — a motivation cliff. Convert those "overflow" levels
+        // into a Berry payout so leveling always rewards something.
+        var overflow = gainedLevels - granted;
+        if (overflow > 0) {
+          var cash = overflow * (economy.BUFFS.hakiOverflowBerries || 200);
+          save.player.berries += cash;
+          events.berries += cash;
+          events.hakiOverflowBerries = (events.hakiOverflowBerries || 0) + cash;
+        }
       }
       if (opts.hakiFocus) {
         var hb = grantHakiPoints(save, Math.max(1, gainedLevels));

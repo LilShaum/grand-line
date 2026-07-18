@@ -1065,6 +1065,7 @@
     if (ev.recurredTo) toast('<i class="ti ti-repeat"></i> Repeats — next due ' + ev.recurredTo);
     if (ev.habitStreak) { toast('<i class="ti ti-flame"></i> ' + ev.habitStreak + '-day Ship Duty streak'); seaAudio.playSound("streak"); }
     if (ev.hakiPointsGained) { toast('<i class="ti ti-bolt"></i> +' + ev.hakiPointsGained + ' Haki Point' + (ev.hakiPointsGained > 1 ? 's' : '') + ' awakened \u2014 spend them in the Haki trees', true); pulseNav('haki'); }
+    if (ev.hakiOverflowBerries) toast('<i class="ti ti-coins"></i> Haki fully awakened \u2014 that level-up paid out +' + fmt(ev.hakiOverflowBerries) + ' \u0e3f instead.');
     if (ev.buffGranted === "morale") toast('<i class="ti ti-mood-smile"></i> Morale up: +10% Berries tomorrow');
     if (ev.buffGranted === "tailwind") toast('<i class="ti ti-wind"></i> Tailwind: +15% XP for 3 days');
     (ev.leveledUp || []).forEach(function (l) {

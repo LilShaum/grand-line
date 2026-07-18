@@ -105,7 +105,8 @@
     morale:         0.10,
     tailwind:       0.15,
     tailwindDays:   3,
-    recapCooldownDays: 7
+    recapCooldownDays: 7,
+    hakiOverflowBerries: 200
   };
 
   var DEFAULT_HABITS = [
