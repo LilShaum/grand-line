@@ -49,7 +49,6 @@
         comboCount: 0,
         lastInsureDate: null,
         lastWeeklyPayout: null,
-        hakiVersion: 2,
         firstRun: true
       },
       focusBountyId: null,       // Sniper: the pinned target bounty

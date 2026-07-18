@@ -1507,14 +1507,14 @@
     if (remindBtn) remindBtn.onclick = function () {
       if (save.player.remindersOn) {
         save.player.remindersOn = false; state.save(save); renderRemindBtn();
-        toast('<i class="ti ti-bell-off"></i> Daily reminder off.');
+        toast('<i class="ti ti-bell-off"></i> Streak alert off.');
         return;
       }
       if (!("Notification" in window)) { toast('<i class="ti ti-alert-triangle"></i> Notifications aren\'t supported here.'); return; }
       Notification.requestPermission().then(function (p) {
         if (p === "granted") {
           save.player.remindersOn = true; state.save(save); renderRemindBtn();
-          try { new Notification("Grand Line", { body: "Reminder on. I'll nudge you when your streak's at risk and the app is open." }); } catch (e) {}
+          try { new Notification("Grand Line", { body: "Streak alert on. I'll nudge you when your streak's at risk, while the app is open." }); } catch (e) {}
         } else { toast('<i class="ti ti-bell-off"></i> Notifications are blocked in your browser settings.'); }
       });
     };
@@ -1574,7 +1574,7 @@
 
   function renderRemindBtn() {
     var b = $("#remindBtn"); if (!b) return;
-    b.innerHTML = '<i class="ti ti-bell"></i> Daily reminder: ' + (save.player.remindersOn ? "on" : "off");
+    b.innerHTML = '<i class="ti ti-bell"></i> Streak alert: ' + (save.player.remindersOn ? "on" : "off");
   }
 
   /* BOOTSTRAP */

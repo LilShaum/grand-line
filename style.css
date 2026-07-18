@@ -62,9 +62,9 @@
      their own light --ink instead. */
   --chrome-text: #f4ecd8;
   --steel:      #466fa6;
-  --sea-teal:   #2e6e6a;
+  --sea-teal:   #2b6763; /* darkened for WCAG AA (4.5:1) on parchment + white-on-teal calendar cells */
   --bounty-gold:#b89038;
-  --bounty-gold2:#9a7a2a;
+  --bounty-gold2:#866a25; /* darkened so ฿ reward numbers clear 3:1 large-text contrast on parchment */
   --wanted-red: #8a3b2e;
   --den-pink:   #e8a0a8;
   --ink:        #2b2017;
