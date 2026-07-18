@@ -1,8 +1,27 @@
 /* Grand Line — service worker.
    Network-first for navigations (so new deploys reach users immediately),
    cache-first with runtime caching for everything else (offline play). */
-var CACHE = "grandline-v3";
-var CORE = ["./", "./index.html", "./manifest.json", "./icon.svg"];
+var CACHE = "grandline-v4";
+var CORE = [
+  "./",
+  "./index.html",
+  "./manifest.json",
+  "./icon.svg",
+  // vendored web fonts (previously Google Fonts CDN)
+  "./vendor/fonts/geist-variable.woff2",
+  "./vendor/fonts/instrument-serif-400-italic.woff2",
+  "./vendor/fonts/instrument-serif-400-normal.woff2",
+  "./vendor/fonts/special-elite-400-normal.woff2",
+  "./vendor/fonts/pirata-one-400-normal.woff2",
+  // vendored Tabler icons (previously jsdelivr CDN)
+  "./vendor/tabler-icons/tabler-icons.min.css",
+  "./vendor/tabler-icons/fonts/tabler-icons.woff2",
+  "./vendor/tabler-icons/fonts/tabler-icons.woff",
+  "./vendor/tabler-icons/fonts/tabler-icons.ttf",
+  // ambient ocean audio (local, but must be precached for first offline use)
+  "./audio/ocean.mp3",
+  "./audio/ocean.ogg"
+];
 
 self.addEventListener("install", function (e) {
   e.waitUntil(
