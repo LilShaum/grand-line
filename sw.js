@@ -1,7 +1,7 @@
 /* Grand Line — service worker.
    Network-first for navigations (so new deploys reach users immediately),
    cache-first with runtime caching for everything else (offline play). */
-var CACHE = "grandline-v5";
+var CACHE = "grandline-v6";
 var CORE = [
   "./",
   "./index.html",
@@ -43,8 +43,18 @@ self.addEventListener("install", function (e) {
 
 self.addEventListener("activate", function (e) {
   e.waitUntil(caches.keys().then(function (keys) {
-    return Promise.all(keys.map(function (k) { return k === CACHE ? null : caches.delete(k); }));
-  }).then(function () { return self.clients.claim(); }));
+    // Only an *update* (a prior cache existed) should prompt a reload; a
+    // first-ever install must not nag.
+    var hadOldCache = keys.some(function (k) { return k !== CACHE; });
+    return Promise.all(keys.map(function (k) { return k === CACHE ? null : caches.delete(k); }))
+      .then(function () { return self.clients.claim(); })
+      .then(function () {
+        if (!hadOldCache) return;
+        return self.clients.matchAll().then(function (clients) {
+          clients.forEach(function (c) { c.postMessage({ type: "update-available" }); });
+        });
+      });
+  }));
 });
 
 self.addEventListener("fetch", function (e) {
@@ -66,17 +76,21 @@ self.addEventListener("fetch", function (e) {
     return;
   }
 
-  // Everything else (CSS-in-bundle is inline; this is fonts/icons CDN): cache-first + runtime cache.
+  // Everything else (app modules, stylesheet, fonts, icons, audio):
+  // stale-while-revalidate. Serve the cached copy instantly for offline speed,
+  // but always kick off a background fetch to refresh the cache, so a changed
+  // js/*.js or style.css can't stay stale behind a fresh index.html across a
+  // deploy — the update lands on the next load.
   e.respondWith(
     caches.match(e.request).then(function (hit) {
-      if (hit) return hit;
-      return fetch(e.request).then(function (res) {
+      var fetchPromise = fetch(e.request).then(function (res) {
         if (res && res.status === 200) {
           var copy = res.clone();
           caches.open(CACHE).then(function (c) { c.put(e.request, copy); });
         }
         return res;
-      }).catch(function () { return undefined; });
+      }).catch(function () { return hit; });
+      return hit || fetchPromise;
     })
   );
 });

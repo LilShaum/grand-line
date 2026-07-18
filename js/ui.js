@@ -333,7 +333,7 @@
       var btn = el("button", "mini-check"); btn.title = "Complete"; btn.setAttribute("aria-label", "Complete " + b.title);
       btn.onclick = function () { doComplete(b.id); };
       li.appendChild(btn);
-      li.appendChild(el("span", null, b.title + ' <span class="muted">(' + economy.TIERS[b.tier].xp + ' ฿)</span>'));
+      li.appendChild(el("span", null, escapeHtml(b.title) + ' <span class="muted">(฿' + economy.TIERS[b.tier].berries + ')</span>'));
       list.appendChild(li);
     });
   }
@@ -1242,7 +1242,6 @@
       return g;
     }
     function playSound(type) {
-      console.log("[SFX]", type, "sfxEnabled:", save.sfxEnabled);
       if (!sfxEnabled()) return;
       ensure(); if (!ctx) return;
       if (ctx.state === "suspended") ctx.resume();

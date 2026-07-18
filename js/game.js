@@ -306,6 +306,15 @@
         return { updated: true };
       }
     }
+    // Capture types (memory/victory/mood) can be logged many times a day, but
+    // their Berry/bounty payout is a once-per-day bonus so they can't be
+    // farmed for unlimited currency. The entry is still saved and still counts
+    // toward the day's streak; only the reward is zeroed after the first.
+    var CAPTURE_DAILY_REWARD = { memory: 1, victory: 1, mood: 1 };
+    var rewardable = true;
+    if (CAPTURE_DAILY_REWARD[type] && save.journal.some(function (e) { return e.type === type && e.date === today; })) {
+      rewardable = false;
+    }
     if (type === "recap") {
       if (!canRecap(save)) return { locked: true, daysLeft: recapDaysLeft(save) };
       save.player.lastRecapDate = today;
@@ -321,7 +330,7 @@
     var grantsXp = def.xp > 0 && def.stat;
     var sg = grantsXp && !!ai.xpSurge, fc = grantsXp && !!ai.hakiFocus;
     var _recapEff = (type === "recap") ? rewards.hakiEffect(save, "recapMult") : null;
-    var ev = rewards.applyReward(save, { xp: def.xp, stat: def.stat, berries: def.berries, isTask: false, bounty: def.bounty, xpSurge: sg, hakiFocus: fc, rewardMult: _recapEff ? _recapEff.value : 1 });
+    var ev = rewards.applyReward(save, { xp: rewardable ? def.xp : 0, stat: def.stat, berries: rewardable ? def.berries : 0, isTask: false, bounty: rewardable ? def.bounty : 0, xpSurge: sg, hakiFocus: fc, rewardMult: _recapEff ? _recapEff.value : 1 });
     if (sg) ai.xpSurge = false;
     if (fc) ai.hakiFocus = false;
     if (grantsXp && ai.logInsight) { save.player.berries += 5; ev.berries = (ev.berries || 0) + 5; ev.logInsightBonus = 5; ai.logInsight = false; }

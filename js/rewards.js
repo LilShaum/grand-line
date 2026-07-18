@@ -169,7 +169,7 @@
     }
 
     var bountyGain = opts.bounty || 0;
-    if (!opts.isTask) bountyGain += hakiSum(save, "journalBounty");
+    if (!opts.isTask && opts.bounty) bountyGain += hakiSum(save, "journalBounty");
     if (opts.isTask && save.player.bountyDayDate !== today) {
       save.player.bountyDayDate = today;
       var dbm = hakiMax(save, "dailyBountyMult") || 1;

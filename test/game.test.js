@@ -185,3 +185,55 @@ test("buyReward: fails when unaffordable, succeeds and deducts cost once funded"
   assert.equal(ok.ok, true);
   assert.equal(save.player.berries, 0);
 });
+
+test("addJournal: memory entries only pay Berries once per day, so they can't be farmed", () => {
+  const save = state.freshSave();
+  save.player.setSailDate = state.todayStr(); // isTask:false anyway, but be explicit
+  const memBerries = economy.JOURNAL.memory.berries;
+
+  const first = game.addJournal(save, "memory", { text: "a" });
+  assert.equal(first.berries, memBerries, "first memory of the day pays its Berries");
+  const berriesAfterFirst = save.player.berries;
+
+  for (let i = 0; i < 20; i++) game.addJournal(save, "memory", { text: "spam " + i });
+  assert.equal(save.player.berries, berriesAfterFirst, "further memories the same day pay nothing");
+  assert.equal(save.journal.filter((e) => e.type === "memory").length, 21, "but every entry is still saved");
+});
+
+test("addJournal: victory entries also cap their reward at once per day", () => {
+  const save = state.freshSave();
+  const before = save.player.berries;
+  game.logVictory(save, "win one");
+  const afterOne = save.player.berries;
+  assert.ok(afterOne > before, "first victory pays out");
+  game.logVictory(save, "win two");
+  assert.equal(save.player.berries, afterOne, "second victory the same day pays nothing");
+});
+
+test("addJournal: a normal daily journal still pays in full after a capture entry", () => {
+  const save = state.freshSave();
+  game.addJournal(save, "memory", { text: "note" });
+  const before = save.player.berries;
+  const ev = game.addJournal(save, "free_write", { text: "real entry" });
+  assert.ok(ev.berries > 0, "free_write is unaffected by the capture-type daily cap");
+  assert.ok(save.player.berries > before);
+});
+
+test("completeBounty: decree + Focus Shot stack their reward multipliers onto XP", () => {
+  const base = state.freshSave();
+  const plain = game.addBounty(base, "target", "strength", "warlord");
+  const plainEv = game.completeBounty(base, plain.id);
+
+  const buffed = state.freshSave();
+  buffed.haki = { c_root: true };        // Conqueror's Haki: daily decree (x2)
+  buffed.crew.find((c) => c.id === "sniper").recruited = true; // Focus Shot (+25%)
+  const b = game.addBounty(buffed, "target", "strength", "warlord");
+  game.setDecree(buffed, b.id);
+  game.setFocus(buffed, b.id);
+  const ev = game.completeBounty(buffed, b.id);
+
+  assert.equal(ev.decreed, 2, "decree reported as x2");
+  assert.equal(ev.focusShot, true, "focus shot reported");
+  // x2 (decree) * 1.25 (focus) = x2.5 relative to the plain clear
+  assert.equal(ev.xp, Math.round(plainEv.xp * 2.5));
+});
