@@ -98,7 +98,11 @@
 
   var BUFFS = {
     streakPerTier:  0.05,
-    streakTierDays: 7,
+    // 5, not 7: at 7 days/tier the +25% cap needs a 35-day streak, which
+    // simulation shows a user missing ~1 day in 3 never reaches (they top out
+    // around +15%). At 5 the cap lands at 25 days and stays meaningful for
+    // imperfect users.
+    streakTierDays: 5,
     streakCap:      0.25,
     setSail:        10,
     dailyBounty:    50,
@@ -200,7 +204,7 @@
       { id: "o_b1",   stat: "wisdom", pos: "b1",   req: ["o_root"], cost: 3, icon: "ti-feather", name: "Calm Mind",        desc: "+10% XP from journal entries.",                            effect: { type: "journalXp", value: 0.10 } },
       { id: "o_b2",   stat: "wisdom", pos: "b2",   req: ["o_b1"],   cost: 4, icon: "ti-map-2",   name: "Read the Sea",     desc: "Raise your streak XP bonus cap by +10%.",                  effect: { type: "streakCap", value: 0.10 } },
       { id: "o_b3",   stat: "wisdom", pos: "b3",   req: ["o_b2"],   cost: 5, icon: "ti-sun",     name: "Flow State",       desc: "Raise the streak cap by another +15%.",                    effect: { type: "streakCap", value: 0.15 } },
-      { id: "o_cap",  stat: "wisdom", pos: "cap",  req: ["o_a3", "o_b3"], cost: 6, icon: "ti-diamond", name: "All-Seeing Eye", desc: "Streak bonuses tier up every 5 days instead of 7.",     effect: { type: "streakTier", value: 5 } }
+      { id: "o_cap",  stat: "wisdom", pos: "cap",  req: ["o_a3", "o_b3"], cost: 6, icon: "ti-diamond", name: "All-Seeing Eye", desc: "Streak bonuses tier up every 3 days instead of 5.",     effect: { type: "streakTier", value: 3 } }
     ],
     strength: [
       { id: "a_root", stat: "strength", pos: "root", req: [],         cost: 2, icon: "ti-shield-half", name: "Armament Haki", desc: "Coat yourself in will — bounties never pay less than 15 XP.", effect: { type: "xpFloor", value: 15 } },

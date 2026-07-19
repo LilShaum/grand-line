@@ -126,6 +126,21 @@ test("xpMultiplier: a 7-day voyage streak adds one streak-bonus tier (+5%)", () 
   assert.equal(ev.xp, Math.round(100 * (1 + economy.BUFFS.streakPerTier)));
 });
 
+test("xpMultiplier: a 10-day streak reaches two bonus tiers at the current 5-day tiering", () => {
+  const save = state.freshSave();
+  const today = "2026-05-15";
+  // 9 prior days + today (marked by applyReward) = a 10-day streak.
+  let cursor = today;
+  for (let i = 0; i < 9; i++) {
+    cursor = rewards.addDays(cursor, -1);
+    save.logPose[cursor] = { tasksDone: 1, journaled: 0 };
+  }
+  const tiers = Math.floor(10 / economy.BUFFS.streakTierDays);
+  const ev = rewards.applyReward(save, { xp: 100, stat: "strength", isTask: true, today });
+  assert.equal(tiers, 2, "10 days should span two tiers at a 5-day cadence");
+  assert.equal(ev.xp, Math.round(100 * (1 + tiers * economy.BUFFS.streakPerTier)));
+});
+
 test("xpMultiplier: recruiting a crewmate with a statXp bonus boosts only their matching stat", () => {
   const save = state.freshSave();
   const swordsman = save.crew.find((c) => c.id === "swordsman");

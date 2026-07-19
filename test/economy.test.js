@@ -121,6 +121,17 @@ test("HAKI_TREE: every non-root node's prerequisites exist in the same tree", ()
   });
 });
 
+test("HAKI_TREE: the All-Seeing Eye capstone must actually improve on the base streak tiering", () => {
+  // Guards against a no-op node: if BUFFS.streakTierDays is ever lowered to
+  // match this node's value, the 6-point capstone silently does nothing.
+  const capstone = economy.HAKI_TREE.wisdom.find((n) => n.id === "o_cap");
+  assert.equal(capstone.effect.type, "streakTier");
+  assert.ok(
+    capstone.effect.value < economy.BUFFS.streakTierDays,
+    `All-Seeing Eye tiers every ${capstone.effect.value}d but the base is already ${economy.BUFFS.streakTierDays}d — the node would be worthless`
+  );
+});
+
 test("HAKI_TREE: every tree has exactly one root (no prerequisites)", () => {
   economy.STAT_KEYS.forEach((stat) => {
     const roots = economy.HAKI_TREE[stat].filter((n) => n.req.length === 0);
