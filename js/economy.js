@@ -181,7 +181,10 @@
     return LORE[doy % LORE.length];
   }
 
-  var HAKI_LIFETIME_CAP = 40;
+  // 64 = exactly two full trees (32 each), reachable by a committed player at
+  // roughly the one-year mark. Level-ups past this convert to Berries
+  // (BUFFS.hakiOverflowBerries) so progression never dead-ends.
+  var HAKI_LIFETIME_CAP = 64;
   var HAKI_TREE_META = {
     wisdom:   { title: "Observation Haki", blurb: "Awareness. See rewards before you strike, guard your streaks, read the sea ahead." },
     strength: { title: "Armament Haki",    blurb: "Raw power. Floors, multipliers and combos — every clear hits harder." },
