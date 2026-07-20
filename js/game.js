@@ -81,6 +81,9 @@
     var dayBefore = rewards.addDays(today, -2);
     var gap = !save.logPose[yest] && save.logPose[dayBefore];
     if (!gap) return;
+    // Grace days cover an isolated miss for free — never burn the weekly Haki
+    // insurance or a Streak Shield on a day the streak would survive anyway.
+    if (rewards.graceAvailable(save, yest)) return;
     if (rewards.hasHaki(save, "streakInsure")) {
       var last = save.player.lastInsureDate;
       if (!last || daysBetween(last, today) >= 7) {

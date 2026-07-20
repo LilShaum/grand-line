@@ -54,17 +54,46 @@
     hakiUnlocked(save).forEach(function (n) { if (n.effect.type === "streakCap") cap += n.effect.value; });
     return cap;
   }
-  function voyageStreak(save, today) {
-    var streak = 0, cursor = today;
-    while (save.logPose[cursor]) { streak++; cursor = addDays(cursor, -1); }
-    return streak;
-  }
-  function taskStreak(save, today) {
-    var streak = 0, cursor = today;
-    while (save.logPose[cursor] && (save.logPose[cursor].tasksDone || 0) > 0) {
-      streak++; cursor = addDays(cursor, -1);
+  // --- streaks with grace days ------------------------------------------
+  // A missed day no longer hard-resets a streak: one miss is forgiven per
+  // BUFFS.streakGraceWindowDays. Two misses inside the same window still
+  // break it, so alternating on/off days can't sustain a streak forever.
+  // Forgiven days keep the chain alive but don't themselves count as streak
+  // days — you get credit for what you actually did.
+  function streakWalk(save, today, needsTask) {
+    var windowDays = economy.BUFFS.streakGraceWindowDays || 7;
+    var streak = 0, cursor = today, walked = [];
+    while (true) {
+      var lp = save.logPose[cursor];
+      var counts = !!lp && (!needsTask || (lp.tasksDone || 0) > 0);
+      if (counts) {
+        streak++; walked.push(false);
+      } else {
+        // Today being blank means the streak simply hasn't started/continued
+        // yet — the day isn't over, so never spend grace on it.
+        if (streak === 0) break;
+        var recentMisses = 0;
+        for (var i = Math.max(0, walked.length - windowDays); i < walked.length; i++) {
+          if (walked[i]) recentMisses++;
+        }
+        if (recentMisses >= 1) break; // this window's grace is already spent
+        walked.push(true);
+      }
+      cursor = addDays(cursor, -1);
     }
     return streak;
+  }
+  function voyageStreak(save, today) { return streakWalk(save, today, false); }
+  function taskStreak(save, today) { return streakWalk(save, today, true); }
+
+  // Is a free grace day available to cover a miss on dayStr? (Only when every
+  // day in the preceding window was logged, i.e. no grace spent recently.)
+  function graceAvailable(save, dayStr) {
+    var windowDays = economy.BUFFS.streakGraceWindowDays || 7;
+    for (var i = 1; i <= windowDays; i++) {
+      if (!save.logPose[addDays(dayStr, -i)]) return false;
+    }
+    return true;
   }
   function activeBuffs(save, today) {
     return save.buffs.filter(function (b) { return b.expiresOn >= today; });
@@ -258,6 +287,7 @@
     activeBuffs: activeBuffs,
     streakCap: streakCap,
     hakiUnlocked: hakiUnlocked,
+    graceAvailable: graceAvailable,
     hakiEffect: hakiEffect, hasHaki: hasHaki, hasCrew: hasCrew, previewReward: previewReward,
     hakiSum: hakiSum, hakiMax: hakiMax, grantHakiPoints: grantHakiPoints,
     addDays: addDays,

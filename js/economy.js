@@ -110,7 +110,10 @@
     tailwind:       0.15,
     tailwindDays:   3,
     recapCooldownDays: 7,
-    hakiOverflowBerries: 200
+    hakiOverflowBerries: 200,
+    // One missed day is forgiven per this many days of streak. Two misses in
+    // the same window still break it, so on/off days can't fake a streak.
+    streakGraceWindowDays: 7
   };
 
   var DEFAULT_HABITS = [

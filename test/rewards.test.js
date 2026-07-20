@@ -189,14 +189,66 @@ test("previewReward matches applyReward's per-tier math once one-time daily bonu
   assert.equal(ev.bountyGain, preview.bounty);
 });
 
-test("voyageStreak: counts consecutive logged days ending today, breaks on a gap", () => {
+test("voyageStreak: a single missed day is forgiven by a grace day", () => {
+  const save = state.freshSave();
+  const today = "2026-05-15";
+  // 10 logged days, except one miss 3 days ago.
+  for (let i = 0; i <= 10; i++) {
+    if (i === 3) continue;
+    save.logPose[rewards.addDays(today, -i)] = { tasksDone: 1 };
+  }
+  // The forgiven day doesn't count itself, but the chain survives it.
+  assert.equal(rewards.voyageStreak(save, today), 10);
+});
+
+test("voyageStreak: two misses inside one grace window still break the streak", () => {
+  const save = state.freshSave();
+  const today = "2026-05-15";
+  for (let i = 0; i <= 10; i++) {
+    if (i === 2 || i === 4) continue; // two misses within the same 7-day window
+    save.logPose[rewards.addDays(today, -i)] = { tasksDone: 1 };
+  }
+  // today, -1 count; -2 forgiven; -3 counts; -4 is the second miss -> break.
+  assert.equal(rewards.voyageStreak(save, today), 3);
+});
+
+test("voyageStreak: alternating on/off days cannot sustain a streak via grace", () => {
+  const save = state.freshSave();
+  const today = "2026-05-15";
+  for (let i = 0; i <= 40; i += 2) save.logPose[rewards.addDays(today, -i)] = { tasksDone: 1 };
+  // Every other day logged would be an infinite streak under a naive
+  // "one miss is always forgiven" rule; the rolling window must stop it.
+  assert.ok(rewards.voyageStreak(save, today) <= 3,
+    `alternating days should collapse quickly, got ${rewards.voyageStreak(save, today)}`);
+});
+
+test("voyageStreak: a blank today never spends grace (streak is 0 until logged)", () => {
+  const save = state.freshSave();
+  const today = "2026-05-15";
+  for (let i = 1; i <= 10; i++) save.logPose[rewards.addDays(today, -i)] = { tasksDone: 1 };
+  assert.equal(rewards.voyageStreak(save, today), 0, "today isn't over — no streak credit yet");
+  assert.equal(rewards.voyageStreak(save, rewards.addDays(today, -1)), 10);
+});
+
+test("graceAvailable: true only when the whole preceding window is logged", () => {
+  const save = state.freshSave();
+  const today = "2026-05-15";
+  for (let i = 1; i <= 7; i++) save.logPose[rewards.addDays(today, -i)] = { tasksDone: 1 };
+  assert.equal(rewards.graceAvailable(save, today), true);
+  delete save.logPose[rewards.addDays(today, -3)]; // grace already spent recently
+  assert.equal(rewards.graceAvailable(save, today), false);
+});
+
+test("voyageStreak: counts logged days ending today, bridging a single gap with grace", () => {
   const save = state.freshSave();
   const today = "2026-05-15";
   save.logPose[today] = { tasksDone: 1 };
   save.logPose[rewards.addDays(today, -1)] = { tasksDone: 1 };
   save.logPose[rewards.addDays(today, -2)] = { tasksDone: 1 };
-  // gap at -3
+  // gap at -3 — forgiven by grace, so the chain continues through it
   save.logPose[rewards.addDays(today, -4)] = { tasksDone: 1 };
+  // gap at -5 as well: that's the second miss in the window, which ends it.
 
-  assert.equal(rewards.voyageStreak(save, today), 3);
+  // 4 active days counted (today, -1, -2, -4); the forgiven day adds nothing.
+  assert.equal(rewards.voyageStreak(save, today), 4);
 });

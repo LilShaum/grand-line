@@ -271,8 +271,12 @@
     } else {
       var prev = rewards.voyageStreak(save, rewards.addDays(today, -1));
       if (prev > 0) {
-        band.classList.add("at-risk");
-        streakEl.innerHTML = '<i class="ti ti-alert-triangle"></i> ' + prev + '-day course breaks tonight — log anything today to keep it';
+        if (rewards.graceAvailable(save, today)) {
+          streakEl.innerHTML = '<i class="ti ti-shield-check"></i> ' + prev + '-day course — a grace day covers you if today slips, but logging keeps it growing';
+        } else {
+          band.classList.add("at-risk");
+          streakEl.innerHTML = '<i class="ti ti-alert-triangle"></i> ' + prev + '-day course breaks tonight — grace already spent this week, so log anything to keep it';
+        }
       } else {
         streakEl.innerHTML = '<i class="ti ti-compass"></i> Set today\'s course — complete a bounty or log an entry to begin a streak';
       }
@@ -302,9 +306,10 @@
     var sw = $("#streakWarn");
     if (sw) {
       var prevStreak = rewards.voyageStreak(save, rewards.addDays(state.todayStr(), -1));
-      var atRisk = rewards.hasHaki(save, "streakWarn") && !save.logPose[state.todayStr()] && prevStreak > 0;
+      var atRisk = rewards.hasHaki(save, "streakWarn") && !save.logPose[state.todayStr()] && prevStreak > 0
+        && !rewards.graceAvailable(save, state.todayStr());
       sw.hidden = !atRisk;
-      if (atRisk) sw.innerHTML = '<i class="ti ti-alert-triangle"></i> Your ' + prevStreak + '-day streak breaks tonight — log anything to keep it alive.';
+      if (atRisk) sw.innerHTML = '<i class="ti ti-alert-triangle"></i> Your ' + prevStreak + '-day streak breaks tonight — your grace day is already spent. Log anything to keep it alive.';
     }
     renderQuickStatRow();
     var qlog = $("#quickLog"), qtoday = game.todaysLog(save);
@@ -1606,7 +1611,7 @@
   }
   if (save.player.remindersOn && "Notification" in window && Notification.permission === "granted") {
     var _td = state.todayStr();
-    if (!save.logPose[_td]) {
+    if (!save.logPose[_td] && !rewards.graceAvailable(save, _td)) {
       var _prev = rewards.voyageStreak(save, rewards.addDays(_td, -1));
       if (_prev > 0) { try { new Notification("Grand Line", { body: "🔥 Your " + _prev + "-day course breaks tonight. Log anything to keep it alive." }); } catch (e) {} }
     }
