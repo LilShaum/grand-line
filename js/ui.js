@@ -48,7 +48,9 @@
       if (x && !x.value && document.activeElement !== x && d[id]) x.value = d[id];
     });
   }
-  function flushSave() { try { state.save(save); } catch (e) {} }
+  // Never let a blind flush (tab close / backgrounding) overwrite a newer save
+  // written by another tab.
+  function flushSave() { try { if (state.isStale(save)) return; state.save(save); } catch (e) {} }
 
   /* ---------------- FILE AUTO-BACKUP (my-tasks "Link file" pattern) ---------------- */
   var backup = (function () {
@@ -1603,6 +1605,13 @@
   renderRemindBtn();
   show("quarters");
   backup.init();
+  // Another tab saved: adopt its state immediately so this tab never goes
+  // stale and can't clobber it on the next action.
+  state.onExternalChange(function (incoming) {
+    save = incoming;
+    refreshAll();
+    toast('<i class="ti ti-refresh"></i> Synced changes from another tab.');
+  });
   document.addEventListener("visibilitychange", function () { if (document.visibilityState === "hidden") flushSave(); });
   window.addEventListener("pagehide", flushSave);
   if (save._shieldUsed === state.todayStr()) {

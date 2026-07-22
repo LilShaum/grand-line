@@ -29,6 +29,7 @@
     });
     return {
       version: 1,
+      rev: 0,
       player: {
         berries: 0,
         totalBounty: 0,
@@ -101,7 +102,39 @@
   var saveListeners = [];
   function onSave(fn) { if (typeof fn === "function") saveListeners.push(fn); }
 
+  // --- multi-tab safety -------------------------------------------------
+  // Every save carries a monotonic revision. A second tab holding an older
+  // copy must never blind-overwrite a newer one: without this, any action in
+  // a stale tab silently destroyed the other tab's progress (including
+  // written journal entries).
+  function storedRev() {
+    try {
+      var raw = (typeof localStorage !== "undefined") ? localStorage.getItem(KEY) : memoryStore;
+      if (!raw) return 0;
+      var data = JSON.parse(raw);
+      return (data && data.rev) || 0;
+    } catch (e) { return 0; }
+  }
+  // True when what's on disk is newer than the copy this tab is holding.
+  function isStale(save) { return storedRev() > ((save && save.rev) || 0); }
+
+  var externalListeners = [];
+  function onExternalChange(fn) { if (typeof fn === "function") externalListeners.push(fn); }
+  if (typeof window !== "undefined" && window.addEventListener) {
+    // Fires in the OTHER tabs whenever one tab writes, so nobody stays stale.
+    window.addEventListener("storage", function (e) {
+      if (e.key !== KEY || !e.newValue) return;
+      var data = null;
+      try { data = JSON.parse(e.newValue); } catch (err) { return; }
+      if (!data) return;
+      for (var i = 0; i < externalListeners.length; i++) {
+        try { externalListeners[i](data); } catch (err) {}
+      }
+    });
+  }
+
   function write(save) {
+    save.rev = ((save && save.rev) || 0) + 1;
     var raw = JSON.stringify(save);
     try {
       if (typeof localStorage !== "undefined") localStorage.setItem(KEY, raw);
@@ -123,7 +156,8 @@
     KEY: KEY, uid: uid, todayStr: todayStr,
     freshSave: freshSave, seedBounty: seedBounty,
     cloneLevels: cloneLevels,
-    load: load, save: write, reset: reset, onSave: onSave
+    load: load, save: write, reset: reset, onSave: onSave,
+    storedRev: storedRev, isStale: isStale, onExternalChange: onExternalChange
   };
 
   GL.state = state;

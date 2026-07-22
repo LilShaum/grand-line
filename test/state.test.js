@@ -53,6 +53,34 @@ test("load/save/reset round-trip through the in-memory store (no localStorage in
   assert.equal(afterReset.player.berries, 0);
 });
 
+test("save(): every write bumps the revision counter", () => {
+  const save = state.freshSave();
+  assert.equal(save.rev, 0, "a fresh save starts at revision 0");
+  state.save(save);
+  assert.equal(save.rev, 1);
+  state.save(save);
+  assert.equal(save.rev, 2);
+});
+
+test("isStale(): detects a copy that is older than what's stored (the multi-tab clobber case)", () => {
+  // Tab A and Tab B both load the same state.
+  const tabA = state.load();
+  const tabB = JSON.parse(JSON.stringify(tabA));
+
+  // Tab A does work and saves it.
+  tabA.player.berries = 999;
+  state.save(tabA);
+
+  // Tab B is now holding an older revision than what's on disk.
+  assert.equal(state.isStale(tabB), true, "Tab B must be recognised as stale");
+  assert.equal(state.isStale(tabA), false, "Tab A wrote last, so it is current");
+
+  // Once Tab B adopts the newer state it is no longer stale.
+  const adopted = state.load();
+  assert.equal(state.isStale(adopted), false);
+  assert.equal(adopted.player.berries, 999, "Tab A's work survived");
+});
+
 test("onSave listeners fire with the saved data on every save()", () => {
   const seen = [];
   state.onSave((save, raw) => seen.push({ berries: save.player.berries, rawIsString: typeof raw === "string" }));
