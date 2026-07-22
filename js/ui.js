@@ -841,7 +841,7 @@
     var banner = el("div", "card haki-pool");
     banner.innerHTML =
       '<div class="haki-pool-top"><span class="haki-pool-num"><i class="ti ti-bolt"></i> ' + pool + '</span>' +
-      '<span class="haki-pool-label">Haki Point' + (pool === 1 ? "" : "s") + ' ready</span>' +
+      '<span class="haki-pool-label">Haki Point' + (pool === 1 ? "" : "s") + ' to spend<br><small>shared across all four trees</small></span>' +
       '<span class="haki-pool-cap">' + awakened + ' / ' + cap + ' awakened</span></div>' +
       '<div class="haki-pool-bar"><div class="haki-pool-fill" style="width:' + Math.min(100, Math.round(awakened / cap * 100)) + '%"></div></div>' +
       '<p class="haki-pool-hint">Level-ups awaken points into one shared pool \u2014 it caps at ' + cap + ' for life. Mastering a single tree costs 32. Choose your Haki.</p>';
@@ -853,8 +853,12 @@
       var spent = game.hakiSpent(save, k);
       var col = el("div", "haki-tree");
       col.style.setProperty("--stat", accent(k));
+      // Label this explicitly: it's points INVESTED in this tree, not a
+      // per-tree balance. Unlabelled, it climbs when you spend and reads like
+      // the cost was added rather than deducted.
       col.innerHTML = '<div class="haki-tree-head"><span class="haki-tree-name">' + (meta.title || k) + '</span>' +
-        '<span class="haki-pts">' + spent + ' / 32</span></div>';
+        '<span class="haki-pts" title="Points you have invested in this tree. 32 masters it. Your spendable points are the shared pool above.">' +
+        spent + ' / 32 invested</span></div>';
 
       var graph = el("div", "haki-graph");
       var svg = '<svg class="haki-links" viewBox="0 0 100 380" preserveAspectRatio="none">';
