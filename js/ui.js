@@ -33,6 +33,11 @@
     return (v || "#1b2a4a").trim();
   }
   function fmt(n) { return Number(n).toLocaleString(); }
+  function daysSince(dateStr) {
+    if (!dateStr) return 0;
+    var then = new Date(dateStr + "T00:00:00"), now = new Date(state.todayStr() + "T00:00:00");
+    return Math.round((now - then) / 86400000);
+  }
   function el(tag, cls, html) { var e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; }
 
   /* ---------------- DRAFT PERSISTENCE (never lose typing) ---------------- */
@@ -286,7 +291,9 @@
     var openCount = save.bounties.filter(function (b) { return b.status === "open"; }).length;
     var bits = [openCount + " open bount" + (openCount === 1 ? "y" : "ies")];
     bits.push(game.todaysLog(save) ? "logged ✓" : "not logged yet");
-    if (game.canRecap(save)) bits.push("Weekly Recap ready");
+    // Don't advertise the Weekly Recap until the account is old enough for a
+    // "week" to be meaningful — offering it on day 1 just confuses new users.
+    if (daysSince(save.player.createdAt) >= 7 && game.canRecap(save)) bits.push("Weekly Recap ready");
     statusEl.textContent = bits.join("  ·  ");
   }
 
@@ -352,11 +359,12 @@
     var rewardDef = economy.ITEMS[def.reward];
     var prog = def.need > 1
       ? '<span class="dispatch-prog">' + Math.min(st.progress, def.need) + " / " + def.need + '</span>'
-      : (st.done ? '<span class="dispatch-prog done">cleared</span>' : '<span class="dispatch-prog">not yet</span>');
+      : (st.done ? '<span class="dispatch-prog done">cleared</span>' : '<span class="dispatch-prog">0 / 1</span>');
     wrap.classList.toggle("done", !!st.done);
     wrap.innerHTML =
       '<div class="dispatch-head"><i class="ti ti-bell-ringing"></i> Marine Dispatch' +
         '<span class="dispatch-reward" title="Reward"><i class="ti ' + rewardDef.icon + '"></i> ' + rewardDef.name + '</span></div>' +
+      '<div class="dispatch-note">Today\'s bonus objective. Finish it as part of your normal day to earn the item shown.</div>' +
       '<div class="dispatch-body"><div class="dispatch-title">' + def.title + '</div>' +
         '<div class="dispatch-obj">' + def.objective + '</div></div>' +
       '<div class="dispatch-status">' + (st.done
@@ -845,7 +853,11 @@
       '<span class="haki-pool-label">Haki Point' + (pool === 1 ? "" : "s") + ' to spend<br><small>shared across all four trees</small></span>' +
       '<span class="haki-pool-cap">' + awakened + ' / ' + cap + ' awakened</span></div>' +
       '<div class="haki-pool-bar"><div class="haki-pool-fill" style="width:' + Math.min(100, Math.round(awakened / cap * 100)) + '%"></div></div>' +
-      '<p class="haki-pool-hint">Level-ups awaken points into one shared pool \u2014 it caps at ' + cap + ' for life. Mastering a single tree costs 32. Choose your Haki.</p>';
+      // First-timer with nothing yet: tell them plainly how to earn a point,
+      // instead of leaving them staring at a wall of locked nodes.
+      (awakened === 0 && pool === 0
+        ? '<p class="haki-pool-hint"><i class="ti ti-info-circle"></i> You have no Haki Points yet. Complete bounties and duties to level up your four stats \u2014 <strong>every stat level-up awakens one point</strong> to spend here.</p>'
+        : '<p class="haki-pool-hint">Level-ups awaken points into one shared pool \u2014 it caps at ' + cap + ' for life. Mastering a single tree costs 32. Choose your Haki.</p>');
     wrap.appendChild(banner);
 
     economy.STAT_KEYS.forEach(function (k) {
@@ -969,25 +981,25 @@
   // Bespoke, hand-drawn crew icons (keyed by def.icon: swords/compass/…). They
   // inherit currentColor from the medallion, so they recolor with the theme.
   function crewIcon(key) {
-    var head = '<svg class="crew-svg" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">';
+    var head = '<svg class="crew-svg" aria-hidden="true" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">';
     var p = {
       swords: head +
         '<g transform="rotate(-40 24 24)" opacity="0.45"><line x1="24" y1="3" x2="24" y2="18" stroke-width="1.8"/><rect x="19.5" y="18" width="9" height="2.5" rx="0.8" fill="currentColor" stroke="none"/><line x1="24" y1="20.5" x2="24" y2="44" stroke-width="1.5"/></g>' +
         '<g transform="rotate(40 24 24)" opacity="0.45"><line x1="24" y1="3" x2="24" y2="18" stroke-width="1.8"/><rect x="19.5" y="18" width="9" height="2.5" rx="0.8" fill="currentColor" stroke="none"/><line x1="24" y1="20.5" x2="24" y2="44" stroke-width="1.5"/></g>' +
         '<line x1="24" y1="3" x2="24" y2="18" stroke-width="2.5"/><rect x="19" y="18" width="10" height="3" rx="1" fill="currentColor" stroke="none"/><line x1="24" y1="21" x2="24" y2="44" stroke-width="2.2"/></svg>',
-      compass: '<svg class="crew-svg" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6">' +
+      compass: '<svg class="crew-svg" aria-hidden="true" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6">' +
         '<rect x="10" y="36" width="28" height="8" rx="4"/><rect x="21" y="27" width="6" height="10" rx="1.5"/><circle cx="24" cy="19" r="11"/><circle cx="24" cy="19" r="5.5" stroke-width="1" opacity="0.4"/><line x1="24" y1="19" x2="24" y2="11" stroke-width="2.2"/><circle cx="24" cy="10" r="2.2" fill="currentColor" stroke="none"/></svg>',
       slingshot: head +
         '<line x1="24" y1="30" x2="24" y2="46" stroke-width="3"/><path d="M24 30 C20 26 15 22 12 10" stroke-width="2.4"/><path d="M24 30 C28 26 33 22 36 10" stroke-width="2.4"/><circle cx="12" cy="10" r="2.8" fill="currentColor" stroke="none"/><circle cx="36" cy="10" r="2.8" fill="currentColor" stroke="none"/><path d="M12 10 C17 20 22 26 24 32" stroke-width="1.4" opacity="0.5"/><path d="M36 10 C31 20 26 26 24 32" stroke-width="1.4" opacity="0.5"/><ellipse cx="24" cy="33" rx="3" ry="2" fill="currentColor" stroke="none"/></svg>',
-      flame: '<svg class="crew-svg" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6">' +
+      flame: '<svg class="crew-svg" aria-hidden="true" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6">' +
         '<rect x="20" y="6" width="12" height="30" rx="2.5"/><rect x="20" y="34" width="18" height="8" rx="4"/><path d="M20 22 C14 20 12 13 16 9" stroke-width="1.8"/><path d="M20 30 C12 28 10 20 14 15" stroke-width="1.5" opacity="0.6"/><path d="M20 14 C15 12 14 7 18 5" stroke-width="1.5" opacity="0.7"/></svg>',
-      cross: '<svg class="crew-svg" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6">' +
+      cross: '<svg class="crew-svg" aria-hidden="true" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6">' +
         '<rect x="18" y="12" width="12" height="26" rx="2"/><rect x="10" y="20" width="28" height="10" rx="2"/><path d="M18 18 C14 15 10 13 8 7" stroke-width="2"/><path d="M13 12 C12 8 13 4 16 3" stroke-width="1.5"/><path d="M30 18 C34 15 38 13 40 7" stroke-width="2"/><path d="M35 12 C36 8 35 4 32 3" stroke-width="1.5"/></svg>',
-      wrench: '<svg class="crew-svg" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6">' +
+      wrench: '<svg class="crew-svg" aria-hidden="true" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6">' +
         '<rect x="18" y="3" width="12" height="5" rx="1.5"/><path d="M18 8 L17 14 L14 18 L14 38 C14 41.5 18 44 24 44 C30 44 34 41.5 34 38 L34 18 L31 14 L30 8 Z"/><line x1="14" y1="26" x2="34" y2="26" stroke-width="1" opacity="0.4"/><line x1="14" y1="33" x2="34" y2="33" stroke-width="1" opacity="0.4"/><path d="M24 20 L25.4 24 L30 24 L26.5 26.5 L27.8 31 L24 28.4 L20.2 31 L21.5 26.5 L18 24 L22.6 24 Z" fill="currentColor" stroke="none"/></svg>',
       book: head +
         '<path d="M20 46 L20 34 Q20 30 24 30 Q28 30 28 34 L28 46" stroke-width="1.6"/><line x1="19" y1="30" x2="13" y2="16" stroke-width="1.5"/><line x1="21" y1="29" x2="19" y2="13" stroke-width="1.5"/><line x1="24" y1="28" x2="24" y2="10" stroke-width="1.5"/><line x1="27" y1="29" x2="29" y2="13" stroke-width="1.5"/><line x1="29" y1="30" x2="35" y2="16" stroke-width="1.5"/><circle cx="24" cy="9" r="2.5" stroke-width="1.3"/><circle cx="24" cy="4.5" r="1.5" fill="currentColor" stroke="none"/><circle cx="27.8" cy="6.5" r="1.5" fill="currentColor" stroke="none"/><circle cx="27.8" cy="11.5" r="1.5" fill="currentColor" stroke="none"/><circle cx="20.2" cy="11.5" r="1.5" fill="currentColor" stroke="none"/><circle cx="20.2" cy="6.5" r="1.5" fill="currentColor" stroke="none"/></svg>',
-      note: '<svg class="crew-svg" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5">' +
+      note: '<svg class="crew-svg" aria-hidden="true" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5">' +
         '<ellipse cx="24" cy="14" rx="17" ry="12"/><ellipse cx="24" cy="34" rx="10" ry="11"/><ellipse cx="20" cy="31" rx="2.5" ry="3" fill="currentColor" stroke="none"/><ellipse cx="28" cy="31" rx="2.5" ry="3" fill="currentColor" stroke="none"/><path d="M22.5 37 L24 34.5 L25.5 37" stroke-width="1.2"/><line x1="20" y1="40.5" x2="28" y2="40.5" stroke-width="1.2"/><line x1="22" y1="40.5" x2="22" y2="43.5" stroke-width="1"/><line x1="24" y1="40.5" x2="24" y2="43.5" stroke-width="1"/><line x1="26" y1="40.5" x2="26" y2="43.5" stroke-width="1"/></svg>',
       wheel: head +
         '<circle cx="24" cy="24" r="9" stroke-width="2"/><line x1="24" y1="4" x2="24" y2="13" stroke-width="2.5"/><line x1="24" y1="35" x2="24" y2="44" stroke-width="2.5"/><line x1="4" y1="24" x2="13" y2="24" stroke-width="2.5"/><line x1="35" y1="24" x2="44" y2="24" stroke-width="2.5"/><line x1="9.4" y1="9.4" x2="15.1" y2="15.1" stroke-width="2"/><line x1="38.6" y1="9.4" x2="32.9" y2="15.1" stroke-width="2"/><line x1="9.4" y1="38.6" x2="15.1" y2="32.9" stroke-width="2"/><line x1="38.6" y1="38.6" x2="32.9" y2="32.9" stroke-width="2"/></svg>'

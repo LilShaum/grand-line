@@ -803,6 +803,7 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
 .dispatch-head { font-weight: 700; color: var(--ocean-navy); font-size: .82rem; letter-spacing: .5px; text-transform: uppercase; display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
 .dispatch-head .ti { color: var(--wanted-red); }
 .dispatch-reward { margin-left: auto; font-size: .66rem; font-weight: 700; text-transform: none; letter-spacing: 0; color: var(--bounty-gold2); display: flex; align-items: center; gap: 3px; background: var(--parchment2); border: 1px solid var(--paper-line); border-radius: 999px; padding: 2px 8px; }
+.dispatch-note { font-size: .68rem; color: var(--ink-soft); font-style: italic; margin: 4px 0 8px; line-height: 1.35; }
 .dispatch-title { font-family: "Pirata One", serif; font-size: 1.2rem; color: var(--ink); line-height: 1.1; }
 .dispatch-obj { font-size: .8rem; color: var(--ink-soft); margin-top: 2px; }
 .dispatch-status { margin-top: 9px; font-size: .72rem; font-weight: 700; color: var(--sea-teal); display: flex; align-items: center; gap: 5px; }
