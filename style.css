@@ -715,193 +715,39 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
 .crew-where .ti { font-size: .82rem; }
 .toast-where { display: block; margin-top: 3px; font-size: .84em; opacity: .95; }
 
-/* ── Crew grid: One Piece wanted-poster cards ── */
-.crew-list {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  padding: 8px 0;
+/* ── Crew: compact roster rows (theme-aware) ── */
+.crew-list { display: flex; flex-direction: column; gap: 8px; padding: 4px 0 2px; }
+.crew-row {
+  display: flex; align-items: center; gap: 12px;
+  background: var(--parchment); border: 1px solid var(--paper-line);
+  border-radius: 11px; padding: 10px 12px; box-shadow: var(--shadow-sm);
+  transition: transform .12s ease, box-shadow .12s ease;
 }
-
-.crew-card {
-  background: linear-gradient(
-    160deg,
-    #F7E8C0 0%,
-    #EDD9A0 40%,
-    #F2E2B2 100%
-  );
-  border: 2px solid #8B6914;
-  box-shadow:
-    inset 0 0 0 3px #F7E8C0,
-    inset 0 0 0 5px #7A5C10,
-    0 4px 16px rgba(0,0,0,0.3),
-    0 1px 4px rgba(0,0,0,0.15);
-  border-radius: 3px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 14px 10px 12px;
-  gap: 6px;
-  position: relative;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+.crew-row:hover { transform: translateY(-1px); box-shadow: var(--shadow); }
+.crew-medallion {
+  width: 46px; height: 46px; min-width: 46px; border-radius: 50%;
+  background: var(--parchment3); border: 1.5px solid var(--bounty-gold2);
+  display: flex; align-items: center; justify-content: center; color: var(--bounty-gold2);
 }
-
-.crew-card:hover {
-  transform: translateY(-2px);
-  box-shadow:
-    inset 0 0 0 3px #F7E8C0,
-    inset 0 0 0 5px #7A5C10,
-    0 8px 24px rgba(0,0,0,0.3),
-    0 2px 6px rgba(0,0,0,0.15);
-}
-
-.crew-wanted-header {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  line-height: 1;
-  margin-bottom: 2px;
-}
-
-.crew-wanted-text {
-  font-family: 'Pirata One', serif;
-  font-size: 1.6rem;
-  color: #B81C0C;
-  letter-spacing: 0.08em;
-  text-shadow: 1px 1px 0 rgba(0,0,0,0.2);
-  line-height: 1;
-}
-
-.crew-wanted-sub {
-  font-family: 'Geist', sans-serif;
-  font-size: 0.55rem;
-  font-weight: 700;
-  letter-spacing: 0.25em;
-  color: #B81C0C;
-  text-transform: uppercase;
-  margin-top: 1px;
-}
-
-.crew-icon-area {
-  width: 80px;
-  height: 80px;
-  border: 1.5px solid #7A5C10;
-  background: rgba(0,0,0,0.06);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 2px;
-  margin: 4px 0;
-}
-
-.crew-icon-area .ti {
-  font-size: 2.4rem;
-  color: #2a1f0e;
-  opacity: 0.75;
-}
-
-.crew-name {
-  font-family: 'Pirata One', serif;
-  font-size: 1rem;
-  color: #1a1207;
-  text-align: center;
-  line-height: 1.1;
-}
-
-.crew-bounty-box {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background: #B81C0C;
-  color: #FFF8E6;
-  padding: 3px 10px 4px;
-  border-radius: 2px;
-  margin: 2px 0;
-  width: 100%;
-}
-
-.crew-bounty-label {
-  font-family: 'Geist', sans-serif;
-  font-size: 0.45rem;
-  font-weight: 700;
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
-  opacity: 0.85;
-  line-height: 1;
-}
-
-.crew-bounty-amount {
-  font-family: 'Instrument Serif', serif;
-  font-size: 1.1rem;
-  font-weight: 400;
-  line-height: 1.2;
-}
-
-.crew-bonus {
-  font-family: 'Geist', sans-serif;
-  font-size: 0.62rem;
-  color: #3a2c10;
-  text-align: center;
-  line-height: 1.35;
-  opacity: 0.9;
-  padding: 0 2px;
-}
-
+.crew-medallion .crew-svg { width: 26px; height: 26px; display: block; }
+.crew-row-body { flex: 1; min-width: 0; }
+.crew-name { font-family: "Pirata One", serif; font-size: 1.1rem; color: var(--ink); line-height: 1.1; }
+.crew-bonus { font-size: .72rem; color: var(--ink-soft); line-height: 1.35; margin-top: 1px; }
+.crew-where { font-size: .64rem; color: var(--sea-teal); font-weight: 700; margin-top: 3px; display: flex; align-items: center; gap: 4px; }
+.crew-where .ti { font-size: .82rem; }
+.crew-row-right { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; white-space: nowrap; }
+.crew-cost { font-family: "Pirata One", serif; font-size: 1.1rem; color: var(--bounty-gold2); }
 .crew-recruit-btn {
-  margin-top: 4px;
-  width: 100%;
-  padding: 6px 0;
-  font-family: 'Geist', sans-serif;
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  background: #2a1f0e;
-  color: #F7E8C0;
-  border: none;
-  border-radius: 2px;
-  cursor: pointer;
-  transition: background 0.1s ease;
+  font-family: "Geist", sans-serif; font-size: .72rem; font-weight: 700; letter-spacing: .03em;
+  padding: 6px 15px; border-radius: 8px; background: var(--ocean-navy); color: var(--chrome-text);
+  border: none; cursor: pointer; transition: background .1s ease;
 }
-
-.crew-recruit-btn:hover:not(:disabled) {
-  background: #B81C0C;
-}
-
-.crew-recruit-btn:disabled,
-.crew-card.recruited .crew-recruit-btn {
-  background: #7A5C10;
-  opacity: 0.6;
-  cursor: default;
-}
-
-.crew-card.recruited::after {
-  content: 'RECRUITED';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) rotate(-15deg);
-  font-family: 'Pirata One', serif;
-  font-size: 1rem;
-  color: rgba(0, 120, 40, 0.35);
-  border: 2px solid rgba(0, 120, 40, 0.35);
-  padding: 4px 8px;
-  border-radius: 3px;
-  pointer-events: none;
-  letter-spacing: 0.1em;
-  white-space: nowrap;
-}
-
-.crew-card .crew-where {
-  display: block;
-  font-family: 'Geist', sans-serif;
-  font-size: 0.55rem;
-  font-weight: 400;
-  font-style: italic;
-  color: #5a4520;
-  text-align: center;
-  margin-top: 0;
-}
+.crew-recruit-btn:hover:not(:disabled) { background: var(--bounty-gold2); }
+.crew-recruit-btn:disabled { opacity: .5; cursor: default; }
+.crew-recruited-pill { font-family: "Geist", sans-serif; font-size: .72rem; font-weight: 700; color: var(--good); display: inline-flex; align-items: center; gap: 4px; }
+.crew-recruited-pill .ti { font-size: .95rem; }
+.crew-row.recruited { opacity: .72; }
+.crew-row.recruited .crew-medallion { border-color: var(--good); color: var(--good); background: color-mix(in srgb, var(--good) 12%, var(--parchment3)); }
 .nav-pulse { animation: navPulse 1s ease-in-out 0s 5; border-radius: 8px; }
 [data-goto="haki"].item-empty .item-count{font-size:0.78em;color:var(--ocean-navy,#1d5f82);font-weight:600;letter-spacing:0.03em} .haki-has-points{position:relative!important}[data-goto="haki"].haki-has-points::after{content:"";position:absolute;top:3px;right:3px;width:8px;height:8px;background:#a855f7;border-radius:50%;box-shadow:0 0 6px #a855f7;pointer-events:none} @keyframes navPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(47,143,134,0); } 50% { box-shadow: 0 0 0 4px rgba(47,143,134,.55); } }
 .float-pop { position: fixed; left: 50%; top: 40%; transform: translateX(-50%); font-family: "Pirata One", serif; font-size: 2.1rem; color: var(--stat, var(--bounty-gold)); text-shadow: 0 2px 8px rgba(0,0,0,.35); pointer-events: none; z-index: 9999; animation: floatPop .75s ease-out forwards; }
