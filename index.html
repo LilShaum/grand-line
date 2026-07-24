@@ -196,24 +196,16 @@
 
       <div class="card insight-banner" id="insightBanner" hidden></div>
 
-      <div class="card daily-journal">
-        <div class="card-head"><i class="ti ti-sunrise"></i> Morning Intent <span class="muted" id="intentStatus"></span></div>
-        <p class="prompt-hint" id="intentPrompt"></p>
-        <textarea id="morningIntent" class="log-textarea short" placeholder="Set today's course…"></textarea>
-        <div class="log-actions"><span class="muted">+10 ฿ · +8 Ambition</span><button class="primary-btn" id="saveIntentBtn"><i class="ti ti-compass"></i> Set Course</button></div>
-      </div>
-
-      <div class="card daily-journal">
-        <div class="card-head"><i class="ti ti-moon"></i> Evening Reflection <span class="muted" id="reflectStatus"></span></div>
-        <p class="prompt-hint" id="reflectPrompt"></p>
-        <textarea id="eveningReflect" class="log-textarea short" placeholder="Log the day's voyage…"></textarea>
-        <div class="log-actions"><span class="muted">+12 ฿ · +10 Wisdom · grants Morale</span><button class="primary-btn" id="saveReflectBtn"><i class="ti ti-device-floppy"></i> Log Reflection</button></div>
-      </div>
-
-      <div class="card">
-        <div class="card-head"><i class="ti ti-feather"></i> Free Log <span class="muted" id="freeStatus"></span></div>
-        <textarea id="freeWrite" class="log-textarea" placeholder="Open waters — write whatever's on your mind…"></textarea>
-        <div class="log-actions"><span class="muted">+5 ฿ · +5 Resolve</span><button class="primary-btn" id="saveFreeBtn"><i class="ti ti-device-floppy"></i> Save</button></div>
+      <div class="card log-composer">
+        <div class="card-head"><i class="ti ti-feather"></i> New Log Entry <span class="muted" id="composeStatus"></span></div>
+        <div class="compose-types" id="composeTypes" role="tablist" aria-label="Entry type">
+          <button type="button" class="compose-type" data-ltype="morning_intent" role="tab"><i class="ti ti-sunrise" aria-hidden="true"></i> Intent</button>
+          <button type="button" class="compose-type" data-ltype="evening_reflection" role="tab"><i class="ti ti-moon" aria-hidden="true"></i> Reflection</button>
+          <button type="button" class="compose-type" data-ltype="free_write" role="tab"><i class="ti ti-feather" aria-hidden="true"></i> Free Log</button>
+        </div>
+        <p class="prompt-hint" id="composePrompt"></p>
+        <textarea id="composeText" class="log-textarea" aria-label="Log entry"></textarea>
+        <div class="log-actions"><span class="muted" id="composeReward"></span><button class="primary-btn" id="composeSave"><i class="ti ti-device-floppy"></i> Save</button></div>
       </div>
 
       <div class="card">

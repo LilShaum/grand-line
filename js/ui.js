@@ -42,7 +42,7 @@
 
   /* ---------------- DRAFT PERSISTENCE (never lose typing) ---------------- */
   var DRAFT_KEY = "grandline.drafts.v1";
-  var DRAFT_FIELDS = ["morningIntent", "eveningReflect", "freeWrite", "recapText", "quickLog", "quickMemoryText", "bountyTitle", "quickBountyTitle"];
+  var DRAFT_FIELDS = ["recapText", "quickLog", "quickMemoryText", "bountyTitle", "quickBountyTitle"];
   function getDrafts() { try { return JSON.parse(localStorage.getItem(DRAFT_KEY) || "{}"); } catch (e) { return {}; } }
   function setDraft(id, val) { var d = getDrafts(); if (val) d[id] = val; else delete d[id]; try { localStorage.setItem(DRAFT_KEY, JSON.stringify(d)); } catch (e) {} }
   function clearDraft(id) { setDraft(id, ""); }
@@ -593,23 +593,67 @@
     });
   }
 
+  // Three daily entry types share one composer instead of three stacked boxes.
+  var LOG_TYPES = {
+    morning_intent:     { label: "set ✓",    reward: "+10 ฿ · +8 Ambition",              ph: "Set today's course…",                     promptFn: function (d) { return economy.morningPrompt(d); }, save: "Set Course",     saveIcon: "ti-compass" },
+    evening_reflection: { label: "logged ✓", reward: "+12 ฿ · +10 Wisdom · grants Morale", ph: "Log the day's voyage…",                    promptFn: function (d) { return economy.eveningPrompt(d); }, save: "Log Reflection", saveIcon: "ti-device-floppy" },
+    free_write:         { label: "saved ✓",  reward: "+5 ฿ · +5 Resolve",                 ph: "Open waters — write whatever's on your mind…", promptFn: null,                                        save: "Save",           saveIcon: "ti-device-floppy" }
+  };
+  var logType = null; // chosen once by time of day, then remembered for the session
+  function composeDraftKey(t) { return "compose_" + t; }
+  function renderComposer(force) {
+    var types = $$("#composeTypes .compose-type");
+    if (!types.length) return;
+    var today = state.todayStr();
+    if (!logType) logType = (new Date().getHours() < 15) ? "morning_intent" : "evening_reflection";
+    var def = LOG_TYPES[logType];
+    types.forEach(function (b) {
+      var on = b.dataset.ltype === logType;
+      b.classList.toggle("active", on);
+      b.setAttribute("aria-selected", on);
+      var done = save.journal.some(function (e) { return e.type === b.dataset.ltype && e.date === today; });
+      b.classList.toggle("done", done);
+    });
+    var promptEl = $("#composePrompt");
+    if (promptEl) { var p = def.promptFn ? def.promptFn(today) : ""; promptEl.textContent = p; promptEl.hidden = !p; }
+    $("#composeReward").textContent = def.reward;
+    var saveBtn = $("#composeSave");
+    if (saveBtn) saveBtn.innerHTML = '<i class="ti ' + def.saveIcon + '"></i> ' + def.save;
+    var ta = $("#composeText");
+    // Reload the box on an explicit type switch (force), or during a background
+    // re-render only when the user isn't actively typing in it.
+    if (ta && (force || document.activeElement !== ta)) {
+      var entry = save.journal.find(function (e) { return e.type === logType && e.date === today; });
+      var draft = getDrafts()[composeDraftKey(logType)];
+      ta.value = entry ? entry.text : (draft || "");
+      ta.placeholder = def.ph;
+    }
+    var existing = save.journal.some(function (e) { return e.type === logType && e.date === today; });
+    $("#composeStatus").textContent = existing ? LOG_TYPES[logType].label : "";
+  }
+  function setLogType(t) {
+    if (!LOG_TYPES[t] || t === logType) return;
+    logType = t;
+    renderComposer(true);
+    var ta = $("#composeText"); if (ta) ta.focus();
+  }
+  function saveComposer() {
+    var ta = $("#composeText"); if (!ta) return;
+    var text = ta.value.trim();
+    if (!text) { toast('<i class="ti ti-pencil"></i> Write at least one line.'); return; }
+    var ev = game.addJournal(save, logType, { text: text });
+    clearDraft(composeDraftKey(logType));
+    if (ev && ev.updated) toast('<i class="ti ti-check"></i> Updated.');
+    else if (ev) celebrate(ev);
+    refreshAll();
+  }
+
   function renderLog() {
     var today = state.todayStr();
     renderLore();
     renderShipLog();
     renderVoyageMap();
-    function tEntry(type) { return save.journal.find(function (e) { return e.type === type && e.date === today; }); }
-    var mi = tEntry("morning_intent"), miEl = $("#morningIntent");
-    if (document.activeElement !== miEl) miEl.value = mi ? mi.text : "";
-    $("#intentStatus").textContent = mi ? "set ✓" : "";
-    $("#intentPrompt").textContent = economy.morningPrompt(today);
-    var er = tEntry("evening_reflection"), erEl = $("#eveningReflect");
-    if (document.activeElement !== erEl) erEl.value = er ? er.text : "";
-    $("#reflectStatus").textContent = er ? "logged ✓" : "";
-    $("#reflectPrompt").textContent = economy.eveningPrompt(today);
-    var fw = tEntry("free_write"), fwEl = $("#freeWrite");
-    if (document.activeElement !== fwEl) fwEl.value = fw ? fw.text : "";
-    $("#freeStatus").textContent = fw ? "saved ✓" : "";
+    renderComposer();
 
     var insightBanner = $("#insightBanner");
     if (insightBanner) {
@@ -658,16 +702,6 @@
       c.onclick = function () { journalFilter = o[0]; renderLog(); };
       fr.appendChild(c);
     });
-  }
-
-  function saveDaily(type, sel) {
-    var text = $(sel).value.trim();
-    if (!text) { toast('<i class="ti ti-pencil"></i> Write at least one line.'); return; }
-    var ev = game.addJournal(save, type, { text: text });
-    clearDraft(sel.replace("#", ""));
-    if (ev && ev.updated) toast('<i class="ti ti-check"></i> Updated.');
-    else if (ev) celebrate(ev);
-    refreshAll();
   }
 
   function renderMoodStrip() {
@@ -1480,9 +1514,13 @@
       };
     });
 
-    $("#saveIntentBtn").onclick = function () { saveDaily("morning_intent", "#morningIntent"); };
-    $("#saveReflectBtn").onclick = function () { saveDaily("evening_reflection", "#eveningReflect"); };
-    $("#saveFreeBtn").onclick = function () { saveDaily("free_write", "#freeWrite"); };
+    $$("#composeTypes .compose-type").forEach(function (b) {
+      b.onclick = function () { setLogType(b.dataset.ltype); };
+    });
+    if ($("#composeSave")) $("#composeSave").onclick = saveComposer;
+    if ($("#composeText")) $("#composeText").addEventListener("input", function () {
+      setDraft(composeDraftKey(logType), this.value);
+    });
 
     $("#quickBountyForm").onsubmit = function (e) {
       e.preventDefault();

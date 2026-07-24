@@ -829,6 +829,17 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
 .first-move .fm-title { font-family: "Pirata One", serif; font-size: 1.2rem; color: var(--ink); display: flex; align-items: center; gap: 7px; line-height: 1.1; }
 .first-move .fm-title .ti { color: var(--bounty-gold2); font-size: 1.1rem; }
 .first-move .fm-text { font-size: .8rem; color: var(--ink-soft); line-height: 1.45; margin: 5px 0 0; }
+/* ── Log composer: one box, three entry types ── */
+.compose-types { display: flex; gap: 6px; margin: 2px 0 10px; flex-wrap: wrap; }
+.compose-type {
+  flex: 1 1 auto; min-width: 88px; display: inline-flex; align-items: center; justify-content: center; gap: 5px;
+  font-family: "Geist", sans-serif; font-size: .76rem; font-weight: 700; padding: 8px 10px; border-radius: 9px;
+  background: var(--parchment2); color: var(--ink-soft); border: 1px solid var(--paper-line); cursor: pointer;
+}
+.compose-type .ti { font-size: .95rem; }
+.compose-type.active { background: var(--ocean-navy); color: var(--chrome-text); border-color: var(--ocean-navy); }
+.compose-type.done:not(.active) { color: var(--good); border-color: color-mix(in srgb, var(--good) 45%, var(--paper-line)); }
+.compose-type.done::after { content: " ✓"; }
 .dispatch-note { font-size: .68rem; color: var(--ink-soft); font-style: italic; margin: 4px 0 8px; line-height: 1.35; }
 .dispatch-title { font-family: "Pirata One", serif; font-size: 1.2rem; color: var(--ink); line-height: 1.1; }
 .dispatch-obj { font-size: .8rem; color: var(--ink-soft); margin-top: 2px; }
