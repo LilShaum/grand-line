@@ -320,6 +320,17 @@
       sw.hidden = !atRisk;
       if (atRisk) sw.innerHTML = '<i class="ti ti-alert-triangle"></i> Your ' + prevStreak + '-day streak breaks tonight — your grace day is already spent. Log anything to keep it alive.';
     }
+    // A brand-new captain sees one clear next move instead of six equal cards.
+    // Disappears the moment they do anything, and never returns after day one.
+    var fm = $("#firstMoveHint");
+    if (fm) {
+      var isNew = daysSince(save.player.createdAt) === 0 && !save.logPose[state.todayStr()];
+      fm.hidden = !isNew;
+      if (isNew) {
+        fm.innerHTML = '<div class="fm-title"><i class="ti ti-compass"></i> Start here</div>' +
+          '<p class="fm-text">Tap the circle beside any bounty below to clear it. That\'s your first Berries and XP — everything else on this page unlocks from there.</p>';
+      }
+    }
     renderQuickStatRow();
     var qlog = $("#quickLog"), qtoday = game.todaysLog(save);
     if (document.activeElement !== qlog) qlog.value = qtoday ? qtoday.text : "";

@@ -67,21 +67,15 @@
         <div class="today-status" id="todayStatus"></div>
       </div>
 
-      <div class="card dispatch-card" id="dispatchCard"></div>
-
       <div class="card streak-warn" id="streakWarn" hidden></div>
 
+      <div class="card first-move" id="firstMoveHint" hidden></div>
+
+      <!-- Primary daily actions come first: clear a bounty, write the log. -->
       <div class="card">
         <div class="card-head"><i class="ti ti-flag"></i> Open Bounties Today</div>
         <ul class="mini-list" id="quartersBounties"></ul>
         <button class="ghost-btn" data-goto="bounties">Go to the Bounty Board <i class="ti ti-arrow-right"></i></button>
-      </div>
-
-      <div class="card">
-        <div class="card-head"><i class="ti ti-plus"></i> Quick Bounty</div>
-        <form id="quickBountyForm" autocomplete="off"><input type="text" id="quickBountyTitle" placeholder="New bounty… press Enter" maxlength="120" aria-label="New bounty title" /></form>
-        <div class="quick-stat-row" id="quickStatRow"></div>
-        <p class="cat-desc" id="quickStatDesc"></p>
       </div>
 
       <div class="card">
@@ -97,9 +91,18 @@
         <form id="quickMemoryForm" class="memory-form quick-memory" autocomplete="off"><input type="text" id="quickMemoryText" placeholder="Quick memory… (+5 ฿)" maxlength="160" aria-label="Quick memory" /><button type="submit" class="primary-btn" aria-label="Save quick memory"><i class="ti ti-plus" aria-hidden="true"></i></button></form>
       </div>
 
-      <div class="haki-grid" id="hakiGrid"></div>
+      <!-- Secondary: adding a new goal, and the optional daily bonus. -->
+      <div class="card">
+        <div class="card-head"><i class="ti ti-plus"></i> Quick Bounty</div>
+        <form id="quickBountyForm" autocomplete="off"><input type="text" id="quickBountyTitle" placeholder="New bounty… press Enter" maxlength="120" aria-label="New bounty title" /></form>
+        <div class="quick-stat-row" id="quickStatRow"></div>
+        <p class="cat-desc" id="quickStatDesc"></p>
+      </div>
 
-      
+      <div class="card dispatch-card" id="dispatchCard"></div>
+
+      <div class="zone-head"><i class="ti ti-chart-bar"></i> Your progress</div>
+      <div class="haki-grid" id="hakiGrid"></div>
 
       <div class="card haki-foot">
         <p class="muted" id="hakiSummary"></p>
