@@ -267,8 +267,17 @@
     <section class="screen" data-screen="hold" hidden role="tabpanel" id="panel-hold" aria-labelledby="tab-hold">
       <h2 class="screen-title"><i class="ti ti-diamond"></i> Treasure Hold</h2>
 
+      <nav class="hold-jump" id="holdJump" aria-label="Jump to a section of the Hold">
+        <button type="button" data-jump="holdVault">Vault</button>
+        <button type="button" data-jump="holdSpoils">Spoils</button>
+        <button type="button" data-jump="holdCrew">Crew</button>
+        <button type="button" data-jump="holdStores">Stores</button>
+        <button type="button" data-jump="holdThemes">Themes</button>
+        <button type="button" data-jump="holdShore">Shore leave</button>
+      </nav>
+
       <!-- (1) THE VAULT -->
-      <div class="vault card">
+      <div class="vault card" id="holdVault">
         <div class="vault-title-row">
           <span class="vault-title" id="vaultTitle">East Blue Pirate</span>
           <span class="vault-berries-chip"><i class="ti ti-coins"></i> ฿<span id="vaultBerries">0</span></span>
@@ -281,7 +290,7 @@
         <div class="vault-next" id="vaultNext"></div>
       </div>
 
-      <div class="zone-head"><i class="ti ti-award"></i> What you've earned</div>
+      <div class="zone-head" id="holdSpoils"><i class="ti ti-award"></i> What you've earned</div>
 
       <div class="card spoils-card">
         <div class="card-head"><i class="ti ti-trophy"></i> Spoils of the Voyage <span class="muted">notoriety won on the seas</span></div>
@@ -289,7 +298,7 @@
         <ul class="trophy-grid" id="epithetList"></ul>
       </div>
 
-      <div class="zone-head"><i class="ti ti-users"></i> Your crew</div>
+      <div class="zone-head" id="holdCrew"><i class="ti ti-users"></i> Your crew</div>
 
       <div class="card">
         <div class="card-head"><i class="ti ti-anchor"></i> Recruit Crew <span class="muted">spend ฿ to bring nakama aboard</span></div>
@@ -297,14 +306,14 @@
         <div class="crew-list" id="crewList"></div>
       </div>
 
-      <div class="zone-head"><i class="ti ti-briefcase"></i> Ship's stores</div>
+      <div class="zone-head" id="holdStores"><i class="ti ti-briefcase"></i> Ship's stores</div>
 
       <div class="card inventory-card">
         <div class="card-head"><i class="ti ti-briefcase"></i> Ship's Stores <span class="muted">provisions stocked from your voyage</span></div>
         <ul class="item-list" id="inventoryList"></ul>
       </div>
 
-      <div class="zone-head"><i class="ti ti-anchor"></i> Make port — spend your plunder</div>
+      <div class="zone-head" id="holdThemes"><i class="ti ti-anchor"></i> Make port — spend your plunder</div>
 
       <div class="card">
         <div class="card-head"><i class="ti ti-map-2"></i> World Themes <span class="muted">locations &amp; factions</span></div>
@@ -317,7 +326,7 @@
       </div>
 
       <div class="card">
-        <div class="card-head"><i class="ti ti-map-pin"></i> Shore Leave <span class="muted">cash your bounty in for real-world rewards</span></div>
+        <div class="card-head" id="holdShore"><i class="ti ti-map-pin"></i> Shore Leave <span class="muted">cash your bounty in for real-world rewards</span></div>
         <ul class="shop-list" id="shopList"></ul>
         <form class="add-shop" id="addShopForm" autocomplete="off">
           <input type="text" id="shopName" placeholder="Reward (e.g. buy that game)" maxlength="80" required />

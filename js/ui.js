@@ -989,33 +989,81 @@
     refreshAll();
   }
   var CREW_NAV = { "Captain's Log": "log", "Captain's Log & the Hold": "log", "Bounty Board": "bounties", "Ship Duties": "duties", "The Helm (settings)": "helm" };
-  // Bespoke, hand-drawn crew icons (keyed by def.icon: swords/compass/…). They
-  // inherit currentColor from the medallion, so they recolor with the theme.
-  function crewIcon(key) {
-    var head = '<svg class="crew-svg" aria-hidden="true" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">';
-    var p = {
-      swords: head +
-        '<g transform="rotate(-40 24 24)" opacity="0.45"><line x1="24" y1="3" x2="24" y2="18" stroke-width="1.8"/><rect x="19.5" y="18" width="9" height="2.5" rx="0.8" fill="currentColor" stroke="none"/><line x1="24" y1="20.5" x2="24" y2="44" stroke-width="1.5"/></g>' +
-        '<g transform="rotate(40 24 24)" opacity="0.45"><line x1="24" y1="3" x2="24" y2="18" stroke-width="1.8"/><rect x="19.5" y="18" width="9" height="2.5" rx="0.8" fill="currentColor" stroke="none"/><line x1="24" y1="20.5" x2="24" y2="44" stroke-width="1.5"/></g>' +
-        '<line x1="24" y1="3" x2="24" y2="18" stroke-width="2.5"/><rect x="19" y="18" width="10" height="3" rx="1" fill="currentColor" stroke="none"/><line x1="24" y1="21" x2="24" y2="44" stroke-width="2.2"/></svg>',
-      compass: '<svg class="crew-svg" aria-hidden="true" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6">' +
-        '<rect x="10" y="36" width="28" height="8" rx="4"/><rect x="21" y="27" width="6" height="10" rx="1.5"/><circle cx="24" cy="19" r="11"/><circle cx="24" cy="19" r="5.5" stroke-width="1" opacity="0.4"/><line x1="24" y1="19" x2="24" y2="11" stroke-width="2.2"/><circle cx="24" cy="10" r="2.2" fill="currentColor" stroke="none"/></svg>',
-      slingshot: head +
-        '<line x1="24" y1="30" x2="24" y2="46" stroke-width="3"/><path d="M24 30 C20 26 15 22 12 10" stroke-width="2.4"/><path d="M24 30 C28 26 33 22 36 10" stroke-width="2.4"/><circle cx="12" cy="10" r="2.8" fill="currentColor" stroke="none"/><circle cx="36" cy="10" r="2.8" fill="currentColor" stroke="none"/><path d="M12 10 C17 20 22 26 24 32" stroke-width="1.4" opacity="0.5"/><path d="M36 10 C31 20 26 26 24 32" stroke-width="1.4" opacity="0.5"/><ellipse cx="24" cy="33" rx="3" ry="2" fill="currentColor" stroke="none"/></svg>',
-      flame: '<svg class="crew-svg" aria-hidden="true" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6">' +
-        '<rect x="20" y="6" width="12" height="30" rx="2.5"/><rect x="20" y="34" width="18" height="8" rx="4"/><path d="M20 22 C14 20 12 13 16 9" stroke-width="1.8"/><path d="M20 30 C12 28 10 20 14 15" stroke-width="1.5" opacity="0.6"/><path d="M20 14 C15 12 14 7 18 5" stroke-width="1.5" opacity="0.7"/></svg>',
-      cross: '<svg class="crew-svg" aria-hidden="true" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6">' +
-        '<rect x="18" y="12" width="12" height="26" rx="2"/><rect x="10" y="20" width="28" height="10" rx="2"/><path d="M18 18 C14 15 10 13 8 7" stroke-width="2"/><path d="M13 12 C12 8 13 4 16 3" stroke-width="1.5"/><path d="M30 18 C34 15 38 13 40 7" stroke-width="2"/><path d="M35 12 C36 8 35 4 32 3" stroke-width="1.5"/></svg>',
-      wrench: '<svg class="crew-svg" aria-hidden="true" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6">' +
-        '<rect x="18" y="3" width="12" height="5" rx="1.5"/><path d="M18 8 L17 14 L14 18 L14 38 C14 41.5 18 44 24 44 C30 44 34 41.5 34 38 L34 18 L31 14 L30 8 Z"/><line x1="14" y1="26" x2="34" y2="26" stroke-width="1" opacity="0.4"/><line x1="14" y1="33" x2="34" y2="33" stroke-width="1" opacity="0.4"/><path d="M24 20 L25.4 24 L30 24 L26.5 26.5 L27.8 31 L24 28.4 L20.2 31 L21.5 26.5 L18 24 L22.6 24 Z" fill="currentColor" stroke="none"/></svg>',
-      book: head +
-        '<path d="M20 46 L20 34 Q20 30 24 30 Q28 30 28 34 L28 46" stroke-width="1.6"/><line x1="19" y1="30" x2="13" y2="16" stroke-width="1.5"/><line x1="21" y1="29" x2="19" y2="13" stroke-width="1.5"/><line x1="24" y1="28" x2="24" y2="10" stroke-width="1.5"/><line x1="27" y1="29" x2="29" y2="13" stroke-width="1.5"/><line x1="29" y1="30" x2="35" y2="16" stroke-width="1.5"/><circle cx="24" cy="9" r="2.5" stroke-width="1.3"/><circle cx="24" cy="4.5" r="1.5" fill="currentColor" stroke="none"/><circle cx="27.8" cy="6.5" r="1.5" fill="currentColor" stroke="none"/><circle cx="27.8" cy="11.5" r="1.5" fill="currentColor" stroke="none"/><circle cx="20.2" cy="11.5" r="1.5" fill="currentColor" stroke="none"/><circle cx="20.2" cy="6.5" r="1.5" fill="currentColor" stroke="none"/></svg>',
-      note: '<svg class="crew-svg" aria-hidden="true" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5">' +
-        '<ellipse cx="24" cy="14" rx="17" ry="12"/><ellipse cx="24" cy="34" rx="10" ry="11"/><ellipse cx="20" cy="31" rx="2.5" ry="3" fill="currentColor" stroke="none"/><ellipse cx="28" cy="31" rx="2.5" ry="3" fill="currentColor" stroke="none"/><path d="M22.5 37 L24 34.5 L25.5 37" stroke-width="1.2"/><line x1="20" y1="40.5" x2="28" y2="40.5" stroke-width="1.2"/><line x1="22" y1="40.5" x2="22" y2="43.5" stroke-width="1"/><line x1="24" y1="40.5" x2="24" y2="43.5" stroke-width="1"/><line x1="26" y1="40.5" x2="26" y2="43.5" stroke-width="1"/></svg>',
-      wheel: head +
-        '<circle cx="24" cy="24" r="9" stroke-width="2"/><line x1="24" y1="4" x2="24" y2="13" stroke-width="2.5"/><line x1="24" y1="35" x2="24" y2="44" stroke-width="2.5"/><line x1="4" y1="24" x2="13" y2="24" stroke-width="2.5"/><line x1="35" y1="24" x2="44" y2="24" stroke-width="2.5"/><line x1="9.4" y1="9.4" x2="15.1" y2="15.1" stroke-width="2"/><line x1="38.6" y1="9.4" x2="32.9" y2="15.1" stroke-width="2"/><line x1="9.4" y1="38.6" x2="15.1" y2="32.9" stroke-width="2"/><line x1="38.6" y1="38.6" x2="32.9" y2="32.9" stroke-width="2"/></svg>'
+  // Crew medallion icons — the full-colour set (gradient shading, navy base,
+  // gold ring). crewPalette() reads the live theme variables, so they recolour
+  // with every theme.
+  function crewPalette() {
+    var cs = getComputedStyle(document.documentElement);
+    function v(n) { return (cs.getPropertyValue(n) || "").trim(); }
+    function rgb(c) { var m = /^#(..)(..)(..)/.exec(c); return m ? [parseInt(m[1], 16), parseInt(m[2], 16), parseInt(m[3], 16)] : [0, 0, 0]; }
+    function lum(c) { var x = rgb(c); return .2126 * x[0] + .7152 * x[1] + .0722 * x[2]; }
+    function shade(c, f) {
+      var x = rgb(c);
+      function h(n) { n = Math.round(Math.min(255, n * f)); return (n < 16 ? "0" : "") + n.toString(16); }
+      return "#" + h(x[0]) + h(x[1]) + h(x[2]);
+    }
+    var P = {
+      navy: v("--ocean-navy"), navy2: v("--ocean-navy2"),
+      gold: v("--bounty-gold"), gold2: v("--bounty-gold2"),
+      red: v("--wanted-red"), teal: v("--sea-teal"), pink: v("--den-pink"),
+      parch: v("--parchment"), ink: v("--ink")
     };
-    return p[key] || (head + '<circle cx="24" cy="24" r="16" stroke-width="1.6"/></svg>');
+    P.bone = Math.abs(lum(P.parch) - lum(P.navy2)) >= Math.abs(lum(P.ink) - lum(P.navy2)) ? P.parch : P.ink;
+    P.bone2 = shade(P.bone, lum(P.bone) > 128 ? .8 : 1.25);
+    P.sock = lum(P.bone) > lum(P.navy2) ? P.navy2 : P.parch;
+    return P;
+  }
+  function crewIcon(key) {
+    var P = crewPalette();
+    var K = "glm-" + key;
+    var GOLD = 'url(#' + K + '-gold)', STEEL = 'url(#' + K + '-steel)';
+    var defs = '<defs>' +
+      '<radialGradient id="' + K + '-bg" cx="35%" cy="28%" r="80%"><stop offset="0%" stop-color="' + P.navy + '"/><stop offset="100%" stop-color="' + P.navy2 + '"/></radialGradient>' +
+      '<linearGradient id="' + K + '-gold" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="' + P.gold + '"/><stop offset="100%" stop-color="' + P.gold2 + '"/></linearGradient>' +
+      '<linearGradient id="' + K + '-steel" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="' + P.bone + '"/><stop offset="100%" stop-color="' + P.bone2 + '"/></linearGradient>' +
+      '</defs>';
+    var base = '<circle cx="24" cy="24" r="22" fill="url(#' + K + '-bg)" stroke="' + P.gold2 + '" stroke-width="1.6"/>' +
+      '<circle cx="24" cy="24" r="19.4" fill="none" stroke="' + P.gold + '" stroke-width="1" stroke-dasharray="2.6 2.3" opacity=".38"/>';
+    var shine = '<ellipse cx="16.5" cy="11.5" rx="9.5" ry="5" fill="#fff" opacity=".10" transform="rotate(-26 16.5 11.5)"/>' +
+      '<path d="M8 33 A17.5 17.5 0 0 0 40 33" fill="none" stroke="#000" opacity=".14" stroke-width="3.5"/>';
+    var art = {
+      swords: '<g transform="rotate(-36 24 24)" opacity=".75"><rect x="22.9" y="8.5" width="2.6" height="12.5" rx="1" fill="' + STEEL + '"/><rect x="20.6" y="21" width="7.2" height="2" rx=".7" fill="' + P.gold2 + '"/><rect x="23" y="23" width="2.4" height="8.5" rx="1" fill="' + P.red + '"/></g>' +
+        '<g transform="rotate(36 24 24)" opacity=".75"><rect x="22.9" y="8.5" width="2.6" height="12.5" rx="1" fill="' + STEEL + '"/><rect x="20.6" y="21" width="7.2" height="2" rx=".7" fill="' + P.gold2 + '"/><rect x="23" y="23" width="2.4" height="8.5" rx="1" fill="' + P.red + '"/></g>' +
+        '<path d="M24 5.5 L26.2 9 L26.2 21.5 L21.8 21.5 L21.8 9 Z" fill="' + STEEL + '"/><line x1="24" y1="7" x2="24" y2="21" stroke="#fff" stroke-width=".7" opacity=".55"/>' +
+        '<rect x="19.2" y="21.5" width="9.6" height="2.7" rx="1" fill="' + GOLD + '"/><rect x="22" y="24.2" width="4" height="11" rx="1.4" fill="' + P.red + '"/>' +
+        '<line x1="22.3" y1="26.5" x2="25.7" y2="28.2" stroke="' + P.gold2 + '" stroke-width=".9"/><line x1="25.7" y1="29.5" x2="22.3" y2="31.2" stroke="' + P.gold2 + '" stroke-width=".9"/><circle cx="24" cy="36.6" r="1.8" fill="' + GOLD + '"/>',
+      compass: '<circle cx="24" cy="24" r="13.6" fill="' + P.bone + '" stroke="' + P.gold2 + '" stroke-width="1"/><circle cx="24" cy="24" r="11.2" fill="none" stroke="' + P.gold2 + '" stroke-width=".5" opacity=".5"/>' +
+        '<g opacity=".9"><path d="M24 13 L25.6 22.4 L24 24 Z" fill="' + P.gold2 + '"/><path d="M24 13 L22.4 22.4 L24 24 Z" fill="' + P.gold + '"/><path d="M24 35 L25.6 25.6 L24 24 Z" fill="' + P.gold + '"/><path d="M24 35 L22.4 25.6 L24 24 Z" fill="' + P.gold2 + '"/><path d="M13 24 L22.4 25.6 L24 24 Z" fill="' + P.gold + '"/><path d="M13 24 L22.4 22.4 L24 24 Z" fill="' + P.gold2 + '"/><path d="M35 24 L25.6 22.4 L24 24 Z" fill="' + P.gold + '"/><path d="M35 24 L25.6 25.6 L24 24 Z" fill="' + P.gold2 + '"/></g>' +
+        '<path d="M29.5 18.5 L25.2 22.8 L24 24 L25.2 25.2 Z" fill="' + P.red + '" transform="rotate(8 24 24)"/><circle cx="24" cy="24" r="2.1" fill="' + GOLD + '" stroke="' + P.gold2 + '" stroke-width=".6"/>',
+      slingshot: '<path d="M24 43 L24 28 M24 28 C20 24.5 16.5 20 14.5 12 M24 28 C28 24.5 31.5 20 33.5 12" fill="none" stroke="' + P.gold2 + '" stroke-width="6" stroke-linecap="round"/>' +
+        '<path d="M24 43 L24 28 M24 28 C20 24.5 16.5 20 14.5 12 M24 28 C28 24.5 31.5 20 33.5 12" fill="none" stroke="' + GOLD + '" stroke-width="3.6" stroke-linecap="round"/>' +
+        '<path d="M14.5 12 C19 19 22 23 24 30 M33.5 12 C29 19 26 23 24 30" fill="none" stroke="' + P.red + '" stroke-width="1.6" stroke-linecap="round"/>' +
+        '<ellipse cx="24" cy="30.5" rx="3.2" ry="2.4" fill="' + P.bone + '" stroke="' + P.gold2 + '" stroke-width=".7"/><circle cx="14.5" cy="11" r="2.4" fill="' + P.red + '" stroke="' + P.gold2 + '" stroke-width=".7"/><circle cx="33.5" cy="11" r="2.4" fill="' + P.red + '" stroke="' + P.gold2 + '" stroke-width=".7"/>',
+      flame: '<path d="M24 7.5 C25 13 30.5 15.5 32.5 21 C34.5 26.5 33 32.5 28.5 36 C30 32 29 28.5 26.5 26.5 C27.5 31 24.5 33 24 36.5 C23 32.5 19.5 31.5 20.5 26.5 C18 28.5 17.5 32.5 19.5 36 C15 32.5 13.5 26.5 15.5 21 C17.5 15.5 23 13 24 7.5 Z" fill="' + P.red + '" stroke="' + P.gold2 + '" stroke-width="1" paint-order="stroke"/>' +
+        '<path d="M24 16 C25.5 20 28.5 22 29 26.5 C29.5 31 27 34.5 24 36.5 C21 34.5 18.5 31 19 26.5 C19.5 22 22.5 20 24 16 Z" fill="' + GOLD + '"/>' +
+        '<path d="M24 25 C25.3 27.5 26 29 25.6 31.4 C25.2 33.5 24 34.8 24 34.8 C24 34.8 22.8 33.5 22.4 31.4 C22 29 22.7 27.5 24 25 Z" fill="' + P.bone + '"/>',
+      cross: '<circle cx="24" cy="27" r="12.4" fill="' + P.bone + '" stroke="' + P.gold2 + '" stroke-width="1"/>' +
+        '<path d="M16 15 C12.5 13.5 10.5 10.5 10 6.5 C13.5 7.5 16.5 9.5 18.5 13" fill="none" stroke="' + GOLD + '" stroke-width="2.6" stroke-linecap="round"/>' +
+        '<path d="M32 15 C35.5 13.5 37.5 10.5 38 6.5 C34.5 7.5 31.5 9.5 29.5 13" fill="none" stroke="' + GOLD + '" stroke-width="2.6" stroke-linecap="round"/>' +
+        '<rect x="21" y="18.5" width="6" height="17" rx="1.6" fill="' + P.red + '"/><rect x="15.5" y="24" width="17" height="6" rx="1.6" fill="' + P.red + '"/><rect x="21.8" y="19.3" width="1.6" height="15.4" rx=".8" fill="#fff" opacity=".28"/>',
+      wrench: '<rect x="19.5" y="6" width="9" height="4" rx="1.4" fill="' + GOLD + '"/>' +
+        '<path d="M20 10 L19.4 14 L16.5 18 L16.5 36.5 C16.5 39.8 19.8 42 24 42 C28.2 42 31.5 39.8 31.5 36.5 L31.5 18 L28.6 14 L28 10 Z" fill="' + P.teal + '"/>' +
+        '<path d="M18 12.5 L18 36 C18 38 19 39.5 20.5 40.3" fill="none" stroke="#fff" opacity=".3" stroke-width="1.4" stroke-linecap="round"/>' +
+        '<rect x="16.5" y="21.5" width="15" height="9.5" fill="' + P.bone + '"/>' +
+        '<path d="M24 22.5 L25.3 26 L29 26 L26.2 28.2 L27.2 31.8 L24 29.6 L20.8 31.8 L21.8 28.2 L19 26 L22.7 26 Z" fill="' + P.red + '"/>',
+      book: '<path d="M15 12 Q24 9.5 33 12 L33 36 Q24 38.5 15 36 Z" fill="' + P.teal + '"/><path d="M31 12.6 L33 12 L33 36 L31 36.6 Z" fill="#000" opacity=".22"/><path d="M15 12 Q24 9.5 33 12 L33 14.5 Q24 12 15 14.5 Z" fill="#fff" opacity=".14"/>' +
+        '<g fill="' + P.bone + '" opacity=".92"><rect x="18.5" y="16.5" width="4.4" height="2" rx=".5"/><rect x="25" y="16.5" width="4.4" height="2" rx=".5"/><rect x="18.5" y="20.5" width="10.9" height="2" rx=".5"/><rect x="18.5" y="24.5" width="4.4" height="2" rx=".5"/><rect x="25" y="24.5" width="4.4" height="2" rx=".5"/><rect x="18.5" y="28.5" width="10.9" height="2" rx=".5"/><rect x="18.5" y="32" width="6.5" height="2" rx=".5"/></g>' +
+        '<g><circle cx="33.5" cy="10.5" r="1.7" fill="' + P.pink + '"/><circle cx="36.5" cy="12" r="1.7" fill="' + P.pink + '"/><circle cx="34" cy="14.5" r="1.7" fill="' + P.pink + '"/><circle cx="31" cy="13" r="1.7" fill="' + P.pink + '"/><circle cx="34" cy="12.4" r="1.3" fill="' + GOLD + '"/></g>',
+      note: '<path d="M11 20 C11 12.5 16.5 7.5 24 7.5 C31.5 7.5 37 12.5 37 20 C37 23.5 35.5 26 33.5 27.5 L14.5 27.5 C12.5 26 11 23.5 11 20 Z" fill="' + P.ink + '" stroke="' + P.gold + '" stroke-width=".9"/>' +
+        '<path d="M17 26 C15.8 30.5 16.5 34.5 19 37.5 C21 39.8 23.5 40.8 24 40.8 C24.5 40.8 27 39.8 29 37.5 C31.5 34.5 32.2 30.5 31 26 Z" fill="' + P.bone + '"/>' +
+        '<ellipse cx="20.4" cy="29.7" rx="2.5" ry="3" fill="' + P.sock + '"/><ellipse cx="27.6" cy="29.7" rx="2.5" ry="3" fill="' + P.sock + '"/><path d="M22.7 35.2 L24 33 L25.3 35.2 Z" fill="' + P.sock + '"/>' +
+        '<line x1="20.5" y1="38" x2="27.5" y2="38" stroke="' + P.sock + '" stroke-width="1"/><line x1="22.4" y1="37" x2="22.4" y2="39" stroke="' + P.sock + '" stroke-width=".9"/><line x1="25.6" y1="37" x2="25.6" y2="39" stroke="' + P.sock + '" stroke-width=".9"/>' +
+        '<g transform="translate(31 30) rotate(12)"><ellipse cx="1.8" cy="8.4" rx="2.6" ry="1.9" fill="' + GOLD + '"/><rect x="3.6" y="0" width="1.5" height="8.4" fill="' + GOLD + '"/><path d="M5.1 0 C7 1 8 2.5 7.6 4.6 C6.8 3.4 6 3 5.1 2.9 Z" fill="' + GOLD + '"/></g>',
+      wheel: '<g stroke="' + GOLD + '" stroke-width="3.4" stroke-linecap="round"><line x1="24" y1="8" x2="24" y2="15"/><line x1="24" y1="33" x2="24" y2="40"/><line x1="8" y1="24" x2="15" y2="24"/><line x1="33" y1="24" x2="40" y2="24"/><line x1="12.7" y1="12.7" x2="17.6" y2="17.6"/><line x1="35.3" y1="12.7" x2="30.4" y2="17.6"/><line x1="12.7" y1="35.3" x2="17.6" y2="30.4"/><line x1="35.3" y1="35.3" x2="30.4" y2="30.4"/></g>' +
+        '<circle cx="24" cy="24" r="9" fill="' + GOLD + '" stroke="' + P.gold2 + '" stroke-width="1"/><circle cx="24" cy="24" r="4.4" fill="' + P.red + '"/><path d="M19 20 A6.5 6.5 0 0 1 27 18.6" fill="none" stroke="#fff" opacity=".35" stroke-width="1.3" stroke-linecap="round"/>'
+    };
+    var emblem = art[key] || ('<circle cx="24" cy="24" r="10" fill="' + GOLD + '"/>');
+    return '<svg class="crew-svg" aria-hidden="true" viewBox="0 0 48 48">' + defs + base + emblem + shine + '</svg>';
   }
   function pulseNav(goto) {
     var b = document.querySelector('[data-goto="' + goto + '"]') || (goto === "helm" ? $("#helmBtn") : null);
@@ -1487,6 +1535,28 @@
       $("#shopName").value = ""; $("#shopCost").value = "";
       renderHold();
     };
+
+    // Hold jump-nav: the Hold is ~6 screens on mobile, so let people jump
+    // between its sections and always see which one they're in.
+    var jumpBtns = $$("#holdJump button");
+    if (jumpBtns.length) {
+      jumpBtns.forEach(function (b) {
+        b.onclick = function () {
+          var t = document.getElementById(b.dataset.jump);
+          if (t) t.scrollIntoView({ behavior: "smooth", block: "start" });
+        };
+      });
+      if (window.IntersectionObserver) {
+        var targets = jumpBtns.map(function (b) { return document.getElementById(b.dataset.jump); }).filter(Boolean);
+        var spy = new IntersectionObserver(function (entries) {
+          entries.forEach(function (e) {
+            if (!e.isIntersecting) return;
+            jumpBtns.forEach(function (b) { b.classList.toggle("active", b.dataset.jump === e.target.id); });
+          });
+        }, { rootMargin: "-64px 0px -70% 0px" });
+        targets.forEach(function (t) { spy.observe(t); });
+      }
+    }
 
     $("#poseControlPrev").onclick = function () { poseOffset--; poseSelectedDay = null; renderPose(); };
     $("#poseControlNext").onclick = function () { poseOffset++; poseSelectedDay = null; renderPose(); };

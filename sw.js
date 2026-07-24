@@ -1,7 +1,7 @@
 /* Grand Line — service worker.
    Network-first for navigations (so new deploys reach users immediately),
    cache-first with runtime caching for everything else (offline play). */
-var CACHE = "grandline-v10";
+var CACHE = "grandline-v11";
 var CORE = [
   "./",
   "./index.html",

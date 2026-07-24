@@ -724,12 +724,14 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
   transition: transform .12s ease, box-shadow .12s ease;
 }
 .crew-row:hover { transform: translateY(-1px); box-shadow: var(--shadow); }
+/* The medallion art is self-contained (own navy disc + gold ring), so the
+   wrapper stays transparent — no double ring. */
 .crew-medallion {
   width: 46px; height: 46px; min-width: 46px; border-radius: 50%;
-  background: var(--parchment3); border: 1.5px solid var(--bounty-gold2);
-  display: flex; align-items: center; justify-content: center; color: var(--bounty-gold2);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 1px 4px rgba(0,0,0,.25);
 }
-.crew-medallion .crew-svg { width: 26px; height: 26px; display: block; }
+.crew-medallion .crew-svg { width: 46px; height: 46px; display: block; border-radius: 50%; }
 .crew-row-body { flex: 1; min-width: 0; }
 .crew-name { font-family: "Pirata One", serif; font-size: 1.1rem; color: var(--ink); line-height: 1.1; }
 .crew-bonus { font-size: .72rem; color: var(--ink-soft); line-height: 1.35; margin-top: 1px; }
@@ -746,8 +748,8 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
 .crew-recruit-btn:disabled { opacity: .5; cursor: default; }
 .crew-recruited-pill { font-family: "Geist", sans-serif; font-size: .72rem; font-weight: 700; color: var(--good); display: inline-flex; align-items: center; gap: 4px; }
 .crew-recruited-pill .ti { font-size: .95rem; }
-.crew-row.recruited { opacity: .72; }
-.crew-row.recruited .crew-medallion { border-color: var(--good); color: var(--good); background: color-mix(in srgb, var(--good) 12%, var(--parchment3)); }
+.crew-row.recruited { opacity: .78; }
+.crew-row.recruited .crew-medallion { box-shadow: 0 0 0 2px var(--good), 0 1px 4px rgba(0,0,0,.25); }
 .nav-pulse { animation: navPulse 1s ease-in-out 0s 5; border-radius: 8px; }
 [data-goto="haki"].item-empty .item-count{font-size:0.78em;color:var(--ocean-navy,#1d5f82);font-weight:600;letter-spacing:0.03em} .haki-has-points{position:relative!important}[data-goto="haki"].haki-has-points::after{content:"";position:absolute;top:3px;right:3px;width:8px;height:8px;background:#a855f7;border-radius:50%;box-shadow:0 0 6px #a855f7;pointer-events:none} @keyframes navPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(47,143,134,0); } 50% { box-shadow: 0 0 0 4px rgba(47,143,134,.55); } }
 .float-pop { position: fixed; left: 50%; top: 40%; transform: translateX(-50%); font-family: "Pirata One", serif; font-size: 2.1rem; color: var(--stat, var(--bounty-gold)); text-shadow: 0 2px 8px rgba(0,0,0,.35); pointer-events: none; z-index: 9999; animation: floatPop .75s ease-out forwards; }
@@ -803,6 +805,26 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
 .dispatch-head { font-weight: 700; color: var(--ocean-navy); font-size: .82rem; letter-spacing: .5px; text-transform: uppercase; display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
 .dispatch-head .ti { color: var(--wanted-red); }
 .dispatch-reward { margin-left: auto; font-size: .66rem; font-weight: 700; text-transform: none; letter-spacing: 0; color: var(--bounty-gold2); display: flex; align-items: center; gap: 3px; background: var(--parchment2); border: 1px solid var(--paper-line); border-radius: 999px; padding: 2px 8px; }
+/* ── Hold: jump navigation ── */
+.hold-jump {
+  position: sticky; top: 0; z-index: 20;
+  display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none;
+  padding: 8px 2px; margin: -2px 0 10px;
+  background: var(--ocean-navy); border-bottom: 1px solid var(--gold-faint);
+}
+.hold-jump::-webkit-scrollbar { display: none; }
+.hold-jump button {
+  flex: 0 0 auto; font-family: "Geist", sans-serif; font-size: .72rem; font-weight: 700;
+  padding: 6px 13px; border-radius: 999px; cursor: pointer; white-space: nowrap;
+  background: var(--parchment2); color: var(--ink); border: 1px solid var(--paper-line);
+}
+.hold-jump button.active { background: var(--bounty-gold2); color: var(--chrome-text); border-color: var(--bounty-gold2); }
+/* Anchors clear the sticky bar when jumped to. */
+#holdVault, #holdSpoils, #holdCrew, #holdStores, #holdThemes, #holdShore { scroll-margin-top: 64px; }
+@media (min-width: 1100px) {
+  /* The Hold is a 2-column masonry here — the bar must span both and not stick. */
+  .hold-jump { position: static; column-span: all; background: transparent; border-bottom: none; }
+}
 .first-move { border-left: 5px solid var(--bounty-gold2); background: linear-gradient(0deg, color-mix(in srgb, var(--bounty-gold2) 8%, transparent), var(--parchment)); }
 .first-move .fm-title { font-family: "Pirata One", serif; font-size: 1.2rem; color: var(--ink); display: flex; align-items: center; gap: 7px; line-height: 1.1; }
 .first-move .fm-title .ti { color: var(--bounty-gold2); font-size: 1.1rem; }
