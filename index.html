@@ -132,16 +132,21 @@
           <select id="bountyTier" aria-label="Difficulty tier"></select>
         </div>
         <p class="cat-desc" id="bountyStatDesc"></p>
-        <label class="health-check"><input type="checkbox" id="bountyHealth" /> <i class="ti ti-heart"></i> Health mission (Cook &amp; Doctor perks apply)</label>
-        <div class="add-row">
-          <input type="date" id="bountyDue" aria-label="Due date (optional)" />
-          <select id="bountyRecurring" aria-label="Recurrence">
-            <option value="">One-time</option>
-            <option value="daily">Daily</option>
-            <option value="weekdays">Weekdays</option>
-            <option value="weekly">Weekly</option>
-          </select>
-        </div>
+        <details class="add-more">
+          <summary><i class="ti ti-settings-2" aria-hidden="true"></i> More options<span class="add-more-hint" id="bountyMoreHint"></span></summary>
+          <label class="health-check"><input type="checkbox" id="bountyHealth" /> <i class="ti ti-heart"></i> Health mission (Cook &amp; Doctor perks apply)</label>
+          <div class="add-row">
+            <label class="field-label">Due date <input type="date" id="bountyDue" aria-label="Due date (optional)" /></label>
+            <label class="field-label">Repeats
+              <select id="bountyRecurring" aria-label="Recurrence">
+                <option value="">One-time</option>
+                <option value="daily">Daily</option>
+                <option value="weekdays">Weekdays</option>
+                <option value="weekly">Weekly</option>
+              </select>
+            </label>
+          </div>
+        </details>
         <div class="add-row">
           <button type="submit" class="primary-btn"><i class="ti ti-plus"></i> Post Bounty</button>
         </div>

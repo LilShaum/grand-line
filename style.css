@@ -829,6 +829,22 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
 .first-move .fm-title { font-family: "Pirata One", serif; font-size: 1.2rem; color: var(--ink); display: flex; align-items: center; gap: 7px; line-height: 1.1; }
 .first-move .fm-title .ti { color: var(--bounty-gold2); font-size: 1.1rem; }
 .first-move .fm-text { font-size: .8rem; color: var(--ink-soft); line-height: 1.45; margin: 5px 0 0; }
+/* ── Collapsible "More options" on the add forms ── */
+.add-more { margin: 2px 0 4px; }
+/* Author .add-row display rules beat the UA details-collapse, so hide explicitly. */
+.add-more:not([open]) > *:not(summary) { display: none !important; }
+.add-more > summary {
+  list-style: none; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+  font-size: .76rem; font-weight: 700; color: var(--sea-teal); padding: 4px 0; user-select: none;
+}
+.add-more > summary::-webkit-details-marker { display: none; }
+.add-more > summary::after { content: "\ea5f"; font-family: "tabler-icons"; font-weight: 400; margin-left: 2px; transition: transform .15s ease; }
+.add-more[open] > summary::after { transform: rotate(180deg); }
+.add-more .add-more-hint { font-weight: 400; font-style: italic; color: var(--ink-soft); }
+.add-more[open] .add-more-hint { display: none; }
+.add-more .health-check { margin-top: 8px; }
+.field-label { display: flex; flex-direction: column; gap: 3px; font-size: .68rem; font-weight: 700; color: var(--ink-soft); text-transform: uppercase; letter-spacing: .04em; }
+.field-label input, .field-label select { text-transform: none; letter-spacing: 0; font-weight: 400; }
 /* ── Log composer: one box, three entry types ── */
 .compose-types { display: flex; gap: 6px; margin: 2px 0 10px; flex-wrap: wrap; }
 .compose-type {

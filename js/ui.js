@@ -1500,8 +1500,23 @@
       var bHealth = $("#bountyHealth") && $("#bountyHealth").checked;
       game.addBounty(save, title, $("#bountyStat").value, $("#bountyTier").value, $("#bountyDue").value || null, $("#bountyRecurring").value || null, bHealth);
       $("#bountyTitle").value = ""; $("#bountyDue").value = ""; $("#bountyRecurring").value = ""; if ($("#bountyHealth")) $("#bountyHealth").checked = false; clearDraft("bountyTitle");
+      var dm = $("#addBountyForm .add-more"); if (dm) dm.removeAttribute("open");
+      updateBountyMoreHint();
       renderBounties();
     };
+    // Show a hint on the collapsed "More options" summary when any advanced
+    // field is set, so it isn't silently hiding a due date / recurrence.
+    function updateBountyMoreHint() {
+      var hint = $("#bountyMoreHint"); if (!hint) return;
+      var bits = [];
+      if ($("#bountyHealth") && $("#bountyHealth").checked) bits.push("health");
+      if ($("#bountyDue") && $("#bountyDue").value) bits.push("due date");
+      if ($("#bountyRecurring") && $("#bountyRecurring").value) bits.push("repeats");
+      hint.textContent = bits.length ? "  ·  " + bits.join(", ") + " set" : "";
+    }
+    ["#bountyHealth", "#bountyDue", "#bountyRecurring"].forEach(function (sel) {
+      var el2 = $(sel); if (el2) el2.addEventListener("change", updateBountyMoreHint);
+    });
     if ($("#bountyStat")) $("#bountyStat").onchange = syncStatDescs;
     if ($("#dutyStat")) $("#dutyStat").onchange = syncStatDescs;
 
