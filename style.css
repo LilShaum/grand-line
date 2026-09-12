@@ -194,7 +194,7 @@ main { padding: 16px; }
   box-shadow: var(--shadow);
 }
 .card-head {
-  font-weight: 700; color: var(--ocean-navy);
+  font-weight: 700; color: var(--ink);
   font-size: .82rem; letter-spacing: .5px; text-transform: uppercase;
   margin-bottom: 10px; display: flex; align-items: center; gap: 6px;
 }
@@ -245,7 +245,7 @@ main { padding: 16px; }
 .primary-btn:hover { filter: brightness(1.08); }
 .primary-btn:active { transform: scale(.97); }
 .ghost-btn {
-  background: transparent; color: var(--ocean-navy); border: 1px solid var(--paper-line);
+  background: transparent; color: var(--ink); border: 1px solid var(--paper-line);
   padding: 9px 12px; font-weight: 600; width: 100%; margin-top: 6px;
   display: inline-flex; align-items: center; justify-content: center; gap: 6px;
 }
@@ -384,7 +384,7 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
 .jf-text { font-family: "Special Elite", monospace; color: var(--ink); font-size: .9rem; line-height: 1.5; }
 
 /* ===================== LOG POSE (calendar) ===================== */
-.pose-head { display: flex; align-items: center; justify-content: center; gap: 14px; font-family: "Instrument Serif", serif; font-size: 1.2rem; color: var(--ocean-navy); }
+.pose-head { display: flex; align-items: center; justify-content: center; gap: 14px; font-family: "Instrument Serif", serif; font-size: 1.2rem; color: var(--ink); }
 .pose-legend { text-align: center; font-size: .72rem; color: var(--ink-soft); margin: 6px 0 12px; }
 .pose-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
 .pose-cell {
@@ -398,7 +398,7 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
 .pose-cell.visited { background: var(--sea-teal); color: #fff; border-color: var(--sea-teal); }
 .pose-cell.visited.full { background: var(--wanted-red); border-color: var(--wanted-red); }
 .pose-cell.today { outline: 2px solid var(--bounty-gold); outline-offset: 1px; }
-.pose-streak { text-align: center; margin-top: 14px; font-family: "Instrument Serif", serif; font-size: 1.15rem; color: var(--ocean-navy); }
+.pose-streak { text-align: center; margin-top: 14px; font-family: "Instrument Serif", serif; font-size: 1.15rem; color: var(--ink); }
 .pose-streak .ti { color: var(--bounty-gold2); }
 
 /* ===================== SHOP / CREW ===================== */
@@ -475,7 +475,7 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
   border-radius: var(--radius); padding: 22px; max-width: 360px; width: 100%; text-align: center;
   box-shadow: var(--shadow);
 }
-.modal h3 { font-family: "Instrument Serif", serif; color: var(--ocean-navy); margin: 0 0 6px; font-weight: 400; }
+.modal h3 { font-family: "Instrument Serif", serif; color: var(--ink); margin: 0 0 6px; font-weight: 400; }
 
 /* ---- First-run onboarding ---- */
 .onboard-modal { max-width: 420px; text-align: left; }
@@ -485,7 +485,7 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
 .onboard-list { list-style: none; margin: 0 0 14px; padding: 0; display: flex; flex-direction: column; gap: 11px; }
 .onboard-list li { display: flex; align-items: flex-start; gap: 11px; font-size: .86rem; line-height: 1.4; color: var(--ink); }
 .onboard-list li .ti { color: var(--bounty-gold2); font-size: 1.2rem; flex: 0 0 auto; margin-top: 1px; }
-.onboard-list li strong { color: var(--ocean-navy); }
+.onboard-list li strong { color: var(--ink); }
 .onboard-modal .tiny { text-align: center; margin: 0 0 14px; }
 .onboard-start { width: 100%; justify-content: center; }
 
@@ -585,9 +585,9 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
 .pose-cell.sel { outline: 3px solid var(--ink); outline-offset: 1px; }
 
 /* day detail panel */
-.pose-day-detail .pdd-head { font-family: "Instrument Serif", serif; font-size: 1.2rem; color: var(--ocean-navy); margin-bottom: 4px; }
+.pose-day-detail .pdd-head { font-family: "Instrument Serif", serif; font-size: 1.2rem; color: var(--ink); margin-bottom: 4px; }
 .pose-day-detail .pdd-sub { font-size: .72rem; color: var(--ink-soft); margin-bottom: 10px; }
-.pose-day-detail .pdd-section { font-weight: 700; font-size: .72rem; text-transform: uppercase; letter-spacing: .5px; color: var(--ocean-navy); margin: 12px 0 6px; }
+.pose-day-detail .pdd-section { font-weight: 700; font-size: .72rem; text-transform: uppercase; letter-spacing: .5px; color: var(--ink); margin: 12px 0 6px; }
 .pose-day-detail ul { list-style: none; margin: 0; padding: 0; }
 .pose-day-detail li { padding: 6px 0; border-bottom: 1px dashed var(--paper-line); font-size: .88rem; color: var(--ink); }
 .pose-day-detail li:last-child { border-bottom: none; }
@@ -608,7 +608,7 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
 .bounty-edit-row select { flex: 1; }
 .bounty-edit-actions { display: flex; gap: 6px; }
 .edit-btn { background: transparent; border: none; color: var(--ink-soft); cursor: pointer; font-size: 1rem; padding: 4px; touch-action: manipulation; }
-.edit-btn:hover { color: var(--ocean-navy); }
+.edit-btn:hover { color: var(--ink); }
 .mini-save { background: var(--good); color: #fff; border: none; border-radius: 8px; padding: 6px 12px; font-weight: 700; cursor: pointer; font-family: inherit; font-size: .75rem; touch-action: manipulation; }
 .mini-cancel { background: transparent; border: 1px solid var(--paper-line); border-radius: 8px; padding: 6px 12px; cursor: pointer; font-family: inherit; font-size: .75rem; color: var(--ink-soft); touch-action: manipulation; }
 
@@ -677,7 +677,7 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
 .bounty-streak-banner.hot .bsb-streak .ti { color: var(--wanted-red); }
 .bsb-streak.cold { color: var(--ink-soft); font-weight: 600; }
 .bsb-next { font-size: .72rem; color: var(--ink-soft); }
-.bsb-next strong { color: var(--ocean-navy); }
+.bsb-next strong { color: var(--ink); }
 .bsb-bar { flex-basis: 100%; height: 5px; background: rgba(43,32,23,.14); border-radius: 4px; overflow: hidden; margin-top: 2px; }
 .bsb-fill { height: 100%; background: linear-gradient(90deg, var(--bounty-gold), var(--wanted-red)); border-radius: 4px; transition: width .4s ease; }
 
@@ -802,7 +802,7 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
 /* ===================== MARINE DISPATCH ===================== */
 .dispatch-card { border-left: 5px solid var(--bounty-gold); }
 .dispatch-card.done { border-left-color: var(--good); }
-.dispatch-head { font-weight: 700; color: var(--ocean-navy); font-size: .82rem; letter-spacing: .5px; text-transform: uppercase; display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
+.dispatch-head { font-weight: 700; color: var(--ink); font-size: .82rem; letter-spacing: .5px; text-transform: uppercase; display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
 .dispatch-head .ti { color: var(--wanted-red); }
 .dispatch-reward { margin-left: auto; font-size: .66rem; font-weight: 700; text-transform: none; letter-spacing: 0; color: var(--bounty-gold2); display: flex; align-items: center; gap: 3px; background: var(--parchment2); border: 1px solid var(--paper-line); border-radius: 999px; padding: 2px 8px; }
 /* ── Hold: jump navigation ── */
