@@ -1086,3 +1086,21 @@ html { scrollbar-color: var(--bounty-gold2) transparent; }
 .haki-detail-blurb { font-style: italic; }
 .haki-detail-lock { font-size: .72rem; font-weight: 700; color: var(--ink-soft); display: inline-flex; align-items: center; gap: 4px; margin-left: 8px; }
 @media (max-width: 700px) { .haki-trees { grid-template-columns: 1fr; } }
+
+/* ===================== USER TEXT OVERFLOW =====================
+   Bounty/duty titles, log entries and reward names are user-supplied and can
+   be a single unbroken string. Without a break rule the text overflows its
+   card and forces the whole page to scroll sideways on a phone. The flex rows
+   also need min-width:0, or the text refuses to shrink and shoves the row's
+   own buttons (e.g. the Hold's "Claim") off-screen. */
+.bounty-title,
+.duty-title,
+.jf-text,
+.shop-item .si-name,
+.mini-list li > span {
+  overflow-wrap: anywhere;
+}
+.shop-item .si-body,
+.mini-list li > span {
+  min-width: 0;
+}
