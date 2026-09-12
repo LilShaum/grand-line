@@ -694,10 +694,12 @@
     }
     items.slice(0, 80).forEach(function (e) {
       var li = el("li");
-      var label = LOG_LABEL[e.type] || e.type;
-      var text = e.type === "mood" ? ("Weather: " + e.mood) : escapeHtml(e.text);
+      // Everything interpolated below is escaped at the render site: the UI
+      // constrains type/date/mood, but a hand-edited backup does not.
+      var label = LOG_LABEL[e.type] || escapeHtml(e.type);
+      var text = e.type === "mood" ? ("Weather: " + escapeHtml(e.mood)) : escapeHtml(e.text);
       li.setAttribute('data-jtype', e.type);
-      li.innerHTML = '<div class="jf-head"><i class="ti ' + (JF_ICON[e.type]||'ti-pencil') + ' jf-icon"></i><span class="jf-type">' + label + '</span><span class="jf-date">' + e.date + '</span></div>' +
+      li.innerHTML = '<div class="jf-head"><i class="ti ' + (JF_ICON[e.type]||'ti-pencil') + ' jf-icon"></i><span class="jf-type">' + label + '</span><span class="jf-date">' + escapeHtml(e.date) + '</span></div>' +
         (text ? '<div class="jf-text">' + text + '</div>' : "");
       feed.appendChild(li);
     });
