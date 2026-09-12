@@ -96,6 +96,9 @@ body {
   margin: 0 auto;
   min-height: 100vh;
   padding-bottom: 88px; /* room for tabbar */
+  /* Pairs with viewport-fit=cover: the poster sits at the very top of the
+     document, so on a notched phone it would otherwise run under the clock. */
+  padding-top: env(safe-area-inset-top);
 }
 
 /* ===================== BOUNTY POSTER (header) ===================== */
@@ -213,7 +216,9 @@ main { padding: 16px; }
 .haki-name { font-weight: 700; color: var(--ink); font-size: .95rem; }
 .haki-lvl {
   font-family: "Pirata One", serif; font-size: 1.1rem;
-  color: var(--stat, var(--ocean-navy));
+  /* The raw stat accent only reaches ~2.5:1 on parchment. Keep the hue so the
+     card still reads as its stat, but pull it toward the body ink. */
+  color: color-mix(in srgb, var(--stat, var(--ocean-navy)) 45%, var(--ink));
 }
 .haki-sub { font-size: .66rem; color: var(--ink-soft); margin-bottom: 8px; }
 .haki-bar { height: 9px; background: rgba(43,32,23,.12); border-radius: 5px; overflow: hidden; }

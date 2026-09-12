@@ -2,16 +2,22 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Grand Line — Become the Pirate King</title>
 
   <!-- Fonts + icons are vendored locally under ./vendor/ so the PWA works
-       fully offline. @font-face blocks are inlined at the top of <style>;
-       the service worker precaches every file in sw.js CORE. -->
+       fully offline. @font-face blocks live at the top of style.css; the
+       service worker precaches every file in sw.js CORE. -->
   <link rel="stylesheet" href="./vendor/tabler-icons/tabler-icons.min.css" />
 
   <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="icon.svg" />
   <link rel="apple-touch-icon" href="icon-192.png" />
+  <!-- Without this, adding to the iOS Home Screen opens a browser tab instead
+       of a standalone app. The status bar style is deliberately left at its
+       default: "black-translucent" would run the poster under the clock. -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Grand Line" />
   <meta name="theme-color" content="#1b2a4a" />
   <link rel="stylesheet" href="style.css" />
 </head>
