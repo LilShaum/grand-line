@@ -676,7 +676,11 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
   100% { opacity: 0; transform: translate(-50%,-50%) rotate(-16deg) scale(1); }
 }
 .bounty-streak-banner { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 14px; padding: 11px 14px; border-left: 5px solid var(--bounty-gold); }
-.bounty-streak-banner.hot { border-left-color: var(--wanted-red); background: linear-gradient(0deg, rgba(138,59,46,.05), var(--parchment)); }
+/* Both stops must be opaque: the old bottom stop was a near-transparent red,
+   so the dark page background showed through and the card faded out at its
+   own bottom edge. The tint is mixed from --wanted-red rather than a hard-
+   coded rgba of its grandline value, so it follows the theme. */
+.bounty-streak-banner.hot { border-left-color: var(--wanted-red); background: linear-gradient(0deg, color-mix(in srgb, var(--wanted-red) 7%, var(--parchment)), var(--parchment)); }
 .bsb-streak { font-weight: 700; color: var(--ink); font-size: .9rem; display: inline-flex; align-items: center; gap: 6px; }
 .bsb-streak .ti { color: var(--bounty-gold2); }
 .bounty-streak-banner.hot .bsb-streak .ti { color: var(--wanted-red); }
