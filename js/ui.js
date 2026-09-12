@@ -501,7 +501,11 @@
       var editBtn = el("button", "edit-btn", '<i class="ti ti-pencil"></i>'); editBtn.title = "Edit"; editBtn.setAttribute("aria-label", "Edit bounty");
       editBtn.onclick = function () { editingBounty = b.id; renderBounties(); };
       var del = el("button", "del-btn", '<i class="ti ti-x"></i>'); del.title = "Delete"; del.setAttribute("aria-label", "Delete bounty");
-      del.onclick = function () { game.deleteBounty(save, b.id); renderBounties(); renderQuarters(); };
+      del.onclick = function () {
+        deleteWithUndo("bounties", b.id, "Bounty",
+          function () { game.deleteBounty(save, b.id); },
+          function () { renderBounties(); renderQuarters(); });
+      };
       var acts = el("div", "bounty-acts");
       if (b.status !== "done" && rewards.hasCrew(save, "sniper")) {
         var isFocus = save.focusBountyId === b.id;
@@ -587,7 +591,11 @@
         '<span class="br-xp">+' + economy.TIERS[h.tier].xp + ' XP</span>');
       var del = el("button", "del-btn", '<i class="ti ti-x"></i>');
       del.title = "Delete"; del.setAttribute("aria-label", "Delete duty");
-      del.onclick = function () { game.deleteHabit(save, h.id); renderDuties(); };
+      del.onclick = function () {
+        deleteWithUndo("habits", h.id, "Duty",
+          function () { game.deleteHabit(save, h.id); },
+          function () { renderDuties(); });
+      };
       li.appendChild(chk); li.appendChild(body); li.appendChild(reward); li.appendChild(del);
       list.appendChild(li);
     });
@@ -849,7 +857,11 @@
         btn.onclick = function () { doBuy(item.id); };
         var del = el("button", "del-btn", '<i class="ti ti-x"></i>');
         del.title = "Delete"; del.setAttribute("aria-label", "Delete shop item");
-        del.onclick = function () { game.deleteShopItem(save, item.id); renderHold(); };
+        del.onclick = function () {
+          deleteWithUndo("shop", item.id, "Reward",
+            function () { game.deleteShopItem(save, item.id); },
+            function () { renderHold(); });
+        };
         li.appendChild(btn); li.appendChild(del);
         list.appendChild(li);
       });
@@ -1256,6 +1268,24 @@
     setTimeout(function () { t.remove(); }, 6000);
   }
 
+  // Row deletes are one tap with no confirm, so they must be reversible.
+  // Capture the row AND its position before removing; `save[key]` is replaced
+  // (not mutated) by the delete, so re-read it when restoring.
+  function deleteWithUndo(key, id, label, doDelete, rerender) {
+    var arr = save[key] || [];
+    var idx = arr.findIndex(function (x) { return x.id === id; });
+    var removed = idx >= 0 ? arr[idx] : null;
+    doDelete();
+    rerender();
+    if (!removed) return;
+    toastAction('<i class="ti ti-trash"></i> ' + label + ' deleted.', "Undo", function () {
+      var cur = save[key] || (save[key] = []);
+      cur.splice(Math.min(idx, cur.length), 0, removed);
+      state.save(save);
+      rerender();
+    });
+  }
+
   function confetti(accentHex) {
     if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     var colors = accentHex
@@ -1655,9 +1685,23 @@
         try {
           var data = JSON.parse(reader.result);
           if (!data || !data.player || !data.stats) throw new Error("bad");
-          save = state.save(data); save = game.onLoad(save);
-          $("#helmModal").hidden = true; show("quarters");
-          toast('<i class="ti ti-upload"></i> Voyage restored.');
+          // Restoring destroys the current save and cannot be undone, so say
+          // concretely what is about to be lost before doing it.
+          var haveEntries = (save.journal || []).length;
+          var haveBerries = fmt(save.player.berries || 0);
+          var incomingEntries = (data.journal || []).length;
+          $("#helmModal").hidden = true;
+          showConfirm(
+            "Restore this backup?",
+            "This replaces your current voyage (" + haveEntries + " log entries, ฿" + haveBerries +
+            ") with the backup's " + incomingEntries + ". Your current progress cannot be recovered afterwards.",
+            "Restore",
+            function () {
+              save = state.save(data); save = game.onLoad(save);
+              show("quarters");
+              toast('<i class="ti ti-upload"></i> Voyage restored.');
+            }
+          );
         } catch (err) { toast('<i class="ti ti-alert-triangle"></i> That file is not a valid backup.'); }
         e.target.value = "";
       };
