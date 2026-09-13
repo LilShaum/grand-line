@@ -315,9 +315,12 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
   padding: 2px 7px; border-radius: 4px; color: #fff; background: var(--ink-soft);
 }
 .tier-petty     { background: #6a6150; }
-.tier-rookie    { background: var(--sea-teal); }
+/* Same deepening as .haki-pts: the dark themes redefine --sea-teal and
+   --wanted-red to light accents, which left this badge's white text at
+   ~2.4:1. The tier hue survives; the badge just sits darker. */
+.tier-rookie    { background: color-mix(in srgb, var(--sea-teal) 64%, #101418); }
 .tier-notorious { background: #7a5a1a; }
-.tier-warlord   { background: var(--wanted-red); }
+.tier-warlord   { background: color-mix(in srgb, var(--wanted-red) 64%, #101418); }
 .del-btn { background: transparent; border: none; color: var(--ink-soft); cursor: pointer; font-size: 1.05rem; padding: 4px; touch-action: manipulation; }
 .del-btn:hover { color: var(--wanted-red); }
 
@@ -537,7 +540,11 @@ button:focus-visible, .tab:focus-visible, .chip:focus-visible, .weather-btn:focu
 .haki-tree-head { display: flex; justify-content: space-between; align-items: baseline; }
 .haki-tree-name { font-weight: 700; color: var(--ink); }
 .haki-pts {
-  font-family: "Pirata One", serif; font-size: .95rem; color: #fff; background: var(--stat, var(--ocean-navy));
+  /* White on a raw accent fails in every theme (2.2-4.2:1) because --stat can
+     be a light gold. Deepen the chip so white always clears 4.5 while the hue
+     still identifies the tree. */
+  font-family: "Pirata One", serif; font-size: .95rem; color: #fff;
+  background: color-mix(in srgb, var(--stat, var(--ocean-navy)) 64%, #101418);
   padding: 1px 9px; border-radius: 999px;
 }
 .haki-tree-sub { font-size: .64rem; color: var(--ink-soft); margin-bottom: 10px; }
